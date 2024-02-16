@@ -17,6 +17,8 @@ pydantic = "^1.10"
 langchain-openai = "^0.0.6"
 jsonschema = "^4.21.1"
 sse-starlette = "^2.0.0"
+alembic = "^1.13.1"
+psycopg2 = "^2.9.9"
 
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "^3.6.1"

@@ -7,7 +7,7 @@ from langchain.chains.openai_functions import create_openai_fn_runnable
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import chain
 from langchain_openai.chat_models import ChatOpenAI
-from langserve import add_routes, CustomUserType
+from langserve import CustomUserType, add_routes
 from pydantic import BaseModel, Field
 
 from extraction.utils import convert_json_schema_to_openai_schema
