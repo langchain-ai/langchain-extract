@@ -43,13 +43,6 @@ class ExtractResponse(BaseModel):
     extracted: Any
 
 
-# class CreateExtractor(BaseModel):
-#     """Request body for the create_extractor endpoint."""
-#
-#     schema: Dict[str, Any] = Field(..., description="The schema to use for extraction.")
-#     instruction: str = Field(..., description="The instruction to use for extraction.")
-#
-
 model = ChatOpenAI(temperature=0)
 
 
