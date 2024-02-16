@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Run migrations."""
-from db.models import Base, ENGINE
+from db.models import ENGINE, Base
 
 
 def main() -> None:
