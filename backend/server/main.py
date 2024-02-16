@@ -5,7 +5,9 @@ from fastapi import FastAPI, HTTPException
 from jsonschema import Draft202012Validator, exceptions
 from langchain.chains.openai_functions import create_openai_fn_runnable
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import chain
 from langchain_openai.chat_models import ChatOpenAI
+from langserve import add_routes
 from pydantic import BaseModel, Field
 
 from extraction.utils import convert_json_schema_to_openai_schema
@@ -27,10 +29,11 @@ class ExtractRequest(BaseModel):
     """Request body for the extract endpoint."""
 
     text: str = Field(..., description="The text to extract from.")
-    schema: Dict[str, Any] = Field(
+    json_schema: Dict[str, Any] = Field(
         ...,
         description="JSON schema that describes what content should be extracted "
         "from the text.",
+        alias="schema",
     )
 
 
@@ -40,23 +43,21 @@ class ExtractResponse(BaseModel):
     extracted: Any
 
 
-class CreateExtractor(BaseModel):
-    """Request body for the create_extractor endpoint."""
-
-    schema: Dict[str, Any] = Field(..., description="The schema to use for extraction.")
-    instruction: str = Field(..., description="The instruction to use for extraction.")
-
+# class CreateExtractor(BaseModel):
+#     """Request body for the create_extractor endpoint."""
+#
+#     schema: Dict[str, Any] = Field(..., description="The schema to use for extraction.")
+#     instruction: str = Field(..., description="The instruction to use for extraction.")
+#
 
 model = ChatOpenAI(temperature=0)
 
 
-@app.post("/extract_from_text")
-def extract(extract_request: ExtractRequest) -> ExtractResponse:
-    """An end point to extract content from a given text object."""
-
-    # Validate the schema itself
+@chain
+def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
+    schema = extraction_request["json_schema"]
     try:
-        Draft202012Validator.check_schema(extract_request.schema)
+        Draft202012Validator.check_schema(schema)
     except exceptions.ValidationError as e:
         raise HTTPException(status_code=422, detail=f"Invalid schema: {e.message}")
 
@@ -76,14 +77,22 @@ def extract(extract_request: ExtractRequest) -> ExtractResponse:
         ]
     )
 
-    openai_function = convert_json_schema_to_openai_schema(extract_request.schema)
+    openai_function = convert_json_schema_to_openai_schema(schema)
     runnable = create_openai_fn_runnable(
         functions=[openai_function], llm=model, prompt=prompt
     )
-    extracted_content = runnable.invoke({"text": extract_request.text})
+    extracted_content = runnable.invoke({"text": extraction_request["text"]})
     return ExtractResponse(
         extracted=extracted_content,
     )
+
+
+add_routes(
+    app,
+    extraction_runnable,
+    path="/extract_runnable",
+    enabled_endpoints=["invoke", "playground", "stream_log"],
+)
 
 
 if __name__ == "__main__":
