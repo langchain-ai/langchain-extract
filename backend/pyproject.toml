@@ -10,6 +10,8 @@ readme = "README.md"
 python = "^3.8.1"
 langchain = "~0.1"
 langsmith = ">=0.0.66"
+fastapi = "^0.109.2"
+langserve = "^0.0.41"
 
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "^3.6.1"
