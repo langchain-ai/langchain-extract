@@ -28,4 +28,3 @@ async def test_generic_fake_chat_model_ainvoke() -> None:
     assert response == AIMessage(content="goodbye")
     response = await model.ainvoke("meow")
     assert response == AIMessage(content="hello")
-
