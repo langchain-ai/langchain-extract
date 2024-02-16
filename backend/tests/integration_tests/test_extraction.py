@@ -5,7 +5,7 @@ from typing import List, Optional
 import httpx
 from fastapi import FastAPI
 from httpx import AsyncClient
-from pydantic.v1 import BaseModel
+from langchain_core.pydantic_v1 import BaseModel
 
 from server.main import app
 
@@ -15,7 +15,7 @@ async def get_async_test_client(
     server: FastAPI, *, path: Optional[str] = None, raise_app_exceptions: bool = True
 ) -> AsyncClient:
     """Get an async client."""
-    url = "http://localhost:9999"
+    url = "http://localhost:9999/"
     if path:
         url += path
     transport = httpx.ASGITransport(
@@ -45,6 +45,6 @@ async def test_extraction_api() -> None:
         is the number of cats I have to the power of 5. (Approximately.)
         """
         result = await client.post(
-            "/extract_from_text", json={"text": text, "schema": Root.schema()}
+            "/extract_text", json={"input": {"text": text, "schema": Root.schema()}}
         )
         assert result.status_code == 200, result.text
