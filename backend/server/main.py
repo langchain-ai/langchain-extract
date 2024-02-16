@@ -1,10 +1,14 @@
 """Entry point into the server."""
 from typing import Any, Dict
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from jsonschema import Draft202012Validator, exceptions
+from langchain.chains.openai_functions import create_openai_fn_runnable
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai.chat_models import ChatOpenAI
 from pydantic import BaseModel, Field
+
+from extraction.utils import convert_json_schema_to_openai_schema
 
 app = FastAPI(
     title="Extraction Powered by LangChain",
@@ -34,6 +38,11 @@ class ExtractResponse(BaseModel):
     """Response body for the extract endpoint."""
 
     extracted: Any
+    schema: Dict[str, Any] = Field(
+        ...,
+        description="The JSON schema that describes what content should be extracted "
+        "from the text.",
+    )
 
 
 class CreateExtractor(BaseModel):
@@ -49,6 +58,13 @@ model = ChatOpenAI()
 @app.post("/extract_from_text")
 def extract(extract_request: ExtractRequest) -> ExtractResponse:
     """An end point to extract content from a given text object."""
+
+    # Validate the schema itself
+    try:
+        Draft202012Validator.check_schema(extract_request.schema)
+    except exceptions.ValidationError as e:
+        raise HTTPException(status_code=422, detail=f"Invalid schema: {e.message}")
+
     prompt = ChatPromptTemplate.from_messages(
         [
             (
@@ -65,17 +81,14 @@ def extract(extract_request: ExtractRequest) -> ExtractResponse:
         ]
     )
 
-    chain = prompt | model
-
-    extracted_content = chain.invoke({"text": extract_request.text})
-
-    # runnable = create_openai_fn_runnable(
-    #     functions=[extract_request.schema], llm=model, prompt=prompt
-    # )
-    # extracted_content = runnable.invoke({"text": extract_request.text})
-    return {
-        "extracted": extracted_content.content,
-    }
+    openai_function = convert_json_schema_to_openai_schema(extract_request.schema)
+    runnable = create_openai_fn_runnable(
+        functions=[openai_function], llm=model, prompt=prompt
+    )
+    extracted_content = runnable.invoke({"text": extract_request.text})
+    return ExtractResponse(
+        extracted=extracted_content,
+    )
 
 
 if __name__ == "__main__":

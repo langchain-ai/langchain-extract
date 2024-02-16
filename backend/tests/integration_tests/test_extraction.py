@@ -1,10 +1,11 @@
 """Makes it easy to run an integration tests using a real chat model."""
 from contextlib import asynccontextmanager
-from typing import Optional
+from typing import List, Optional
 
 import httpx
 from fastapi import FastAPI
 from httpx import AsyncClient
+from pydantic.v1 import BaseModel
 
 from server.main import app
 
@@ -30,8 +31,20 @@ async def get_async_test_client(
 
 async def test_extraction_api() -> None:
     """Test the extraction API endpoint."""
+
+    class Person(BaseModel):
+        age: Optional[int]
+        name: Optional[str]
+
+    class Root(BaseModel):
+        people: List[Person]
+
     async with get_async_test_client(app) as client:
+        text = """
+        My name is Chester. I am young. I love cats. I have two cats. My age
+        is the number of cats I have to the power of 5. (Approximately.)
+        """
         result = await client.post(
-            "/extract_from_text", json={"text": "hello", "schema": {}}
+            "/extract_from_text", json={"text": text, "schema": Root.schema()}
         )
         assert result.status_code == 200, result.text

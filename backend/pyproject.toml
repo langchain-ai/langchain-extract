@@ -15,6 +15,7 @@ langserve = "^0.0.41"
 uvicorn = "^0.27.1"
 pydantic = "^2.6.1"
 langchain-openai = "^0.0.6"
+jsonschema = "^4.21.1"
 
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "^3.6.1"
