@@ -47,7 +47,7 @@ class CreateExtractor(BaseModel):
     instruction: str = Field(..., description="The instruction to use for extraction.")
 
 
-model = ChatOpenAI()
+model = ChatOpenAI(temperature=0)
 
 
 @app.post("/extract_from_text")
