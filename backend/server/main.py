@@ -73,7 +73,8 @@ def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
             ),
             (
                 "human",
-                "I need to extract information from the following text: ```\n{text}\n```\n",
+                "I need to extract information from "
+                "the following text: ```\n{text}\n```\n",
             ),
         ]
     )
@@ -83,6 +84,7 @@ def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
         functions=[openai_function], llm=model, prompt=prompt
     )
     extracted_content = runnable.invoke({"text": extraction_request.text})
+
     return ExtractResponse(
         extracted=extracted_content,
     )
