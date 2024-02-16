@@ -1,7 +1,7 @@
 """Entry point into the server."""
-from typing import Any, Dict
+from typing import Any, Dict, List
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from jsonschema import Draft202012Validator, exceptions
 from langchain.chains.openai_functions import create_openai_fn_runnable
 from langchain_core.prompts import ChatPromptTemplate
@@ -10,6 +10,7 @@ from langchain_openai.chat_models import ChatOpenAI
 from langserve import CustomUserType, add_routes
 from pydantic import BaseModel, Field
 
+from db.models import get_session, Extractor
 from extraction.utils import convert_json_schema_to_openai_schema
 
 app = FastAPI(
@@ -82,6 +83,27 @@ def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
         extracted=extracted_content,
     )
 
+
+@app.post("/extractors")
+def create_extractor() -> str:
+    """Endpoint to create an extractor."""
+    return "Not implemented yet."
+
+@app.get("/extractors")
+def list_extractors(
+        *,
+    limit: int = 10,
+    offset: int = 0,
+    session = Depends(get_session),
+) -> List[Any]:
+    """Endpoint to get all extractors."""
+    return session.query(Extractor).limit(limit).offset(offset).all()
+
+
+@app.get("/extractor/{id}")
+def get_extractor(id: str) -> str:
+    """Endpoint to get an extractor."""
+    return "Not implemented yet."
 
 add_routes(
     app,

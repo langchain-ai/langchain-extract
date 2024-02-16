@@ -17,10 +17,9 @@ Base = declarative_base()
 
 
 # TODO(Eugene): Convert to async code
-@contextmanager
-def _create_session(self) -> Generator[Session, None, None]:
+def get_session() -> Generator[Session, None, None]:
     """Create a new session."""
-    session = self.session_maker()
+    session = Session()
 
     try:
         yield session
