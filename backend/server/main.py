@@ -14,9 +14,11 @@ class ExtractRequest(BaseModel):
     """Request body for the extract endpoint."""
 
     text: str = Field(..., description="The text to extract from.")
-    schema: Dict[str, Any] = Field(...,
-                                   description="JSON schema that describes "
-                                                    "what content should be extracted from the text.")
+    schema: Dict[str, Any] = Field(
+        ...,
+        description="JSON schema that describes what content should be extracted "
+                    "from the text."
+    )
 
 
 class ExtractResponse(BaseModel):
