@@ -7,7 +7,7 @@ from langchain.chains.openai_functions import create_openai_fn_runnable
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import chain
 from langchain_openai.chat_models import ChatOpenAI
-from langserve import add_routes
+from langserve import add_routes, CustomUserType
 from pydantic import BaseModel, Field
 
 from extraction.utils import convert_json_schema_to_openai_schema
@@ -25,7 +25,7 @@ app = FastAPI(
 )
 
 
-class ExtractRequest(BaseModel):
+class ExtractRequest(CustomUserType):
     """Request body for the extract endpoint."""
 
     text: str = Field(..., description="The text to extract from.")
@@ -55,7 +55,8 @@ model = ChatOpenAI(temperature=0)
 
 @chain
 def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
-    schema = extraction_request["json_schema"]
+    """An end point to extract content from a given text object."""
+    schema = extraction_request.json_schema
     try:
         Draft202012Validator.check_schema(schema)
     except exceptions.ValidationError as e:
@@ -81,7 +82,7 @@ def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
     runnable = create_openai_fn_runnable(
         functions=[openai_function], llm=model, prompt=prompt
     )
-    extracted_content = runnable.invoke({"text": extraction_request["text"]})
+    extracted_content = runnable.invoke({"text": extraction_request.text})
     return ExtractResponse(
         extracted=extracted_content,
     )
@@ -90,7 +91,7 @@ def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
 add_routes(
     app,
     extraction_runnable,
-    path="/extract_runnable",
+    path="/extract_text",
     enabled_endpoints=["invoke", "playground", "stream_log"],
 )
 
