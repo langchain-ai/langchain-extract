@@ -3,22 +3,28 @@ name: langchain-extract
 
 services:
   postgres:
-    image: postgres:latest
+    # Careful if bumping postgres version.
+    # Make sure to keep in sync with CI 
+    # version if being tested on CI.
+    image: postgres:16
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: langchain_extract
+      POSTGRES_DB: langchain
       POSTGRES_USER: langchain
-      POSTGRES_PASSWORD: langpass
+      POSTGRES_PASSWORD: langchain
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-        #  backend:
-        #    build: ./backend
-        #    ports:
-        #      - "8000:8000"
-        #    depends_on:
-        #      - postgres
+# For rely on docker compose to spin up postgres
+# but developer using docker
+# Add backend when we actually need it
+#  backend:
+#    build: ./backend
+#    ports:
+#      - "8000:8000"
+#    depends_on:
+#      - postgres
 
 volumes:
   postgres_data:
