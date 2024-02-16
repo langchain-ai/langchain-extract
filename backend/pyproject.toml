@@ -12,6 +12,7 @@ langchain = "~0.1"
 langsmith = ">=0.0.66"
 fastapi = "^0.109.2"
 langserve = "^0.0.41"
+uvicorn = "^0.27.1"
 
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "^3.6.1"
