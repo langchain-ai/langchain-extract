@@ -1,0 +1,25 @@
+version: "3"
+name: langchain-extract
+
+services:
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: langchain_extract
+      POSTGRES_USER: langchain
+      POSTGRES_PASSWORD: langpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+        #  backend:
+        #    build: ./backend
+        #    ports:
+        #      - "8000:8000"
+        #    depends_on:
+        #      - postgres
+
+volumes:
+  postgres_data:
+  
