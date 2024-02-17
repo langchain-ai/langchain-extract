@@ -1,17 +1,18 @@
 """Entry point into the server."""
-from typing import Any, Dict, List
+from typing import Any, Dict
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException
 from jsonschema import Draft202012Validator, exceptions
 from langchain.chains.openai_functions import create_openai_fn_runnable
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import chain
 from langchain_openai.chat_models import ChatOpenAI
 from langserve import CustomUserType, add_routes
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
-from db.models import Extractor, get_session
 from extraction.utils import convert_json_schema_to_openai_schema
+from server.api import extractors
+from server.validators import validate_json_schema
 
 app = FastAPI(
     title="Extraction Powered by LangChain",
@@ -25,6 +26,9 @@ app = FastAPI(
     ],
 )
 
+# Include API endpoints for extractor defintions
+app.include_router(extractors.router)
+
 
 class ExtractRequest(CustomUserType):
     """Request body for the extract endpoint."""
@@ -36,6 +40,12 @@ class ExtractRequest(CustomUserType):
         "from the text.",
         alias="schema",
     )
+
+    @validator("json_schema")
+    def validate_schema(cls, v: Any) -> Dict[str, Any]:
+        """Validate the schema."""
+        validate_json_schema(v)
+        return v
 
 
 class ExtractResponse(BaseModel):
@@ -82,30 +92,6 @@ def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
     return ExtractResponse(
         extracted=extracted_content,
     )
-
-
-class CreateExtractor(BaseModel):
-    """Request body for the create_extractor endpoint."""
-
-    schema: Dict[str, Any] = Field(..., description="The schema to use for extraction.")
-    instruction: str = Field(..., description="The instruction to use for extraction.")
-
-
-@app.post("/extractors")
-def create_extractor() -> str:
-    """Endpoint to create an extractor."""
-    return "Not implemented yet."
-
-
-@app.get("/extractors")
-def list_extractors(
-    *,
-    limit: int = 10,
-    offset: int = 0,
-    session=Depends(get_session),
-) -> List[Any]:
-    """Endpoint to get all extractors."""
-    return session.query(Extractor).limit(limit).offset(offset).all()
 
 
 add_routes(

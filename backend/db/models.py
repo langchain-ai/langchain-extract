@@ -5,13 +5,13 @@ from typing import Generator
 from sqlalchemy import Column, DateTime, String, create_engine
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import func
 
 from server.settings import get_postgres_url
 
 ENGINE = create_engine(get_postgres_url())
-Session = sessionmaker(bind=ENGINE)
+SessionClass = sessionmaker(bind=ENGINE)
 
 Base = declarative_base()
 
@@ -19,7 +19,7 @@ Base = declarative_base()
 # TODO(Eugene): Convert to async code
 def get_session() -> Generator[Session, None, None]:
     """Create a new session."""
-    session = Session()
+    session = SessionClass()
 
     try:
         yield session
@@ -33,7 +33,7 @@ def get_session() -> Generator[Session, None, None]:
 class Extractor(Base):
     __tablename__ = "extractors"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     modified_at = Column(DateTime(timezone=True), onupdate=func.now())
     schema = Column(JSONB)
