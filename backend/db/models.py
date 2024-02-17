@@ -41,13 +41,11 @@ class Extractor(Base):
     )
     created_at = Column(
         DateTime(timezone=True),
-        nullable=False,
         server_default=func.now(),
         comment="Time when this extracted was originally created.",
     )
     modified_at = Column(
         DateTime(timezone=True),
-        nullable=False,
         onupdate=func.now(),
         comment="Last time this was modified.",
     )

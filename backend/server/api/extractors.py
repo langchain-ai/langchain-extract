@@ -39,11 +39,10 @@ def create_extractor(
     create_request: CreateExtractor, *, session: Session = Depends(get_session)
 ) -> UUID:
     """Endpoint to create an extractor."""
-    import json
-
     instance = Extractor(
         schema=create_request.json_schema,
         description=create_request.description,
+        instruction=create_request.instruction,
     )
     session.add(instance)
     session.commit()
