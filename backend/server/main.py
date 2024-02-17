@@ -26,7 +26,7 @@ app = FastAPI(
     ],
 )
 
-# Include API endpoints for extractor defintions
+# Include API endpoints for extractor definitions
 app.include_router(extractors.router)
 
 

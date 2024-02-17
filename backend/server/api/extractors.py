@@ -1,6 +1,4 @@
-"""Endpoints for managing definition of extractors.
-
-"""
+"""Endpoints for managing definition of extractors."""
 from typing import Any, Dict, List
 from uuid import UUID
 
@@ -13,7 +11,7 @@ from server.validators import validate_json_schema
 
 router = APIRouter(
     prefix="/extractors",
-    tags=["extractors"],
+    tags=["extractor definitions"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -39,10 +37,13 @@ class CreateExtractor(BaseModel):
 @router.post("")
 def create_extractor(
     create_request: CreateExtractor, *, session: Session = Depends(get_session)
-) -> str:
+) -> UUID:
     """Endpoint to create an extractor."""
+    import json
+
     instance = Extractor(
-        schema=create_request.json_schema, description=create_request.description
+        schema=create_request.json_schema,
+        description=create_request.description,
     )
     session.add(instance)
     session.commit()
