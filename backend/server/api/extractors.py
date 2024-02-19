@@ -60,7 +60,7 @@ def list_extractors(
     return session.query(Extractor).limit(limit).offset(offset).all()
 
 
-@router.delete("{uuid}")
+@router.delete("/{uuid}")
 def delete_extractor(uuid: UUID, *, session: Session = Depends(get_session)) -> None:
     """Endpoint to delete an extractor."""
     session.query(Extractor).filter(Extractor.uuid == str(uuid)).delete()

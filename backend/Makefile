@@ -16,6 +16,22 @@ test:
 test_watch:
 	poetry run ptw . -- $(TEST_FILE)
 
+start_test_db:
+	docker-compose --profile test up -d postgres_test
+
+clear_test_db:
+	# Tear down test db
+	docker-compose --profile test exec -T postgres_test psql -U test_user -d test -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+
+stop_test_db: clear_test_db
+	docker-compose --profile test stop postgres_test
+	docker-compose --profile test rm -f postgres_test
+
+integration_tests: start_test_db
+	sleep 3  # Buffer time for database to start
+	# The below line ensures we stop db if tests fail.
+	poetry run pytest tests/integration_tests/; result=$$?; make stop_test_db; exit $$result
+
 ######################
 # LINTING AND FORMATTING
 ######################
