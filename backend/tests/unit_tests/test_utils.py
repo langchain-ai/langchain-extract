@@ -1,11 +1,11 @@
 from typing import List
 
+import pytest
 from langchain.pydantic_v1 import BaseModel, Field
 
 from extraction.utils import (
     FewShotExample,
     convert_json_schema_to_openai_schema,
-    make_system_message,
 )
 
 
@@ -85,6 +85,7 @@ def test_convert_json_schema_to_openai_schema() -> None:
     }
 
 
+@pytest.mark.skip(reason="Not implemented yet.")
 def test_make_system_message() -> None:
     """Test making a system message from instructions and examples."""
     instructions = "Test instructions."

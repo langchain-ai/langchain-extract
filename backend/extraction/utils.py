@@ -61,10 +61,14 @@ def make_prompt_template(
     if examples is not None:
         few_shot_prompt = []
         for example in examples:
-            few_shot_prompt.extend([
-                HumanMessage(content=example.text),
-                AIMessage(content="", additional_kwargs={"function_call": example.output})
-        ])
+            few_shot_prompt.extend(
+                [
+                    HumanMessage(content=example.text),
+                    AIMessage(
+                        content="", additional_kwargs={"function_call": example.output}
+                    ),
+                ]
+            )
         prompt_components.extend(few_shot_prompt)
 
     prompt_components.append(

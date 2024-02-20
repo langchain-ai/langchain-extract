@@ -14,7 +14,7 @@ from extraction.utils import (
     convert_json_schema_to_openai_schema,
     make_prompt_template,
 )
-from server.api import extractors
+from server.api import examples, extractors
 from server.validators import validate_json_schema
 
 app = FastAPI(
@@ -31,6 +31,7 @@ app = FastAPI(
 
 # Include API endpoints for extractor definitions
 app.include_router(extractors.router)
+app.include_router(examples.router)
 
 
 class ExtractRequest(CustomUserType):
