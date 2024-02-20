@@ -7,7 +7,7 @@ from tests.db import get_async_client
 async def test_extractors_api() -> None:
     """This will test a few of the extractors API endpoints."""
     # First verify that the database is empty
-    with get_async_client() as client:
+    async with get_async_client() as client:
         response = await client.get("/extractors")
         assert response.status_code == 200
         assert response.json() == []
