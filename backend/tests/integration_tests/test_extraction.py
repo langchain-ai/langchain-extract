@@ -35,6 +35,7 @@ async def test_extraction_api() -> None:
     class Person(BaseModel):
         age: Optional[int]
         name: Optional[str]
+        alias: Optional[str]
 
     class Root(BaseModel):
         people: List[Person]
@@ -45,6 +46,46 @@ async def test_extraction_api() -> None:
         is the number of cats I have to the power of 5. (Approximately.)
         """
         result = await client.post(
-            "/extract_text", json={"input": {"text": text, "schema": Root.schema()}}
+            "/extract_text/invoke",
+            json={"input": {"text": text, "schema": Root.schema()}},
+        )
+        assert result.status_code == 200, result.text
+        response_data = result.json()
+        assert isinstance(response_data["output"]["extracted"]["people"], list)
+
+        # Test with instructions
+        result = await client.post(
+            "/extract_text/invoke",
+            json={
+                "input": {
+                    "text": text,
+                    "schema": Root.schema(),
+                    "instructions": "Very important: Chester's alias is Neo.",
+                }
+            },
+        )
+        response_data = result.json()
+        assert result.status_code == 200, result.text
+
+        # Test with few shot examples
+        examples = [
+            {
+                "text": "My name is Grung. I am 100.",
+                "output": {
+                    "arguments": '{"people":[{"name":"######","age":100}]}',
+                    "name": "Root",
+                },
+            },
+        ]
+        result = await client.post(
+            "/extract_text/invoke",
+            json={
+                "input": {
+                    "text": text,
+                    "schema": Root.schema(),
+                    "instructions": "Redact all names using the characters `######`",
+                    "examples": examples,
+                }
+            },
         )
         assert result.status_code == 200, result.text

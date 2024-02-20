@@ -33,7 +33,7 @@ Verify that unit tests pass (they probably wont?)
 Testing and formatting is done using a Makefile inside `[root]/backend`
 
 ```sh
-mak format
+make format
 ```
 
 ```sh
