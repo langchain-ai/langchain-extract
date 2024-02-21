@@ -19,6 +19,10 @@ jsonschema = "^4.21.1"
 sse-starlette = "^2.0.0"
 alembic = "^1.13.1"
 psycopg2 = "^2.9.9"
+python-magic = "^0.4.27"
+pdfminer-six = "^20231228"
+beautifulsoup4 = "^4.12.3"
+lxml = "^5.1.0"
 
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "^3.6.1"
