@@ -16,19 +16,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  postgres_test:
-    image: postgres:16
-    ports:
-      - "5433:5432" # Expose on different port
-    environment:
-      POSTGRES_DB: test
-      POSTGRES_USER: test_user
-      POSTGRES_PASSWORD: test_pwd
-    volumes:
-      - postgres_test_data:/var/lib/postgresql/data
-    profiles:
-      - test # Only start when test profile is active
-
 # For rely on docker compose to spin up postgres
 # but developer using docker
 # Add backend when we actually need it
@@ -41,4 +28,3 @@ services:
 
 volumes:
   postgres_data:
-  postgres_test_data:
