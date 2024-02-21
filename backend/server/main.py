@@ -71,13 +71,14 @@ model = ChatOpenAI(temperature=0)
 def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
     """An end point to extract content from a given text object."""
     schema = extraction_request.json_schema
+    name = schema.get("title", "")
     try:
         Draft202012Validator.check_schema(schema)
     except exceptions.ValidationError as e:
         raise HTTPException(status_code=422, detail=f"Invalid schema: {e.message}")
 
     prompt = make_prompt_template(
-        extraction_request.instructions, extraction_request.examples
+        extraction_request.instructions, extraction_request.examples, name
     )
     openai_function = convert_json_schema_to_openai_schema(schema)
     runnable = create_openai_fn_runnable(

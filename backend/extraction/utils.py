@@ -1,6 +1,7 @@
 """Adapters to convert between different formats."""
 from __future__ import annotations
 
+import json
 from typing import Any, Dict, List, Optional
 
 from langchain.prompts import ChatPromptTemplate
@@ -44,7 +45,7 @@ def convert_json_schema_to_openai_schema(
 
 
 def make_prompt_template(
-    instructions: Optional[str], examples: Optional[List[FewShotExample]]
+    instructions: Optional[str], examples: Optional[List[FewShotExample]], name: str
 ) -> ChatPromptTemplate:
     """Make a system message from instructions and examples."""
     prefix = (
@@ -61,11 +62,12 @@ def make_prompt_template(
     if examples is not None:
         few_shot_prompt = []
         for example in examples:
+            function_call = {"arguments": json.dumps(example.output), "name": name}
             few_shot_prompt.extend(
                 [
                     HumanMessage(content=example.text),
                     AIMessage(
-                        content="", additional_kwargs={"function_call": example.output}
+                        content="", additional_kwargs={"function_call": function_call}
                     ),
                 ]
             )

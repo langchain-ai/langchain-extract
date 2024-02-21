@@ -71,10 +71,7 @@ async def test_extraction_api() -> None:
         examples = [
             {
                 "text": "My name is Grung. I am 100.",
-                "output": {
-                    "arguments": '{"people":[{"name":"######","age":100}]}',
-                    "name": "Root",
-                },
+                "output": Root(people=[Person(age=100, name="######")]).dict(),
             },
         ]
         result = await client.post(
