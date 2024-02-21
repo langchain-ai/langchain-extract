@@ -26,5 +26,34 @@ def drop():
     click.echo("All tables dropped successfully.")
 
 
+@cli.command()
+def create_test_db():
+    """Create a test database called langchain_test used for testing purposes."""
+    import psycopg2
+    from psycopg2.errors import DuplicateDatabase
+
+    # establishing the connection
+    conn = psycopg2.connect(
+        database="langchain",
+        user="langchain",
+        password="langchain",
+        host="localhost",
+        port="5432",
+    )
+    conn.autocommit = True
+
+    # Creating a cursor object using the cursor() method
+    with conn.cursor() as cursor:
+        # Preparing query to create a database
+        sql = "CREATE DATABASE langchain_test;"
+
+        # Creating a database
+        try:
+            cursor.execute(sql)
+            print("Database created successfully.")
+        except DuplicateDatabase:
+            print("Database already exists")
+
+
 if __name__ == "__main__":
     cli()
