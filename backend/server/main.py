@@ -2,7 +2,9 @@
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, HTTPException
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from jsonschema import Draft202012Validator, exceptions
 from langchain.chains.openai_functions import create_openai_fn_runnable
 from langchain_core.runnables import chain
@@ -32,6 +34,24 @@ app = FastAPI(
         }
     ],
 )
+
+
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/ready")
+def ready():
+    return "ok"
+
 
 # Include API endpoints for extractor definitions
 app.include_router(extractors.router)

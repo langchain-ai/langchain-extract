@@ -1,5 +1,5 @@
 {
-  "name": "extract",
+  "name": "langchain-extract",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,8 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.15.10",
+    "@openapitools/openapi-generator-cli": "^2.9.0",
+    "add": "^2.0.6",
+    "axios": "^1.6.7",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "swr": "^2.2.5",
+    "vite-plugin-eslint": "^1.8.1",
+    "yarn": "^1.22.21"
   },
   "devDependencies": {
     "@types/react": "^18.2.56",
