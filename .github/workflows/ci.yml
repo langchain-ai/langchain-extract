@@ -19,14 +19,14 @@ concurrency:
 
 env:
   POETRY_VERSION: "1.7.1"
-  WORKDIR: "/backend"
+  WORKDIR: "./backend"
 
 jobs:
   lint:
     uses:
       ./.github/workflows/_lint.yml
     with:
-      working-directory: ${{ env.WORKDIR }}
+      working-directory: ./backend
     secrets: inherit
   test:
     timeout-minutes: 5
@@ -34,6 +34,29 @@ jobs:
     defaults:
       run:
         working-directory: ${{ env.WORKDIR }}
+    services:
+      postgres:
+        # ensure postgres version this stays in sync with prod database
+        # and with postgres version used in docker compose
+        image: postgres:16
+        env:
+          # optional (defaults to `postgres`)
+          POSTGRES_DB: langchain_test
+          # required
+          POSTGRES_PASSWORD: langchain
+          # optional (defaults to `5432`)
+          POSTGRES_PORT: 5432
+          # optional (defaults to `postgres`)
+          POSTGRES_USER: langchain
+        ports:
+          # maps tcp port 5432 on service container to the host
+          - 5432:5432
+        # set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 3s
+          --health-timeout 5s
+          --health-retries 10
     strategy:
       matrix:
         python-version:
@@ -51,7 +74,17 @@ jobs:
           python-version: ${{ matrix.python-version }}
           poetry-version: ${{ env.POETRY_VERSION }}
           working-directory: ${{ env.WORKDIR }}
-          cache-key: benchmarks-all
+          cache-key: langchain-extract-all
+      - name: Test database connection
+        run: |
+          # Set up postgresql-client
+          sudo apt-get install -y postgresql-client
+          # Test psql connection
+          psql -h localhost -p 5432 -U langchain -d langchain_test -c "SELECT 1;"
+        env:
+          # postgress password is required; alternatively, you can run:
+          # `PGPASSWORD=postgres_password psql ...`
+          PGPASSWORD: langchain
 
       - name: Install dependencies
         shell: bash

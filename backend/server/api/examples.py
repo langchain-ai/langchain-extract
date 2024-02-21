@@ -1,11 +1,10 @@
 """Endpoints for managing definition of examples.."""
-from typing import Annotated, Any, List
+from typing import Any, List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from typing_extensions import TypedDict
+from typing_extensions import Annotated, TypedDict
 
 from db.models import Example, get_session
 
