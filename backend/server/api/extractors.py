@@ -35,7 +35,7 @@ class CreateExtractor(BaseModel):
 
 
 @router.post("")
-def create_extractor(
+def create(
     create_request: CreateExtractor, *, session: Session = Depends(get_session)
 ) -> UUID:
     """Endpoint to create an extractor."""
@@ -50,7 +50,7 @@ def create_extractor(
 
 
 @router.get("")
-def list_extractors(
+def list(
     *,
     limit: int = 10,
     offset: int = 0,
@@ -61,7 +61,7 @@ def list_extractors(
 
 
 @router.delete("/{uuid}")
-def delete_extractor(uuid: UUID, *, session: Session = Depends(get_session)) -> None:
+def delete(uuid: UUID, *, session: Session = Depends(get_session)) -> None:
     """Endpoint to delete an extractor."""
     session.query(Extractor).filter(Extractor.uuid == str(uuid)).delete()
     session.commit()
