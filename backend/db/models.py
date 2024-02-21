@@ -5,7 +5,7 @@ from typing import Generator
 from sqlalchemy import Column, DateTime, ForeignKey, String, Text, create_engine
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session, relationship, sessionmaker
 from sqlalchemy.sql import func
 
 from server.settings import get_postgres_url
@@ -91,8 +91,10 @@ class Extractor(TimestampedModel):
         Text, nullable=False, comment="The prompt to the language model."
     )  # TODO: This will need to evolve
 
+    examples = relationship("Example", backref="extractor")
+
     def __repr__(self) -> str:
-        return f"<Extractor(id={self.id}, description={self.description})>"
+        return f"<Extractor(id={self.uuid}, description={self.description})>"
 
 
 class Example(TimestampedModel):
@@ -135,6 +137,4 @@ class Example(TimestampedModel):
     )
 
     def __repr__(self) -> str:
-        return (
-            f"<Example(id={self.id}, content={self.content[:20]}, valid={self.valid})>"
-        )
+        return f"<Example(id={self.uuid}, content={self.content[:20]}>"

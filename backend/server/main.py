@@ -1,14 +1,18 @@
 """Entry point into the server."""
 from typing import Any, Dict, List, Optional
+from uuid import UUID
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from jsonschema import Draft202012Validator, exceptions
 from langchain.chains.openai_functions import create_openai_fn_runnable
 from langchain_core.runnables import chain
 from langchain_openai.chat_models import ChatOpenAI
 from langserve import CustomUserType, add_routes
 from pydantic import BaseModel, Field, validator
+from sqlalchemy.orm import Session
+from typing_extensions import Annotated, TypedDict
 
+from db.models import Extractor, get_session
 from extraction.utils import (
     FewShotExample,
     convert_json_schema_to_openai_schema,
@@ -69,7 +73,10 @@ model = ChatOpenAI(temperature=0)
 
 @chain
 def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
-    """An end point to extract content from a given text object."""
+    """An end point to extract content from a given text object.
+
+    Used for powering an extraction playground.
+    """
     schema = extraction_request.json_schema
     name = schema.get("title", "")
     try:
@@ -89,6 +96,37 @@ def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
     return ExtractResponse(
         extracted=extracted_content,
     )
+
+
+class ExtractFromFileRequest(TypedDict):
+    """Extract endpoint that uses an existing extractor."""
+
+    extractor_id: Annotated[UUID, "The extractor ID to use."]
+    text: Annotated[str, "The text to extract from."]
+
+
+@app.post("/extract", response_model=ExtractResponse, tags=["extraction"])
+async def extract_using_existing_extractor(
+    extract_request: ExtractFromFileRequest, *, session: Session = Depends(get_session)
+) -> ExtractResponse:
+    """Endpoint that is used with an existing extractor.
+
+    This endpoint will be expanded to support upload of binary files as well as
+    text files.
+    """
+    extractor = (
+        session.query(Extractor)
+        .filter(Extractor.uuid == extract_request["extractor_id"])
+        .scalar()
+    )
+    if extractor is None:
+        raise HTTPException(status_code=404, detail="Extractor not found.")
+
+    # Use the json schema and examples
+    json_schema = extractor.schema
+    examples = extractor.examples
+    assert examples == []
+    return ExtractResponse(extracted="placeholder")
 
 
 add_routes(
