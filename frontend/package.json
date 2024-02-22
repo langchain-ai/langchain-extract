@@ -12,8 +12,11 @@
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
+    "@heroicons/react": "^2.1.1",
     "@mui/material": "^5.15.10",
     "@openapitools/openapi-generator-cli": "^2.9.0",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
     "@tanstack/react-query": "^5.22.2",
     "add": "^2.0.6",
     "axios": "^1.6.7",
@@ -30,9 +33,13 @@
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
     "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
+    "daisyui": "^4.7.2",
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.4"
   }

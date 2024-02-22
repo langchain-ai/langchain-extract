@@ -1,5 +1,3 @@
-import "./App.css";
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useListExtractorsGet } from "./api/extractor-definitions/extractor-definitions";
 
@@ -25,7 +23,7 @@ const Extract = () => {
         {extractors?.map((extractor: any) => {
           return (
             <li key={extractor.uuid}>
-              {extractor.uuid} | {extractor.description}
+              {extractor.uuid} | {extractor.description} | {JSON.stringify(extractor.schema)}
             </li>
           );
         })}
@@ -40,10 +38,19 @@ const queryClient = new QueryClient();
  * Widget to extract content from text given an extractor
  */
 const ExtractionWidget = () => {
-  <div>
-    <textarea></textarea>
-    <button></button>
-  </div>;
+  return (
+    <div>
+      <h1>Extract</h1>
+      <label htmlFor="content">
+        <h2>Content</h2>
+      </label>
+      <textarea
+        id="content"
+        placeholder="Write your thoughts here..."
+      ></textarea>
+        <button className="bg-sky-700 px-4 py-2 text-white hover:bg-sky-800 sm:px-8 sm:py-3">Run</button>
+    </div>
+  );
 };
 
 const App = () => {
@@ -53,9 +60,11 @@ const App = () => {
 
   return (
     <>
+    <h1 className="text-3xl font-bold underline">
+      Hello world!
+    </h1>
       <QueryClientProvider client={queryClient}>
         <Extract />
-        <h1>Extract</h1>
         <ExtractionWidget />
       </QueryClientProvider>
     </>
