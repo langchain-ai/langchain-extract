@@ -6,6 +6,7 @@ from langchain.pydantic_v1 import BaseModel, Field
 from extraction.utils import (
     FewShotExample,
     convert_json_schema_to_openai_schema,
+    make_prompt_template,
 )
 
 
@@ -85,8 +86,7 @@ def test_convert_json_schema_to_openai_schema() -> None:
     }
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
-def test_make_system_message() -> None:
+def test_make_prompt_template() -> None:
     """Test making a system message from instructions and examples."""
     instructions = "Test instructions."
     examples = [
@@ -104,24 +104,21 @@ def test_make_system_message() -> None:
         "If no information is relevant, use the schema and output "
         "an empty list where appropriate."
     )
-    system_message = make_system_message(instructions, examples)
-    examples_str = (
-        '\{{"text": "Test text.", '
-        '"output": [\{{"name": "Test Name", "age": 0\}}, '
-        '\{{"name": "Test Name 2", "age": 1\}}]\}}'
-    )
-    assert f"{prefix}\n\nTest instructions.\n\n{examples_str}" == system_message
+    prompt = make_prompt_template(instructions, examples, "name")
+    messages = prompt.messages
+    assert 4 == len(messages)
+    system = messages[0].prompt.template
+    assert system.startswith(prefix)
+    assert system.endswith(instructions)
 
-    system_message = make_system_message(None, None)
-    assert prefix == system_message
+    example_input = messages[1]
+    assert example_input.content == "Test text."
+    example_output = messages[2]
+    assert "function_call" in example_output.additional_kwargs
+    assert example_output.additional_kwargs["function_call"]["name"] == "name"
 
-    system_message = make_system_message(instructions, None)
-    assert f"{prefix}\n\nTest instructions." == system_message
+    prompt = make_prompt_template(instructions, None, "name")
+    assert 2 == len(prompt.messages)
 
-    system_message = make_system_message(None, examples)
-    assert f"{prefix}\n\n{examples_str}" == system_message
-
-    examples = [FewShotExample(text="Test text.", output=[])]
-    system_message = make_system_message(None, examples)
-    examples_str = '\\{{"text": "Test text.", "output": []\\}}'
-    assert f"{prefix}\n\n{examples_str}" == system_message
+    prompt = make_prompt_template(None, examples, "name")
+    assert 4 == len(prompt.messages)
