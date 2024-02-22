@@ -1,59 +1,63 @@
-import { useState } from "react";
-import axios from "axios";
 import "./App.css";
-import useSWR from "swr";
-// import Button from '@mui/material/Button';
-import useSWRMutation from "swr/mutation";
 
-const api = axios.create({
-  baseURL: "http://localhost:8000",
-});
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useListExtractorsGet } from "./api/extractor-definitions/extractor-definitions";
 
-
-async function fetcher(url: string) {
-  return api.get(url).then((res) => res.data);
-}
-
-export function useExtract() {
-  return useSWR(["/extract"], async () => {
-    const response = await fetch("http://localhost:8000/extract", {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json', // Specify that the body content is JSON
-      },
-      body: JSON.stringify({
-        text: "hello",
-        extractor_id: "00000000-0000-0000-0000-000000000005",
-      }),
-    });
-
-    if (!response.ok) throw new Error(await response.text());
-
-    const json = await response.json();
-    return json;
-  });
-}
+const BASE_URL = "http://localhost:8000";
 
 const Extract = () => {
-  const { data, error } = useExtract();
+  const { data, isLoading, isError } = useListExtractorsGet({}, { axios: { baseURL: BASE_URL } });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error</div>;
+  }
+  /*  */
+  const extractors = data?.data;
+
   return (
     <div>
-      <textarea />
-      <button>Extract</button>
-      {error && <div>Failed to load with error message {error.message}</div>}
+      <h2>Available Extractors</h2>
+      <ul>
+        {extractors?.map((extractor: any) => {
+          return (
+            <li key={extractor.uuid}>
+              {extractor.uuid} | {extractor.description}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 };
 
+const queryClient = new QueryClient();
+
+/**
+ * Widget to extract content from text given an extractor
+ */
+const ExtractionWidget = () => {
+  <div>
+    <textarea></textarea>
+    <button></button>
+  </div>;
+};
+
 const App = () => {
-  const { data } = useSWR("/ready", fetcher);
+  // const { data } = useSWR("/ready", fetcher);
   // log the liveliness probe result
-  console.log(data);
+  // console.log(data);
 
   return (
     <>
-      <h1>Extract</h1>
-      <Extract />
+      <QueryClientProvider client={queryClient}>
+        <Extract />
+        <h1>Extract</h1>
+        <ExtractionWidget />
+      </QueryClientProvider>
     </>
   );
 };
