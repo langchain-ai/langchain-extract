@@ -9,6 +9,8 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.utils.json_schema import dereference_refs
 from pydantic import BaseModel, Field
 
+from db.models import Example, Extractor
+
 
 def _rm_titles(kv: dict) -> dict:
     """Remove titles from a dictionary."""
@@ -21,6 +23,14 @@ def _rm_titles(kv: dict) -> dict:
         else:
             new_kv[k] = v
     return new_kv
+
+
+def _cast_example_to_dict(example: Example) -> Dict[str, Any]:
+    """Cast example record to dictionary."""
+    return {
+        "text": example.content,
+        "output": json.loads(example.output),
+    }
 
 
 # PUBLIC API
@@ -81,3 +91,8 @@ def make_prompt_template(
         ),
     )
     return ChatPromptTemplate.from_messages(prompt_components)
+
+
+def get_examples_from_extractor(extractor: Extractor) -> List[Dict[str, Any]]:
+    """Get examples from an extractor."""
+    return [_cast_example_to_dict(example) for example in extractor.examples]

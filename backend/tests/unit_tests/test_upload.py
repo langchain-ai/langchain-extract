@@ -1,4 +1,4 @@
-from server.api.upload import _guess_mimetype
+from extraction.parsing import _guess_mimetype
 from tests.unit_tests.fixtures import get_sample_paths
 
 

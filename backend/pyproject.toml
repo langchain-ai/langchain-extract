@@ -23,6 +23,8 @@ python-magic = "^0.4.27"
 pdfminer-six = "^20231228"
 beautifulsoup4 = "^4.12.3"
 lxml = "^5.1.0"
+faiss-cpu = "^1.7.4"
+python-multipart = "^0.0.9"
 
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "^3.6.1"
