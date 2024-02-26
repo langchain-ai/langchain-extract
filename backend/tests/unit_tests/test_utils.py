@@ -4,10 +4,9 @@ import pytest
 from langchain.pydantic_v1 import BaseModel, Field
 
 from extraction.utils import (
-    FewShotExample,
     convert_json_schema_to_openai_schema,
-    make_prompt_template,
 )
+from server.extraction_runnable import ExtractionExample, _make_prompt_template
 
 
 def test_convert_json_schema_to_openai_schema() -> None:
@@ -39,30 +38,11 @@ def test_convert_json_schema_to_openai_schema() -> None:
 
     openai_schema = convert_json_schema_to_openai_schema(schema)
     assert openai_schema == {
-        "description": "",
-        "name": "Person",
+        "description": "Extract information matching the given schema.",
+        "name": "extractor",
         "parameters": {
             "properties": {
-                "age": {"description": "The age of the person.", "type": "integer"},
-                "name": {"description": "The name of the " "person.", "type": "string"},
-            },
-            "required": ["name", "age"],
-            "type": "object",
-        },
-    }
-
-    class People(BaseModel):
-        """A list of people with names and ages."""
-
-        people: List[Person] = Field(..., description="A list of people.")
-
-    assert convert_json_schema_to_openai_schema(People.schema()) == {
-        "description": "A list of people with names and ages.",
-        "name": "People",
-        "parameters": {
-            "properties": {
-                "people": {
-                    "description": "A list of people.",
+                "data": {
                     "items": {
                         "properties": {
                             "age": {
@@ -80,7 +60,7 @@ def test_convert_json_schema_to_openai_schema() -> None:
                     "type": "array",
                 }
             },
-            "required": ["people"],
+            "required": ["data"],
             "type": "object",
         },
     }
@@ -90,7 +70,7 @@ def test_make_prompt_template() -> None:
     """Test making a system message from instructions and examples."""
     instructions = "Test instructions."
     examples = [
-        FewShotExample(
+        ExtractionExample(
             text="Test text.",
             output=[
                 {"name": "Test Name", "age": 0},
@@ -104,7 +84,7 @@ def test_make_prompt_template() -> None:
         "If no information is relevant, use the schema and output "
         "an empty list where appropriate."
     )
-    prompt = make_prompt_template(instructions, examples, "name")
+    prompt = _make_prompt_template(instructions, examples, "name")
     messages = prompt.messages
     assert 4 == len(messages)
     system = messages[0].prompt.template
@@ -117,8 +97,8 @@ def test_make_prompt_template() -> None:
     assert "function_call" in example_output.additional_kwargs
     assert example_output.additional_kwargs["function_call"]["name"] == "name"
 
-    prompt = make_prompt_template(instructions, None, "name")
+    prompt = _make_prompt_template(instructions, None, "name")
     assert 2 == len(prompt.messages)
 
-    prompt = make_prompt_template(None, examples, "name")
+    prompt = _make_prompt_template(None, examples, "name")
     assert 4 == len(prompt.messages)

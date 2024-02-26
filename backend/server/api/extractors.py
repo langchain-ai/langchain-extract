@@ -19,6 +19,8 @@ router = APIRouter(
 class CreateExtractor(BaseModel):
     """A request to create an extractor."""
 
+    name: str = Field(default="", description="The name of the extractor.")
+
     description: str = Field(
         default="", description="Short description of the extractor."
     )
@@ -34,19 +36,26 @@ class CreateExtractor(BaseModel):
         return v
 
 
+class CreateExtractorResponse(BaseModel):
+    """Response for creating an extractor."""
+
+    uuid: UUID
+
+
 @router.post("")
 def create(
     create_request: CreateExtractor, *, session: Session = Depends(get_session)
-) -> UUID:
+) -> CreateExtractorResponse:
     """Endpoint to create an extractor."""
     instance = Extractor(
+        name=create_request.name,
         schema=create_request.json_schema,
         description=create_request.description,
         instruction=create_request.instruction,
     )
     session.add(instance)
     session.commit()
-    return instance.uuid
+    return CreateExtractorResponse(uuid=instance.uuid)
 
 
 @router.get("")

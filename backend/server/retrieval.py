@@ -8,11 +8,11 @@ from langchain_core.runnables import RunnableLambda
 from langchain_openai import OpenAIEmbeddings
 
 from db.models import Extractor
-from extraction.utils import get_examples_from_extractor
 from server.extraction_runnable import (
     ExtractRequest,
     ExtractResponse,
     extraction_runnable,
+    get_examples_from_extractor,
 )
 
 
@@ -30,7 +30,9 @@ def _make_extract_request(input_dict: Dict[str, Any]) -> ExtractRequest:
 async def extract_from_content(
     content: str,
     extractor: Extractor,
+    *,
     text_splitter_kwargs: Optional[Dict[str, Any]] = None,
+    multi: bool = True,
 ) -> ExtractResponse:
     """Extract from potentially long-form content."""
     if text_splitter_kwargs is None:
@@ -59,7 +61,7 @@ async def extract_from_content(
     schema = extractor.schema
     examples = get_examples_from_extractor(extractor)
     description = extractor.description  # TODO: improve this
-    return await runnable.ainvoke(
+    result = await runnable.ainvoke(
         {
             "query": description,
             "schema": schema,
@@ -67,3 +69,4 @@ async def extract_from_content(
             "instructions": extractor.instruction,
         }
     )
+    return ExtractResponse(extracted=[result.extracted])

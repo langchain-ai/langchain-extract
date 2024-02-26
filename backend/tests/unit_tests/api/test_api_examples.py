@@ -16,13 +16,14 @@ async def test_examples_api() -> None:
         # First create an extractor
         create_request = {
             "description": "Test Description",
+            "name": "Test Name",
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
         }
         response = await client.post("/extractors", json=create_request)
         assert response.status_code == 200
         # Get the extractor id
-        extractor_id = response.json()
+        extractor_id = response.json()["uuid"]
 
         # Let's verify that there are no examples
         response = await client.get("/examples?extractor_id=" + extractor_id)
@@ -33,11 +34,16 @@ async def test_examples_api() -> None:
         create_request = {
             "extractor_id": extractor_id,
             "content": "Test Content",
-            "output": "Test Output",
+            "output": [
+                {
+                    "age": 100,
+                    "name": "Grung",
+                }
+            ],
         }
         response = await client.post("/examples", json=create_request)
         assert response.status_code == 200
-        example_id = response.json()
+        example_id = response.json()["uuid"]
 
         # Verify that the example was created
         response = await client.get("/examples?extractor_id=" + extractor_id)
@@ -51,7 +57,12 @@ async def test_examples_api() -> None:
         assert projected_response == {
             "content": "Test Content",
             "extractor_id": extractor_id,
-            "output": "Test Output",
+            "output": [
+                {
+                    "age": 100,
+                    "name": "Grung",
+                }
+            ],
             "uuid": example_id,
         }
 

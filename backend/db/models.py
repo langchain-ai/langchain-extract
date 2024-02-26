@@ -50,21 +50,21 @@ class TimestampedModel(Base):
     # This is our own uuid assigned to the artifact.
     # By construction guaranteed to be unique no matter what.
     uuid = Column(
-        String,
+        UUID(as_uuid=True),
         primary_key=True,
         default=lambda: str(uuid.uuid4()),
-        doc="The UUID of the artifact.",
+        doc="Unique identifier for this model.",
     )
 
 
 class Extractor(TimestampedModel):
     __tablename__ = "extractors"
 
-    uuid = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,
-        comment="Unique identifier for this extractor.",
+    name = Column(
+        String(100),
+        nullable=False,
+        server_default="",
+        comment="The name of the extractor.",
     )
     created_at = Column(
         DateTime(timezone=True),
@@ -114,12 +114,6 @@ class Example(TimestampedModel):
 
     __tablename__ = "examples"
 
-    id = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,
-        comment="Unique identifier for this example.",
-    )
     content = Column(
         Text,
         nullable=False,
@@ -137,4 +131,4 @@ class Example(TimestampedModel):
     )
 
     def __repr__(self) -> str:
-        return f"<Example(id={self.uuid}, content={self.content[:20]}>"
+        return f"<Example(uuid={self.uuid}, content={self.content[:20]}>"

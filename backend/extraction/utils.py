@@ -1,15 +1,7 @@
 """Adapters to convert between different formats."""
 from __future__ import annotations
 
-import json
-from typing import Any, Dict, List, Optional
-
-from langchain.prompts import ChatPromptTemplate
-from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.utils.json_schema import dereference_refs
-from pydantic import BaseModel, Field
-
-from db.models import Example, Extractor
 
 
 def _rm_titles(kv: dict) -> dict:
@@ -25,74 +17,37 @@ def _rm_titles(kv: dict) -> dict:
     return new_kv
 
 
-def _cast_example_to_dict(example: Example) -> Dict[str, Any]:
-    """Cast example record to dictionary."""
-    return {
-        "text": example.content,
-        "output": json.loads(example.output),
-    }
-
-
 # PUBLIC API
-class FewShotExample(BaseModel):
-    text: str = Field(..., description="The input text")
-    output: Dict[str, Any] = Field(..., description="Desired output records.")
 
 
 def convert_json_schema_to_openai_schema(
-    schema: dict, *, name: str = "", description: str = "", rm_titles: bool = True
+    schema: dict,
+    *,
+    rm_titles: bool = True,
+    multi: bool = True,
 ) -> dict:
     """Convert JSON schema to a corresponding OpenAI function call."""
-    schema = dereference_refs(schema)
-    schema.pop("definitions", None)
-    title = schema.pop("title", "")
-    default_description = schema.pop("description", "")
-    return {
-        "name": name or title,
-        "description": description or default_description,
-        "parameters": _rm_titles(schema) if rm_titles else schema,
-    }
-
-
-def make_prompt_template(
-    instructions: Optional[str], examples: Optional[List[FewShotExample]], name: str
-) -> ChatPromptTemplate:
-    """Make a system message from instructions and examples."""
-    prefix = (
-        "You are a top-tier algorithm for extracting information from text. "
-        "Only extract information that is relevant to the provided text. "
-        "If no information is relevant, use the schema and output "
-        "an empty list where appropriate."
-    )
-    if instructions:
-        system_message = ("system", f"{prefix}\n\n{instructions}")
+    if multi:
+        # Wrap the schema in an object called "Root" with a property called: "data"
+        # which will be a json array of the original schema.
+        schema_ = {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": schema,
+                },
+            },
+            "required": ["data"],
+        }
     else:
-        system_message = ("system", prefix)
-    prompt_components = [system_message]
-    if examples is not None:
-        few_shot_prompt = []
-        for example in examples:
-            function_call = {"arguments": json.dumps(example.output), "name": name}
-            few_shot_prompt.extend(
-                [
-                    HumanMessage(content=example.text),
-                    AIMessage(
-                        content="", additional_kwargs={"function_call": function_call}
-                    ),
-                ]
-            )
-        prompt_components.extend(few_shot_prompt)
+        raise NotImplementedError("Only multi is supported for now.")
 
-    prompt_components.append(
-        (
-            "human",
-            "I need to extract information from "
-            "the following text: ```\n{text}\n```\n",
-        ),
-    )
-    return ChatPromptTemplate.from_messages(prompt_components)
+    schema_ = dereference_refs(schema_)
+    schema_.pop("definitions", None)
 
-
-def get_examples_from_extractor(extractor: Extractor) -> List[Dict[str, Any]]:
-    """Get examples from an extractor."""
-    return [_cast_example_to_dict(example) for example in extractor.examples]
+    return {
+        "name": "extractor",
+        "description": "Extract information matching the given schema.",
+        "parameters": _rm_titles(schema_) if rm_titles else schema_,
+    }
