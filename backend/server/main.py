@@ -1,10 +1,10 @@
 """Entry point into the server."""
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
-from fastapi.middleware.cors import CORSMiddleware
 
 from server.api import examples, extract, extractors
 from server.extraction_runnable import (
@@ -37,6 +37,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/ready")
 def ready():
