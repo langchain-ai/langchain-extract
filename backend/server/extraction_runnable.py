@@ -22,11 +22,16 @@ from server.settings import CHUNK_SIZE, MODEL_NAME, model
 from server.validators import validate_json_schema
 
 
-class FewShotExample(BaseModel):
-    """A few shot example."""
+class ExtractionExample(BaseModel):
+    """An example extraction.
+
+    This example consists of a text and the expected output of the extraction.
+    """
 
     text: str = Field(..., description="The input text")
-    output: Dict[str, Any] = Field(..., description="Desired output records.")
+    output: List[Dict[str, Any]] = Field(
+        ..., description="The expected output of the example. A list of objects."
+    )
 
 
 class ExtractRequest(CustomUserType):
@@ -42,8 +47,8 @@ class ExtractRequest(CustomUserType):
     instructions: Optional[str] = Field(
         None, description="Supplemental system instructions."
     )
-    examples: Optional[List[FewShotExample]] = Field(
-        None, description="Few shot examples."
+    examples: Optional[List[ExtractionExample]] = Field(
+        None, description="Examples of extractions."
     )
 
     @validator("json_schema")
@@ -86,13 +91,13 @@ def _cast_example_to_dict(example: Example) -> Dict[str, Any]:
     """Cast example record to dictionary."""
     return {
         "text": example.content,
-        "output": json.loads(example.output),
+        "output": example.output,
     }
 
 
 def _make_prompt_template(
     instructions: Optional[str],
-    examples: Optional[List[FewShotExample]],
+    examples: Optional[Sequence[ExtractionExample]],
     function_name: str,
 ) -> ChatPromptTemplate:
     """Make a system message from instructions and examples."""
@@ -110,8 +115,15 @@ def _make_prompt_template(
     if examples is not None:
         few_shot_prompt = []
         for example in examples:
+            # TODO: We'll need to refactor this at some point to
+            # support other encoding strategies. The function calling logic here
+            # has some hard-coded assumptions (e.g., name of parameters like `data`).
             function_call = {
-                "arguments": json.dumps(example.output),
+                "arguments": json.dumps(
+                    {
+                        "data": example.output,
+                    }
+                ),
                 "name": function_name,
             }
             few_shot_prompt.extend(
@@ -162,11 +174,7 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResp
     runnable = create_openai_fn_runnable(
         functions=[openai_function], llm=model, prompt=prompt
     )
-    extracted_content = await runnable.ainvoke({"text": extraction_request.text})
-
-    return ExtractResponse(
-        data=extracted_content,
-    )
+    return await runnable.ainvoke({"text": extraction_request.text})
 
 
 async def extract_entire_document(

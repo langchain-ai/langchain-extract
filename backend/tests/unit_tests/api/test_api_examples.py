@@ -33,7 +33,12 @@ async def test_examples_api() -> None:
         create_request = {
             "extractor_id": extractor_id,
             "content": "Test Content",
-            "output": "Test Output",
+            "output": [
+                {
+                    "age": 100,
+                    "name": "Grung",
+                }
+            ],
         }
         response = await client.post("/examples", json=create_request)
         assert response.status_code == 200
@@ -51,7 +56,12 @@ async def test_examples_api() -> None:
         assert projected_response == {
             "content": "Test Content",
             "extractor_id": extractor_id,
-            "output": "Test Output",
+            "output": [
+                {
+                    "age": 100,
+                    "name": "Grung",
+                }
+            ],
             "uuid": example_id,
         }
 

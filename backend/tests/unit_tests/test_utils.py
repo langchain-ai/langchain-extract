@@ -6,7 +6,7 @@ from langchain.pydantic_v1 import BaseModel, Field
 from extraction.utils import (
     convert_json_schema_to_openai_schema,
 )
-from server.extraction_runnable import FewShotExample, _make_prompt_template
+from server.extraction_runnable import ExtractionExample, _make_prompt_template
 
 
 def test_convert_json_schema_to_openai_schema() -> None:
@@ -70,7 +70,7 @@ def test_make_prompt_template() -> None:
     """Test making a system message from instructions and examples."""
     instructions = "Test instructions."
     examples = [
-        FewShotExample(
+        ExtractionExample(
             text="Test text.",
             output=[
                 {"name": "Test Name", "age": 0},

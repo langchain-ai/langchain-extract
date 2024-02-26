@@ -1,5 +1,5 @@
 """Endpoints for managing definition of examples.."""
-from typing import Any, List
+from typing import Any, Dict, List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -21,7 +21,7 @@ class CreateExample(TypedDict):
     extractor_id: Annotated[UUID, "The extractor ID that this is an example for."]
     content: Annotated[str, "The input portion of the example."]
     output: Annotated[
-        str, "JSON object that is expected to be extracted from the content."
+        List[Any], "JSON object that is expected to be extracted from the content."
     ]
 
 
@@ -54,6 +54,7 @@ def list(
     return (
         session.query(Example)
         .filter(Example.extractor_id == extractor_id)
+        .order_by(Example.uuid)
         .limit(limit)
         .offset(offset)
         .all()
