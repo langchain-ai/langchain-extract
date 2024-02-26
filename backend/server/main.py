@@ -5,6 +5,8 @@ from langserve import add_routes
 
 from server.api import examples, extract, extractors
 from server.extraction_runnable import (
+    ExtractRequest,
+    InternalExtraction,
     extraction_runnable,
 )
 
@@ -27,7 +29,9 @@ app.include_router(extract.router)
 
 add_routes(
     app,
-    extraction_runnable,
+    extraction_runnable.with_types(
+        input_type=ExtractRequest, output_type=InternalExtraction
+    ),
     path="/extract_text",
     enabled_endpoints=["invoke", "playground", "stream_log"],
 )

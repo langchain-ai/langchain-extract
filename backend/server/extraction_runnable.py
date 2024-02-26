@@ -22,6 +22,13 @@ from server.settings import CHUNK_SIZE, MODEL_NAME
 from server.validators import validate_json_schema
 
 
+class FewShotExample(BaseModel):
+    """A few shot example."""
+
+    text: str = Field(..., description="The input text")
+    output: Dict[str, Any] = Field(..., description="Desired output records.")
+
+
 class ExtractRequest(CustomUserType):
     """Request body for the extract endpoint."""
 
@@ -78,62 +85,6 @@ def _deduplicate_extract_results(
 model = ChatOpenAI(model=MODEL_NAME, temperature=0)
 
 
-async def extract_entire_document(
-    content: str,
-    extractor: Extractor,
-    multi: bool = True,
-) -> ExtractResponse:
-    """Extract from entire document."""
-    json_schema = extractor.schema
-    examples = get_examples_from_extractor(extractor)
-    text_splitter = TokenTextSplitter(
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=20,
-        model_name=MODEL_NAME,
-    )
-    texts = text_splitter.split_text(content)
-    extraction_requests = [
-        ExtractRequest(
-            text=text,
-            schema=json_schema,
-            instructions=extractor.instruction,  # TODO: consistent naming
-            examples=examples,
-        )
-        for text in texts
-    ]
-    results = await extraction_runnable.abatch(
-        extraction_requests, {"max_concurrency": 1}
-    )
-    return _deduplicate_extract_results(results)
-
-
-@chain
-async def extraction_runnable(extraction_request: ExtractRequest) -> InternalExtraction:
-    """An end point to extract content from a given text object.
-
-    Used for powering an extraction playground.
-    """
-    schema = extraction_request.json_schema
-    name = schema.get("title", "")
-    try:
-        Draft202012Validator.check_schema(schema)
-    except exceptions.ValidationError as e:
-        raise HTTPException(status_code=422, detail=f"Invalid schema: {e.message}")
-
-    prompt = make_prompt_template(
-        extraction_request.instructions, extraction_request.examples, name
-    )
-    openai_function = convert_json_schema_to_openai_schema(schema)
-    runnable = create_openai_fn_runnable(
-        functions=[openai_function], llm=model, prompt=prompt
-    )
-    extracted_content = runnable.ainvoke({"text": extraction_request.text})
-
-    return InternalExtraction(
-        extracted=extracted_content,
-    )
-
-
 def _cast_example_to_dict(example: Example) -> Dict[str, Any]:
     """Cast example record to dictionary."""
     return {
@@ -142,12 +93,7 @@ def _cast_example_to_dict(example: Example) -> Dict[str, Any]:
     }
 
 
-class FewShotExample(BaseModel):
-    text: str = Field(..., description="The input text")
-    output: Dict[str, Any] = Field(..., description="Desired output records.")
-
-
-def make_prompt_template(
+def _make_prompt_template(
     instructions: Optional[str], examples: Optional[List[FewShotExample]], name: str
 ) -> ChatPromptTemplate:
     """Make a system message from instructions and examples."""
@@ -186,6 +132,66 @@ def make_prompt_template(
     return ChatPromptTemplate.from_messages(prompt_components)
 
 
+# PUBLIC API
+
+
 def get_examples_from_extractor(extractor: Extractor) -> List[Dict[str, Any]]:
     """Get examples from an extractor."""
     return [_cast_example_to_dict(example) for example in extractor.examples]
+
+
+@chain
+async def extraction_runnable(extraction_request: ExtractRequest) -> InternalExtraction:
+    """An end point to extract content from a given text object.
+
+    Used for powering an extraction playground.
+    """
+    schema = extraction_request.json_schema
+    try:
+        Draft202012Validator.check_schema(schema)
+    except exceptions.ValidationError as e:
+        raise HTTPException(status_code=422, detail=f"Invalid schema: {e.message}")
+
+    name = schema.get("title", "")
+
+    prompt = _make_prompt_template(
+        extraction_request.instructions, extraction_request.examples, name
+    )
+    openai_function = convert_json_schema_to_openai_schema(schema)
+    runnable = create_openai_fn_runnable(
+        functions=[openai_function], llm=model, prompt=prompt
+    )
+    extracted_content = runnable.ainvoke({"text": extraction_request.text})
+
+    return InternalExtraction(
+        extracted=extracted_content,
+    )
+
+
+async def extract_entire_document(
+    content: str,
+    extractor: Extractor,
+    multi: bool = True,
+) -> ExtractResponse:
+    """Extract from entire document."""
+    json_schema = extractor.schema
+    examples = get_examples_from_extractor(extractor)
+    text_splitter = TokenTextSplitter(
+        chunk_size=CHUNK_SIZE,
+        chunk_overlap=20,
+        model_name=MODEL_NAME,
+    )
+    texts = text_splitter.split_text(content)
+    extraction_requests = [
+        ExtractRequest(
+            text=text,
+            schema=json_schema,
+            instructions=extractor.instruction,  # TODO: consistent naming
+            examples=examples,
+        )
+        for text in texts
+    ]
+    results = await extraction_runnable.abatch(
+        extraction_requests, {"max_concurrency": 1}
+    )
+    return _deduplicate_extract_results(results)

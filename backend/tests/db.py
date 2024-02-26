@@ -1,11 +1,6 @@
 """Utility code that sets up a test database and client for tests."""
-import os
 from contextlib import asynccontextmanager
 from typing import Generator
-
-# We'll need to fix the handling of env variables for testing purposes
-# This is fine for now.
-os.environ["OPENAI_API_KEY"] = "placeholder"
 
 from httpx import AsyncClient
 from sqlalchemy import URL, create_engine

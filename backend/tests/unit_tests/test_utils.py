@@ -6,7 +6,7 @@ from langchain.pydantic_v1 import BaseModel, Field
 from extraction.utils import (
     convert_json_schema_to_openai_schema,
 )
-from server.extraction_runnable import FewShotExample, make_prompt_template
+from server.extraction_runnable import FewShotExample, _make_prompt_template
 
 
 def test_convert_json_schema_to_openai_schema() -> None:
@@ -103,7 +103,7 @@ def test_make_prompt_template() -> None:
         "If no information is relevant, use the schema and output "
         "an empty list where appropriate."
     )
-    prompt = make_prompt_template(instructions, examples, "name")
+    prompt = _make_prompt_template(instructions, examples, "name")
     messages = prompt.messages
     assert 4 == len(messages)
     system = messages[0].prompt.template
@@ -116,8 +116,8 @@ def test_make_prompt_template() -> None:
     assert "function_call" in example_output.additional_kwargs
     assert example_output.additional_kwargs["function_call"]["name"] == "name"
 
-    prompt = make_prompt_template(instructions, None, "name")
+    prompt = _make_prompt_template(instructions, None, "name")
     assert 2 == len(prompt.messages)
 
-    prompt = make_prompt_template(None, examples, "name")
+    prompt = _make_prompt_template(None, examples, "name")
     assert 4 == len(prompt.messages)
