@@ -16,6 +16,9 @@ test:
 test_watch:
 	poetry run ptw . -- $(TEST_FILE)
 
+openapi:
+	OPENAI_API_KEY=placeholder python -c "from server import main; import json; print(json.dumps(main.app.openapi()))"  > openapi.json
+
 
 ######################
 # LINTING AND FORMATTING

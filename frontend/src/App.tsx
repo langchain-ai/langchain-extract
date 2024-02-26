@@ -58,6 +58,18 @@ const ListExtractors = () => {
           })}
         </tbody>
       </table>
+
+    {/* <div className="w-3/4 border-cyan-900">
+      {extractors?.length !== 0 && <Form
+      schema={extractors[0].schema}
+      validator={validator}
+      onChange={log('changed')}
+      onSubmit={log('submitted')}
+      onError={log('errors')}
+    />
+}
+
+    </div> */}
     </div>
   );
 };
@@ -125,6 +137,23 @@ const ExtractionResults = ({ data, isPending }) => {
     </div>
   );
 };
+
+import validator from '@rjsf/validator-ajv8';
+import Form from '@rjsf/core';
+import { RJSFSchema } from '@rjsf/utils';
+
+// const schema: RJSFSchema = {
+//   title: 'Todo',
+//   type: 'object',
+//   required: ['title'],
+//   properties: {
+//     title: { type: 'string', title: 'Title', default: 'A new task' },
+//     done: { type: 'boolean', title: 'Done?', default: false },
+//   },
+// };
+
+const log = (type) => console.log.bind(console, type);
+
 
 const App = () => {
   return (
