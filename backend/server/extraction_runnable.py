@@ -1,18 +1,23 @@
+import json
 from typing import Any, Dict, List, Optional
 
 from fastapi import HTTPException
 from jsonschema import Draft202012Validator, exceptions
 from langchain.chains.openai_functions import create_openai_fn_runnable
+from langchain.text_splitter import TokenTextSplitter
 from langchain_core.runnables import chain
 from langchain_openai.chat_models import ChatOpenAI
 from langserve import CustomUserType
 from pydantic import BaseModel, Field, validator
 
+from db.models import Extractor
 from extraction.utils import (
     FewShotExample,
     convert_json_schema_to_openai_schema,
+    get_examples_from_extractor,
     make_prompt_template,
 )
+from server.settings import CHUNK_SIZE, MODEL_NAME
 from server.validators import validate_json_schema
 
 
@@ -40,17 +45,65 @@ class ExtractRequest(CustomUserType):
         return v
 
 
+ExtractedType = Any
+
+
+class InternalExtraction(BaseModel):
+    """An extraction result."""
+
+    extracted: ExtractedType
+
+
 class ExtractResponse(BaseModel):
     """Response body for the extract endpoint."""
 
-    extracted: Any
+    extracted: List[ExtractedType]
 
 
-model = ChatOpenAI(temperature=0)
+def _deduplicate_extract_results(
+    responses: List[InternalExtraction],
+) -> ExtractResponse:
+    unique_extracted = []
+    seen = set()
+    for response in responses:
+        serialized = json.dumps(response.extracted, sort_keys=True)
+        if serialized not in seen:
+            seen.add(serialized)
+            unique_extracted.append(response.extracted)
+
+    return ExtractResponse(extracted=unique_extracted)
+
+
+model = ChatOpenAI(model=MODEL_NAME, temperature=0)
+
+
+async def extract_entire_document(
+    content: str, extractor: Extractor
+) -> ExtractResponse:
+    """Extract from entire document."""
+    json_schema = extractor.schema
+    examples = get_examples_from_extractor(extractor)
+    text_splitter = TokenTextSplitter(
+        chunk_size=CHUNK_SIZE,
+        chunk_overlap=20,
+        model_name=MODEL_NAME,
+    )
+    texts = text_splitter.split_text(content)
+    results = []
+    for text in texts:
+        extraction_request = ExtractRequest(
+            text=text,
+            schema=json_schema,
+            instructions=extractor.instruction,  # TODO: consistent naming
+            examples=examples,
+        )
+        extraction_result = await extraction_runnable.ainvoke(extraction_request)
+        results.append(extraction_result)
+    return _deduplicate_extract_results(results)
 
 
 @chain
-def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
+def extraction_runnable(extraction_request: ExtractRequest) -> InternalExtraction:
     """An end point to extract content from a given text object.
 
     Used for powering an extraction playground.
@@ -71,6 +124,6 @@ def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
     )
     extracted_content = runnable.invoke({"text": extraction_request.text})
 
-    return ExtractResponse(
+    return InternalExtraction(
         extracted=extracted_content,
     )

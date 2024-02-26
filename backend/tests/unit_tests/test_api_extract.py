@@ -3,20 +3,32 @@ import tempfile
 from unittest.mock import patch
 from uuid import UUID
 
+from langchain.text_splitter import CharacterTextSplitter
 from langchain_core.runnables import RunnableLambda
 
+from server.extraction_runnable import (
+    ExtractResponse,
+    InternalExtraction,
+    _deduplicate_extract_results,
+)
 from tests.db import get_async_client
 
 
 def mock_extraction_runnable(*args, **kwargs):
     """Mock the extraction_runnable function."""
     extract_request = args[0]
-    return {
-        "extracted": extract_request.text[:10],
-    }
+    return InternalExtraction(extracted={"result": extract_request.text[:10]})
 
 
-@patch("server.main.extraction_runnable", new=RunnableLambda(mock_extraction_runnable))
+def mock_text_splitter(*args, **kwargs):
+    return CharacterTextSplitter()
+
+
+@patch(
+    "server.extraction_runnable.extraction_runnable",
+    new=RunnableLambda(mock_extraction_runnable),
+)
+@patch("server.extraction_runnable.TokenTextSplitter", mock_text_splitter)
 async def test_extract_from_file() -> None:
     """Test extract from file API."""
     async with get_async_client() as client:
@@ -53,7 +65,7 @@ async def test_extract_from_file() -> None:
             },
         )
         assert response.status_code == 200
-        assert response.json() == {"extracted": "Test Conte"}
+        assert response.json() == {"extracted": [{"result": "Test Conte"}]}
 
         # We'll use multi-form data here.
 
@@ -72,4 +84,73 @@ async def test_extract_from_file() -> None:
             )
 
         assert response.status_code == 200, response.text
-        assert response.json() == {"extracted": "This is a "}
+        assert response.json() == {"extracted": [{"result": "This is a "}]}
+
+
+async def test_deduplication() -> None:
+    response_1 = InternalExtraction(extracted={"name": "Chester", "age": 42})
+    response_2 = InternalExtraction(extracted={"name": "Jane", "age": 43})
+    result = _deduplicate_extract_results([response_1, response_2])
+    expected = ExtractResponse(
+        extracted=[
+            {"name": "Chester", "age": 42},
+            {"name": "Jane", "age": 43},
+        ]
+    )
+    assert expected == result
+
+    response_1 = InternalExtraction(
+        extracted={
+            "records": [
+                {"field_1": 1, "field_2": "a"},
+                {"field_1": 2, "field_2": "b"},
+            ]
+        }
+    )
+    response_2 = InternalExtraction(
+        extracted={
+            "records": [
+                {"field_1": 1, "field_2": "a"},
+                {"field_1": 2, "field_2": "b"},
+            ]
+        }
+    )
+    result = _deduplicate_extract_results([response_1, response_2])
+    expected = ExtractResponse(
+        extracted=[
+            {
+                "records": [
+                    {"field_1": 1, "field_2": "a"},
+                    {"field_1": 2, "field_2": "b"},
+                ]
+            }
+        ]
+    )
+    assert expected == result
+
+    response_2 = InternalExtraction(
+        extracted={
+            "records": [
+                {"field_1": 1, "field_2": "a"},
+                {"field_1": 2, "field_2": "c"},
+            ]
+        }
+    )
+    result = _deduplicate_extract_results([response_1, response_2])
+    expected = ExtractResponse(
+        extracted=[
+            {
+                "records": [
+                    {"field_1": 1, "field_2": "a"},
+                    {"field_1": 2, "field_2": "b"},
+                ]
+            },
+            {
+                "records": [
+                    {"field_1": 1, "field_2": "a"},
+                    {"field_1": 2, "field_2": "c"},
+                ]
+            },
+        ]
+    )
+    assert expected == result

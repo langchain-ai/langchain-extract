@@ -12,8 +12,8 @@ from extraction.parsing import parse_binary_input
 from extraction.utils import get_examples_from_extractor
 from server.api import examples, extractors
 from server.extraction_runnable import (
-    ExtractRequest,
     ExtractResponse,
+    extract_entire_document,
     extraction_runnable,
 )
 from server.retrieval import extract_from_content
@@ -65,15 +65,7 @@ async def extract_using_existing_extractor(
         text_ = "\n".join([document.page_content for document in documents])
 
     if mode == "entire_document":
-        json_schema = extractor.schema
-        examples = get_examples_from_extractor(extractor)
-        extraction_request = ExtractRequest(
-            text=text_,
-            schema=json_schema,
-            instructions=extractor.instruction,  # TODO: consistent naming
-            examples=examples,
-        )
-        return await extraction_runnable.ainvoke(extraction_request)
+        return await extract_entire_document(text_, extractor)
     elif mode == "retrieval":
         return await extract_from_content(text_, extractor, text_splitter_kwargs=None)
     else:

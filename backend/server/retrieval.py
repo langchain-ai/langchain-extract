@@ -59,7 +59,7 @@ async def extract_from_content(
     schema = extractor.schema
     examples = get_examples_from_extractor(extractor)
     description = extractor.description  # TODO: improve this
-    return await runnable.ainvoke(
+    result = await runnable.ainvoke(
         {
             "query": description,
             "schema": schema,
@@ -67,3 +67,4 @@ async def extract_from_content(
             "instructions": extractor.instruction,
         }
     )
+    return ExtractResponse(extracted=[result.extracted])
