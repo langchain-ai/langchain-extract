@@ -78,7 +78,7 @@ model = ChatOpenAI(model=MODEL_NAME, temperature=0)
 
 
 async def extract_entire_document(
-    content: str, extractor: Extractor
+    content: str, extractor: Extractor, multi: bool = True,
 ) -> ExtractResponse:
     """Extract from entire document."""
     json_schema = extractor.schema
@@ -89,21 +89,23 @@ async def extract_entire_document(
         model_name=MODEL_NAME,
     )
     texts = text_splitter.split_text(content)
-    results = []
-    for text in texts:
-        extraction_request = ExtractRequest(
+    extraction_requests = [
+        ExtractRequest(
             text=text,
             schema=json_schema,
             instructions=extractor.instruction,  # TODO: consistent naming
             examples=examples,
         )
-        extraction_result = await extraction_runnable.ainvoke(extraction_request)
-        results.append(extraction_result)
+        for text in texts
+    ]
+    results = await extraction_runnable.abatch(
+        extraction_requests, {'max_concurrency': 1}
+    )
     return _deduplicate_extract_results(results)
 
 
 @chain
-def extraction_runnable(extraction_request: ExtractRequest) -> InternalExtraction:
+async def extraction_runnable(extraction_request: ExtractRequest) -> InternalExtraction:
     """An end point to extract content from a given text object.
 
     Used for powering an extraction playground.
@@ -122,7 +124,7 @@ def extraction_runnable(extraction_request: ExtractRequest) -> InternalExtractio
     runnable = create_openai_fn_runnable(
         functions=[openai_function], llm=model, prompt=prompt
     )
-    extracted_content = runnable.invoke({"text": extraction_request.text})
+    extracted_content = runnable.ainvoke({"text": extraction_request.text})
 
     return InternalExtraction(
         extracted=extracted_content,

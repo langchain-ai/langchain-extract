@@ -30,7 +30,9 @@ def _make_extract_request(input_dict: Dict[str, Any]) -> ExtractRequest:
 async def extract_from_content(
     content: str,
     extractor: Extractor,
+    *,
     text_splitter_kwargs: Optional[Dict[str, Any]] = None,
+    multi: bool = True,
 ) -> ExtractResponse:
     """Extract from potentially long-form content."""
     if text_splitter_kwargs is None:
