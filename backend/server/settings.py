@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from langchain_openai import ChatOpenAI
 from sqlalchemy.engine import URL
 
 MODEL_NAME = "gpt-3.5-turbo"
@@ -16,3 +19,6 @@ def get_postgres_url():
         port=5432,
     )
     return url
+
+
+model = ChatOpenAI(model=MODEL_NAME, temperature=0)

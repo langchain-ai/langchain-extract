@@ -38,30 +38,11 @@ def test_convert_json_schema_to_openai_schema() -> None:
 
     openai_schema = convert_json_schema_to_openai_schema(schema)
     assert openai_schema == {
-        "description": "",
-        "name": "Person",
+        "description": "Extract information matching the given schema.",
+        "name": "extractor",
         "parameters": {
             "properties": {
-                "age": {"description": "The age of the person.", "type": "integer"},
-                "name": {"description": "The name of the " "person.", "type": "string"},
-            },
-            "required": ["name", "age"],
-            "type": "object",
-        },
-    }
-
-    class People(BaseModel):
-        """A list of people with names and ages."""
-
-        people: List[Person] = Field(..., description="A list of people.")
-
-    assert convert_json_schema_to_openai_schema(People.schema()) == {
-        "description": "A list of people with names and ages.",
-        "name": "People",
-        "parameters": {
-            "properties": {
-                "people": {
-                    "description": "A list of people.",
+                "data": {
                     "items": {
                         "properties": {
                             "age": {
@@ -79,7 +60,7 @@ def test_convert_json_schema_to_openai_schema() -> None:
                     "type": "array",
                 }
             },
-            "required": ["people"],
+            "required": ["data"],
             "type": "object",
         },
     }

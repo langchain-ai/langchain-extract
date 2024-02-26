@@ -21,15 +21,33 @@ def _rm_titles(kv: dict) -> dict:
 
 
 def convert_json_schema_to_openai_schema(
-    schema: dict, *, name: str = "", description: str = "", rm_titles: bool = True
+    schema: dict,
+    *,
+    rm_titles: bool = True,
+    multi: bool = True,
 ) -> dict:
     """Convert JSON schema to a corresponding OpenAI function call."""
-    schema = dereference_refs(schema)
-    schema.pop("definitions", None)
-    title = schema.pop("title", "")
-    default_description = schema.pop("description", "")
+    if multi:
+        # Wrap the schema in an object called "Root" with a property called: "data"
+        # which will be a json array of the original schema.
+        schema_ = {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": schema,
+                },
+            },
+            "required": ["data"],
+        }
+    else:
+        raise NotImplementedError("Only multi is supported for now.")
+
+    schema_ = dereference_refs(schema_)
+    schema_.pop("definitions", None)
+
     return {
-        "name": name or title,
-        "description": description or default_description,
-        "parameters": _rm_titles(schema) if rm_titles else schema,
+        "name": "extractor",
+        "description": "Extract information matching the given schema.",
+        "parameters": _rm_titles(schema_) if rm_titles else schema_,
     }

@@ -8,8 +8,7 @@ from langchain_core.runnables import RunnableLambda
 
 from server.extraction_runnable import (
     ExtractResponse,
-    InternalExtraction,
-    _deduplicate_extract_results,
+    _deduplicate,
 )
 from tests.db import get_async_client
 
@@ -17,7 +16,11 @@ from tests.db import get_async_client
 def mock_extraction_runnable(*args, **kwargs):
     """Mock the extraction_runnable function."""
     extract_request = args[0]
-    return InternalExtraction(extracted={"result": extract_request.text[:10]})
+    return {
+        "data": [
+            extract_request.text[:10],
+        ]
+    }
 
 
 def mock_text_splitter(*args, **kwargs):
@@ -65,10 +68,9 @@ async def test_extract_from_file() -> None:
             },
         )
         assert response.status_code == 200
-        assert response.json() == {"extracted": [{"result": "Test Conte"}]}
+        assert response.json() == {"data": ["Test Conte"]}
 
         # We'll use multi-form data here.
-
         # Create a named temporary file
         with tempfile.NamedTemporaryFile(mode="w+t", delete=False) as f:
             f.write("This is a named temporary file.")
@@ -84,73 +86,57 @@ async def test_extract_from_file() -> None:
             )
 
         assert response.status_code == 200, response.text
-        assert response.json() == {"extracted": [{"result": "This is a "}]}
+        assert response.json() == {"data": ["This is a "]}
 
 
-async def test_deduplication() -> None:
-    response_1 = InternalExtraction(extracted={"name": "Chester", "age": 42})
-    response_2 = InternalExtraction(extracted={"name": "Jane", "age": 43})
-    result = _deduplicate_extract_results([response_1, response_2])
+async def test_deduplication_different_resutls() -> None:
+    """Test deduplication of extraction results."""
+    result = _deduplicate(
+        [
+            {"data": [{"name": "Chester", "age": 42}]},
+            {"data": [{"name": "Jane", "age": 42}]},
+        ]
+    )
     expected = ExtractResponse(
-        extracted=[
+        data=[
             {"name": "Chester", "age": 42},
-            {"name": "Jane", "age": 43},
+            {"name": "Jane", "age": 42},
         ]
     )
     assert expected == result
 
-    response_1 = InternalExtraction(
-        extracted={
-            "records": [
-                {"field_1": 1, "field_2": "a"},
-                {"field_1": 2, "field_2": "b"},
-            ]
-        }
-    )
-    response_2 = InternalExtraction(
-        extracted={
-            "records": [
-                {"field_1": 1, "field_2": "a"},
-                {"field_1": 2, "field_2": "b"},
-            ]
-        }
-    )
-    result = _deduplicate_extract_results([response_1, response_2])
-    expected = ExtractResponse(
-        extracted=[
+    result = _deduplicate(
+        [
             {
-                "records": [
-                    {"field_1": 1, "field_2": "a"},
-                    {"field_1": 2, "field_2": "b"},
-                ]
-            }
-        ]
-    )
-    assert expected == result
-
-    response_2 = InternalExtraction(
-        extracted={
-            "records": [
-                {"field_1": 1, "field_2": "a"},
-                {"field_1": 2, "field_2": "c"},
-            ]
-        }
-    )
-    result = _deduplicate_extract_results([response_1, response_2])
-    expected = ExtractResponse(
-        extracted=[
-            {
-                "records": [
+                "data": [
                     {"field_1": 1, "field_2": "a"},
                     {"field_1": 2, "field_2": "b"},
                 ]
             },
             {
-                "records": [
+                "data": [
                     {"field_1": 1, "field_2": "a"},
                     {"field_1": 2, "field_2": "c"},
                 ]
             },
         ]
     )
+
+    expected = ExtractResponse(
+        data=[
+            {"field_1": 1, "field_2": "a"},
+            {"field_1": 2, "field_2": "b"},
+            {"field_1": 2, "field_2": "c"},
+        ]
+    )
+    assert expected == result
+
+    # Test with data being a list of strings
+    result = _deduplicate([{"data": ["1", "2"]}, {"data": ["1", "3"]}])
+    expected = ExtractResponse(data=["1", "2", "3"])
+    assert expected == result
+
+    # Test with data being a mix of integer and string
+    result = _deduplicate([{"data": [1, "2"]}, {"data": ["1", "3"]}])
+    expected = ExtractResponse(data=[1, "2", "1", "3"])
     assert expected == result

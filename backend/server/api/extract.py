@@ -25,7 +25,6 @@ async def extract_using_existing_extractor(
     mode: Literal["entire_document", "retrieval"] = Form("entire_document"),
     file: Optional[UploadFile] = File(None),
     session: Session = Depends(get_session),
-    multi: bool = Form(True),
 ) -> ExtractResponse:
     """Endpoint that is used with an existing extractor.
 
@@ -48,9 +47,9 @@ async def extract_using_existing_extractor(
         text_ = "\n".join([document.page_content for document in documents])
 
     if mode == "entire_document":
-        return await extract_entire_document(text_, extractor, multi=multi)
+        return await extract_entire_document(text_, extractor)
     elif mode == "retrieval":
-        return await extract_from_content(text_, extractor, multi=multi)
+        return await extract_from_content(text_, extractor)
     else:
         raise ValueError(
             f"Invalid mode {mode}. Expected one of 'entire_document', 'retrieval'."
