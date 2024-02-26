@@ -4,10 +4,9 @@ import pytest
 from langchain.pydantic_v1 import BaseModel, Field
 
 from extraction.utils import (
-    FewShotExample,
     convert_json_schema_to_openai_schema,
-    make_prompt_template,
 )
+from server.extraction_runnable import FewShotExample, make_prompt_template
 
 
 def test_convert_json_schema_to_openai_schema() -> None:

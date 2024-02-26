@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from typing import Any, Dict, List, Optional
 
@@ -5,17 +7,16 @@ from fastapi import HTTPException
 from jsonschema import Draft202012Validator, exceptions
 from langchain.chains.openai_functions import create_openai_fn_runnable
 from langchain.text_splitter import TokenTextSplitter
+from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import chain
 from langchain_openai.chat_models import ChatOpenAI
 from langserve import CustomUserType
 from pydantic import BaseModel, Field, validator
 
-from db.models import Extractor
+from db.models import Example, Extractor
 from extraction.utils import (
-    FewShotExample,
     convert_json_schema_to_openai_schema,
-    get_examples_from_extractor,
-    make_prompt_template,
 )
 from server.settings import CHUNK_SIZE, MODEL_NAME
 from server.validators import validate_json_schema
@@ -78,7 +79,9 @@ model = ChatOpenAI(model=MODEL_NAME, temperature=0)
 
 
 async def extract_entire_document(
-    content: str, extractor: Extractor, multi: bool = True,
+    content: str,
+    extractor: Extractor,
+    multi: bool = True,
 ) -> ExtractResponse:
     """Extract from entire document."""
     json_schema = extractor.schema
@@ -99,7 +102,7 @@ async def extract_entire_document(
         for text in texts
     ]
     results = await extraction_runnable.abatch(
-        extraction_requests, {'max_concurrency': 1}
+        extraction_requests, {"max_concurrency": 1}
     )
     return _deduplicate_extract_results(results)
 
@@ -129,3 +132,60 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> InternalExt
     return InternalExtraction(
         extracted=extracted_content,
     )
+
+
+def _cast_example_to_dict(example: Example) -> Dict[str, Any]:
+    """Cast example record to dictionary."""
+    return {
+        "text": example.content,
+        "output": json.loads(example.output),
+    }
+
+
+class FewShotExample(BaseModel):
+    text: str = Field(..., description="The input text")
+    output: Dict[str, Any] = Field(..., description="Desired output records.")
+
+
+def make_prompt_template(
+    instructions: Optional[str], examples: Optional[List[FewShotExample]], name: str
+) -> ChatPromptTemplate:
+    """Make a system message from instructions and examples."""
+    prefix = (
+        "You are a top-tier algorithm for extracting information from text. "
+        "Only extract information that is relevant to the provided text. "
+        "If no information is relevant, use the schema and output "
+        "an empty list where appropriate."
+    )
+    if instructions:
+        system_message = ("system", f"{prefix}\n\n{instructions}")
+    else:
+        system_message = ("system", prefix)
+    prompt_components = [system_message]
+    if examples is not None:
+        few_shot_prompt = []
+        for example in examples:
+            function_call = {"arguments": json.dumps(example.output), "name": name}
+            few_shot_prompt.extend(
+                [
+                    HumanMessage(content=example.text),
+                    AIMessage(
+                        content="", additional_kwargs={"function_call": function_call}
+                    ),
+                ]
+            )
+        prompt_components.extend(few_shot_prompt)
+
+    prompt_components.append(
+        (
+            "human",
+            "I need to extract information from "
+            "the following text: ```\n{text}\n```\n",
+        ),
+    )
+    return ChatPromptTemplate.from_messages(prompt_components)
+
+
+def get_examples_from_extractor(extractor: Extractor) -> List[Dict[str, Any]]:
+    """Get examples from an extractor."""
+    return [_cast_example_to_dict(example) for example in extractor.examples]

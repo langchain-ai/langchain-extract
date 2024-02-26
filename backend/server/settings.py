@@ -5,6 +5,7 @@ CHUNK_SIZE = int(4_096 * 0.8)
 # Max concurrency for the model.
 MAX_CONCURRENCY = 1
 
+
 def get_postgres_url():
     url = URL.create(
         drivername="postgresql",
