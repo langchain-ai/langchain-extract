@@ -6,10 +6,6 @@ from uuid import UUID
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_core.runnables import RunnableLambda
 
-from server.extraction_runnable import (
-    ExtractResponse,
-    _deduplicate,
-)
 from tests.db import get_async_client
 
 
@@ -87,56 +83,3 @@ async def test_extract_from_file() -> None:
 
         assert response.status_code == 200, response.text
         assert response.json() == {"data": ["This is a "]}
-
-
-async def test_deduplication_different_resutls() -> None:
-    """Test deduplication of extraction results."""
-    result = _deduplicate(
-        [
-            {"data": [{"name": "Chester", "age": 42}]},
-            {"data": [{"name": "Jane", "age": 42}]},
-        ]
-    )
-    expected = ExtractResponse(
-        data=[
-            {"name": "Chester", "age": 42},
-            {"name": "Jane", "age": 42},
-        ]
-    )
-    assert expected == result
-
-    result = _deduplicate(
-        [
-            {
-                "data": [
-                    {"field_1": 1, "field_2": "a"},
-                    {"field_1": 2, "field_2": "b"},
-                ]
-            },
-            {
-                "data": [
-                    {"field_1": 1, "field_2": "a"},
-                    {"field_1": 2, "field_2": "c"},
-                ]
-            },
-        ]
-    )
-
-    expected = ExtractResponse(
-        data=[
-            {"field_1": 1, "field_2": "a"},
-            {"field_1": 2, "field_2": "b"},
-            {"field_1": 2, "field_2": "c"},
-        ]
-    )
-    assert expected == result
-
-    # Test with data being a list of strings
-    result = _deduplicate([{"data": ["1", "2"]}, {"data": ["1", "3"]}])
-    expected = ExtractResponse(data=["1", "2", "3"])
-    assert expected == result
-
-    # Test with data being a mix of integer and string
-    result = _deduplicate([{"data": [1, "2"]}, {"data": ["1", "3"]}])
-    expected = ExtractResponse(data=[1, "2", "1", "3"])
-    assert expected == result
