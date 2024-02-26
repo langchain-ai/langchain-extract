@@ -25,12 +25,18 @@ class CreateExample(TypedDict):
     ]
 
 
+class CreateExampleResponse(TypedDict):
+    """Response for creating an example."""
+
+    uuid: UUID
+
+
 @router.post("")
 def create(
     create_request: CreateExample,
     *,
     session: Session = Depends(get_session),
-) -> UUID:
+) -> CreateExampleResponse:
     """Endpoint to create an example."""
     instance = Example(
         extractor_id=create_request["extractor_id"],
@@ -39,7 +45,7 @@ def create(
     )
     session.add(instance)
     session.commit()
-    return instance.uuid
+    return {"uuid": instance.uuid}
 
 
 @router.get("")

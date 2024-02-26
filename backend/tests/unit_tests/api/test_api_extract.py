@@ -44,6 +44,7 @@ async def test_extract_from_file() -> None:
 
         # First create an extractor
         create_request = {
+            "name": "Test Name",
             "description": "Test Description",
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
@@ -51,7 +52,7 @@ async def test_extract_from_file() -> None:
         response = await client.post("/extractors", json=create_request)
         assert response.status_code == 200, response.text
         # Get the extractor id
-        extractor_id = response.json()
+        extractor_id = response.json()["uuid"]
 
         # Run an extraction.
         # We'll use multi-form data here.
