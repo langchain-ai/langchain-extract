@@ -1,169 +1,95 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import React from "react";
 
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
-
-const getExtractors = async () => {
-  const response = await axios.get("/extractors");
-  return response.data;
-};
-
-
-const runExtraction = async (extractionRequest) => {
-  const response = await axios.postForm("/extract", extractionRequest);
-  return response.data;
-};
-
-const ListExtractors = () => {
-  const queryClient = useQueryClient();
-  const { data: extractors, isLoading, isError } = useQuery({ queryKey: ["getExtractors"], queryFn: getExtractors });
-
-  const deleteExtractor = useMutation({
-    mutationFn: (uuid) => axios.delete(`/extractors/${uuid}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries("getExtractors");
-    }
-  },
-  )
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return <div>Error</div>;
-  }
-
-
-  return (
-    <div>
-      <Heading>Extractors</Heading>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Description</th>
-            <th>Schema</th>
-          </tr>
-        </thead>
-        <tbody>
-          {extractors?.map((extractor: any) => {
-            return (
-              <tr key={extractor.uuid} className="hover:bg-green-100">
-                <td>{extractor.description}</td>
-                <td>{JSON.stringify(extractor.schema)}</td>
-                <td className="hover:tran"><button className="button " onClick={() => deleteExtractor.mutate(extractor.uuid)}>X</button></td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-
-    {/* <div className="w-3/4 border-cyan-900">
-      {extractors?.length !== 0 && <Form
-      schema={extractors[0].schema}
-      validator={validator}
-      onChange={log('changed')}
-      onSubmit={log('submitted')}
-      onError={log('errors')}
-    />
-}
-
-    </div> */}
-    </div>
-  );
-};
-
-const Heading = ({ children }) => {
-  return <h1 className="text-5xl font-bold">{children}</h1>;
-};
+import { useDisclosure, Radio, RadioGroup, Stack } from '@chakra-ui/react'
+import { ResultsTable } from "./components/ResultsTable";
+import { Button } from '@chakra-ui/react'
+import {
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+} from '@chakra-ui/react'
+import { Heading } from "./components/Heading";
+import { ExtractorPlayground } from "./components/ExtractorPlayground";
+import { ListExtractors } from "./components/ListExtractors";
 
 /**
- * Widget to extract content from text given an extractor
+ * Component to create a new extractor with fields for name, description, schema, and examples
  */
-const ExtractionWidget = ({}) => {
-  // const { data, isPending, mutate } = useExtractUsingExistingExtractorExtractPost();
-  const { data, isPending, mutate } = useMutation({ mutationFn: runExtraction });
-  const uuid = "1494bdb8-e4ed-43b8-9a2a-f6ac4a318096";
-  const text = "hello my name is chester and i am 23 years old.";
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    const request = {
-      extractor_id: event.target.extractorId.value,
-      text: event.target.text.value,
-    };
-    console.log(request);
-    mutate(request);
-  };
-
+const CreateExtractor = ({}) => {
+  // You might use a mutation hook here if you're using something like React Query for state management
+  // const { mutate, isLoading } = useMutation({ mutationFn: createExtractorFunction });
   return (
     <div className="w-4/5 m-auto">
-      <Heading>Extraction</Heading>
-      <form className="m-auto flex flex-col content-between gap-5 mt-10" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="extractorId"
-          placeholder="extractor id"
-          className="input input-bordered"
-          defaultValue={uuid}
-        />
-        <input type="file" name="file" className="file-input " />
-        <div className="divider">OR</div>
-        <textarea placeholder="Text" name="text" className="textarea textarea-bordered h-3/4" defaultValue={text} />
+      <Heading>Create New Extractor</Heading>
+      <form className="m-auto flex flex-col content-between gap-5 mt-10">
+        <input type="text" name="name" placeholder="Name" className="input input-bordered" required />
+        <textarea name="description" placeholder="Description" className="textarea textarea-bordered h-1/4" required />
+        <textarea name="schema" placeholder="Schema" className="textarea textarea-bordered h-1/4" required />
+        <textarea name="examples" placeholder="Examples" className="textarea textarea-bordered h-1/4" required />
         <button className="btn" type="submit">
-          Run
+          Create
         </button>
       </form>
-      <ExtractionResults data={data} isPending={isPending} />
     </div>
   );
 };
 
-const ExtractionResults = ({ data, isPending }) => {
-  return (
-    <div className="mt-1">
-      <Heading>Results</Heading>
+function PlacementExample() {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [placement, setPlacement] = React.useState('right')
 
-      {isPending ? (
-        <div>Loading...</div>
-      ) : (
-        <div>
-          <SyntaxHighlighter language="javascript" style={docco}>
-            {JSON.stringify(data, null, 2)}
-          </SyntaxHighlighter>
-        </div>
-      )}
-    </div>
-  );
-};
-
-import validator from '@rjsf/validator-ajv8';
-import Form from '@rjsf/core';
-import { RJSFSchema } from '@rjsf/utils';
-
-// const schema: RJSFSchema = {
-//   title: 'Todo',
-//   type: 'object',
-//   required: ['title'],
-//   properties: {
-//     title: { type: 'string', title: 'Title', default: 'A new task' },
-//     done: { type: 'boolean', title: 'Done?', default: false },
-//   },
-// };
-
-const log = (type) => console.log.bind(console, type);
-
-
-const App = () => {
   return (
     <>
-      <div className="flex flex-col justify-between h-3/4 overfow-auto">
-        <ListExtractors />
-        <ExtractionWidget />
+      <Button colorScheme='blue' onClick={onOpen}>
+        LangChain Extract
+      </Button>
+      <Drawer placement='left' onClose={onClose} isOpen={isOpen}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerHeader borderBottomWidth='1px'>Basic Drawer</DrawerHeader>
+          <DrawerBody>
+            <ListExtractors onSelect={() => {}} />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </>
+  )
+}
+
+const App = () => {
+  const initialExtractor = "6fec248a-8846-4939-9da2-eb7db0f642a7";
+  const [extractorId, setExtractorId] = React.useState(initialExtractor);
+
+  const onSelect = (extractorId: string) => {
+    setExtractorId(extractorId);
+  };
+
+
+
+  return (
+    <>
+      {/* <SideBar /> */}
+      <div className="flex flex-col w-100% h-full">
+    {/* <PlacementExample/> */}
+        <div className="flex justify-between bg-slate-200 mb-2 p-2">
+          <div>LangChain Extract</div>
+          <div className="text-s text-rose-800">
+            Research Preview: this is unauthenticated and all data can be found.
+            Do not use with sensitive data.
+          </div>
+        </div>
+        <div className="flex">
+          <ListExtractors onSelect={onSelect} />
+          <ExtractorPlayground extractor_id={extractorId} />
+        </div>
       </div>
     </>
   );
 };
+
 
 export default App;
