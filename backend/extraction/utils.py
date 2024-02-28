@@ -35,7 +35,7 @@ def convert_json_schema_to_openai_schema(
             "properties": {
                 "data": {
                     "type": "array",
-                    "items": schema,
+                    "items": dereference_refs(schema),
                 },
             },
             "required": ["data"],
@@ -43,7 +43,6 @@ def convert_json_schema_to_openai_schema(
     else:
         raise NotImplementedError("Only multi is supported for now.")
 
-    schema_ = dereference_refs(schema_)
     schema_.pop("definitions", None)
 
     return {
