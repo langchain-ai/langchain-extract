@@ -4,22 +4,15 @@ import validator from "@rjsf/validator-ajv8";
 import { useQuery } from "@tanstack/react-query";
 import { getExtractor } from "../api";
 
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import {
   Input,
   InputGroup,
   InputLeftAddon,
-  Editable,
-  Stack,
-  VStack,
-  EditableInput,
-  EditableTextarea,
-  EditablePreview,
-  useEditableControls,
+  VStack
 } from "@chakra-ui/react";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
-import { Button, ButtonGroup, IconButton, Flex } from "@chakra-ui/react";
 
 export const Extractor = ({ extractor_id }: { extractor_id: string }) => {
   const { data, isLoading, isError } = useQuery({ queryKey: ["getExtractor", extractor_id], queryFn: getExtractor });

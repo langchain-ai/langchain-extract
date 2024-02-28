@@ -1,5 +1,4 @@
 import { Spinner, Table, TableCaption, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
-import { useClipboard } from '@chakra-ui/react'
 
 function getColumns(records: object[]) {
   // Create a set to store unique keys
@@ -27,7 +26,6 @@ export const ResultsTable = ({
   // scan all the results to determine the columns
   // then display the results in a table
   const actualData = data?.data;
-  const { onCopy, value, setValue, hasCopied } = useClipboard("");
   const columns = actualData ? getColumns(actualData) : [];
 
   if (isPending) {

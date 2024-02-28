@@ -1,5 +1,5 @@
 import React from "react";
-import { Heading } from "./components/Heading";
+import { Heading } from "./Heading";
 
 /**
  * Component to create a new extractor with fields for name, description, schema, and examples
@@ -22,3 +22,5 @@ const CreateExtractor = ({ }) => {
     </div>
   );
 };
+
+export default CreateExtractor

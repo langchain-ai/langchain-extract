@@ -9,10 +9,9 @@ import { ResultsTable } from "./ResultsTable";
  * Widget to extract content from text given an extractor
  */
 export const ExtractorPlayground = ({ extractor_id }: { extractor_id: string }) => {
-  // const { data, isPending, mutate } = useExtractUsingExistingExtractorExtractPost();
   const { data, isPending, mutate } = useMutation({ mutationFn: runExtraction });
   const text = "hello my name is chester and i am 23 years old.";
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const request = {
