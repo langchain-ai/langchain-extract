@@ -2,7 +2,7 @@
 from typing import Any, Dict, List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, validator
 from sqlalchemy.orm import Session
 
@@ -56,6 +56,23 @@ def create(
     session.add(instance)
     session.commit()
     return CreateExtractorResponse(uuid=instance.uuid)
+
+
+@router.get("/{uuid}")
+def get(
+    uuid: UUID, *, session: Session = Depends(get_session)
+) -> Dict[str, Any]:
+    """Endpoint to get an extractor."""
+    extractor = session.query(Extractor).filter(Extractor.uuid == str(uuid)).scalar()
+    if extractor is None:
+        raise HTTPException(status_code=404, detail="Extractor not found.")
+    return {
+        "uuid": extractor.uuid,
+        "name": extractor.name,
+        "description": extractor.description,
+        "schema": extractor.schema,
+        "instruction": extractor.instruction,
+    }
 
 
 @router.get("")
