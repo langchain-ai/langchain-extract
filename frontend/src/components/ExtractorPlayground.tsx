@@ -19,7 +19,6 @@ export const ExtractorPlayground = ({ extractor_id }: { extractor_id: string }) 
       extractor_id: extractor_id,
       text: event.target.text.value,
     };
-    console.log(request);
     mutate(request);
   };
 
