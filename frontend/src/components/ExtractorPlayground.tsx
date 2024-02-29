@@ -4,11 +4,20 @@ import { runExtraction } from "../api";
 import { Extractor } from "./Extractor";
 import { Heading } from "./Heading";
 import { ResultsTable } from "./ResultsTable";
+import { useParams } from "react-router";
 
 /**
  * Widget to extract content from text given an extractor
  */
-export const ExtractorPlayground = ({ extractor_id }: { extractor_id: string }) => {
+export const ExtractorPlayground = () => {
+  let { extractorId } = useParams();
+  console.log(extractorId)
+  // ...
+  const location = window.location.pathname;
+  return (
+    <div>{location}</div>
+  )
+  // const location = use.Location;
   const { data, isPending, mutate } = useMutation({ mutationFn: runExtraction });
   const text = "hello my name is chester and i am 23 years old.";
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

@@ -28,6 +28,7 @@ export const ListExtractors = ({ onSelect }) => {
         {extractors?.map((extractor: any) => {
           return (
             <li key={extractor.uuid} className="hover:bg-slate-100 p-3" onClick={onSelect.bind(null, extractor.uuid)}>
+              {extractor.uuid}
               {extractor.name}
               {/* <button onClick={() => deleteExtractor.mutate(extractor.uuid)}>Delete</button> */}
             </li>

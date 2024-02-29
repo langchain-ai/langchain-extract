@@ -6,18 +6,12 @@ import { ListExtractors } from "./components/ListExtractors";
 import { Sidebar } from "./components/Sidebar";
 import "./index.css";
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
 import ErrorPage from "./routes/ErrorPage";
-import Root from "./routes/Root";
 
 const queryClient = new QueryClient();
 
-const OtherStuff = () => {
-
-
-}
-
-const Main = () => {
+const Root = () => {
   const initialExtractor = "6fec248a-8846-4939-9da2-eb7db0f642a7";
   const [extractorId, setExtractorId] = React.useState(initialExtractor);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,22 +32,36 @@ const Main = () => {
           </div>
           <div>🦜 LangChain Extract</div>
         </div>
-        <div id="content">
-        <div className="flex m-auto w-5/6">
-          <ExtractorPlayground extractor_id={extractorId} />
-        </div>
-
         <h1> temporary for convenience </h1>
-
         <ListExtractors onSelect={onSelect} />
+        <div>
+      </div>
+      <Outlet/>
+        <div>
+          {/* <div className="flex m-auto w-5/6">
+            <ExtractorPlayground extractor_id={extractorId} />
+          </div> */}
         </div>
       </div>
     </>
   );
 };
 
-const NavBar = () => {
-  return <><div>meow</div></>;
+const Main = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  return (
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Root />}>
+            <Route path="/" element={<div>main</div>}/>
+            <Route path="/e/:extractorId" element={<ExtractorPlayground/>}/>
+          </Route>
+
+        </Routes>
+      </BrowserRouter>
+    </>
+  );
 };
 
 const App = () => {
@@ -61,7 +69,7 @@ const App = () => {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <ChakraProvider>
-          <Main/>
+          <Main />
         </ChakraProvider>
       </QueryClientProvider>
     </React.StrictMode>
