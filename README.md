@@ -1,6 +1,6 @@
 🚧 Under Active Development 🚧
 
-Please expect breaking changes!
+Please expect breaking changes, a bunch of additional features. We're just getting started.
 
 # 🦜⛏️ LangChain Extract
 
@@ -10,9 +10,12 @@ Please expect breaking changes!
 [![](https://dcbadge.vercel.app/api/server/6adMQxSpJS?compact=true&style=flat)](https://discord.gg/6adMQxSpJS)
 [![Open Issues](https://img.shields.io/github/issues-raw/langchain-ai/langchain-extract)](https://github.com/langchain-ai/langchain-extract/issues)
 
-This repo is an implementation of a locally hosted extraction service.
+Langchain-extract is an implementation of a locally hosted extraction service built with LangChain, FastAPI and Postgresql.
 
-It's build with LangChain, FastAPI and Postgresql.
+It follows closely the [extraction use-case documentation](https://python.langchain.com/docs/use_cases/extraction) and is meant to provide
+a reference implementation of an app that helps to do extraction over data using LLMs.
+
+Feel free to adapt this application to your own needs.
 
 ## ✅ Running locally
 
