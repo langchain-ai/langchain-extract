@@ -2,7 +2,7 @@
 
 Please expect breaking changes!
 
-# 🦜📝 LangChain Extract
+# 🦜⛏️ LangChain Extract
 
 [![CI](https://github.com/langchain-ai/langchain-extract/actions/workflows/ci.yml/badge.svg)](https://github.com/langchain-ai/langchain-extract/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
