@@ -1,5 +1,5 @@
 """Endpoints for managing definition of examples.."""
-from typing import Any, Dict, List
+from typing import Any, List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends

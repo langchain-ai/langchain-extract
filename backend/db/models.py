@@ -79,7 +79,8 @@ class Extractor(TimestampedModel):
     schema = Column(
         JSONB,
         nullable=False,
-        comment="JSON Schema that describes what content will be extracted from the document",
+        comment="JSON Schema that describes what content will be "
+        "extracted from the document",
     )
     description = Column(
         String(100),

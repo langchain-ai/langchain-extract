@@ -34,7 +34,7 @@ lint lint_diff:
 
 format format_diff:
 	[ "$(PYTHON_FILES)" = "" ] || poetry run ruff format $(PYTHON_FILES)
-	[ "$(PYTHON_FILES)" = "" ] || poetry run ruff --select I --fix $(PYTHON_FILES)
+	[ "$(PYTHON_FILES)" = "" ] || poetry run ruff --fix $(PYTHON_FILES)
 
 spell_check:
 	poetry run codespell --toml pyproject.toml
