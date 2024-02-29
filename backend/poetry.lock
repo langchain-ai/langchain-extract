@@ -1770,13 +1770,13 @@ tiktoken = ">=0.5.2,<1"
 
 [[package]]
 name = "langserve"
-version = "0.0.41"
+version = "0.0.45"
 description = ""
 optional = false
 python-versions = ">=3.8.1,<4.0.0"
 files = [
-    {file = "langserve-0.0.41-py3-none-any.whl", hash = "sha256:99583a6a4f2a6c3f98ffcf0c9eeed2a1ef6278b0cfaf9d789dfd517c49d0062a"},
-    {file = "langserve-0.0.41.tar.gz", hash = "sha256:8583d9d01b202b4111e21e3c94d91ca6b61093ebff55fdfd0f92c6c8d155a6e5"},
+    {file = "langserve-0.0.45-py3-none-any.whl", hash = "sha256:5554fce00d92e13b11d38c1d2f5997a13cf19c84e718eb5fb43d229857eb20d5"},
+    {file = "langserve-0.0.45.tar.gz", hash = "sha256:47c90d939390f70abf515bff50a4b38362cfb1db9aefa7f0a3b06d11cb37f0a3"},
 ]
 
 [package.dependencies]
@@ -4240,4 +4240,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "302511765abb89cb2227b4a4af29fb2ed9d6c23ad7d8b08d1a87d85ffc2aa4ac"
+content-hash = "d6e8cfc2473196383c4484501e4e21d6a227d134b4158b34c80b5356a362f79f"

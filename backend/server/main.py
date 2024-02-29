@@ -53,7 +53,7 @@ add_routes(
         input_type=ExtractRequest, output_type=ExtractResponse
     ),
     path="/extract_text",
-    enabled_endpoints=["invoke", "playground", "stream_log"],
+    enabled_endpoints=["invoke", "batch"],
 )
 
 
