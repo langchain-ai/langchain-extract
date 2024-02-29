@@ -10,24 +10,32 @@ Please expect breaking changes!
 [![](https://dcbadge.vercel.app/api/server/6adMQxSpJS?compact=true&style=flat)](https://discord.gg/6adMQxSpJS)
 [![Open Issues](https://img.shields.io/github/issues-raw/langchain-ai/langchain-extract)](https://github.com/langchain-ai/langchain-extract/issues)
 
+This repo is an implementation of a locally hosted extraction service.
 
-# Set up
+It's build with LangChain, FastAPI and Postgresql.
 
-## Services
+## ✅ Running locally
 
-The root folder contains a docker compose file which will a launch a postgres
-instance.
+The `backend` code is located in `/backend`. 
 
-```
-docker compose up
-```
+The backend code relies on having access to a postgres instance. 
 
-At the time of writing, the app wasn't using postgres yet!
 
-## App
+### Launch Postgres
+
+Use the `docker-compose.yml` file in the root directory to launch a postgres instance.
 
 ```sh
-cd [root]/backend
+docker compose up postgres
+```
+
+### Launch the extraction webserver
+
+At the moment, we don't have the backend defined in docker compose, so
+you'll need to set up the backend.
+
+```sh
+cd backend
 ```
 
 Set up the environment using poetry:
@@ -36,28 +44,45 @@ Set up the environment using poetry:
 poetry install --with lint,dev,test
 ```
 
-Verify that unit tests pass (they probably wont?)
+Run the following script to create a database and schema:
 
-# Test and format
+```sh
+python -m scripts.run_migrations create 
+```
+
+From `/backend`:
+
+```sh
+OPENAI_API_KEY=[YOUR API KEY] python -m server.main
+```
+
+## Set up for development
+
+Use this if you want to develop in your own fork of the repo.
+
+For now, we will not be accepting pull requests, but would love to hear any feedback
+about ideas or issues etc.
+
+### Testing 
+
+Create a test database. The test database is used for running tests and is
+separate from the main database. It will have the same schema as the main
+database.
+
+```sh
+python -m scripts.run_migrations create-test-db
+```
+
+Run the tests
+
+```sh
+make test
+```
+
+# Linting and format
 
 Testing and formatting is done using a Makefile inside `[root]/backend`
 
 ```sh
 make format
 ```
-
-```sh
-make test
-```
-
-# Launch Server
-
-From `[root]/backend`:
-
-```sh
-python -m server.main
-```
-
-# Example client
-
-See `docs/source/notebooks` for an example client.
