@@ -59,9 +59,7 @@ def create(
 
 
 @router.get("/{uuid}")
-def get(
-    uuid: UUID, *, session: Session = Depends(get_session)
-) -> Dict[str, Any]:
+def get(uuid: UUID, *, session: Session = Depends(get_session)) -> Dict[str, Any]:
     """Endpoint to get an extractor."""
     extractor = session.query(Extractor).filter(Extractor.uuid == str(uuid)).scalar()
     if extractor is None:
