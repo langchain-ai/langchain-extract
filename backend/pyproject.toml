@@ -36,6 +36,14 @@ mypy = "^1.7.0"
 ruff = "^0.1.5"
 
 [tool.poetry.group.docs.dependencies]
+nbsphinx = ">=0.8.9"
+sphinx = ">=5.2.0"
+sphinx-autobuild = "^2021.3.14"
+sphinx_book_theme = "^1.0.0"
+myst-nb = { version = "^1.0.0", python = "^3.9" }
+toml = "^0.10.2"
+sphinx-copybutton = ">=0.5.1"
+
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.2.1"
