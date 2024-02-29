@@ -1,6 +1,3 @@
-from typing import List
-
-import pytest
 from langchain.pydantic_v1 import BaseModel, Field
 
 from extraction.utils import (
