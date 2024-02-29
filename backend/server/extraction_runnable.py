@@ -18,8 +18,11 @@ from db.models import Example, Extractor
 from extraction.utils import (
     convert_json_schema_to_openai_schema,
 )
-from server.settings import CHUNK_SIZE, MODEL_NAME, model
+from server.settings import CHUNK_SIZE, MODEL_NAME, get_model
 from server.validators import validate_json_schema
+
+# Instantiate the model
+model = get_model()
 
 
 class ExtractionExample(BaseModel):

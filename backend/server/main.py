@@ -3,8 +3,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
-from sqlalchemy.orm import Session
-from typing_extensions import Annotated
 
 from server.api import examples, extract, extractors
 from server.extraction_runnable import (
