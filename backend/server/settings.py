@@ -21,4 +21,6 @@ def get_postgres_url():
     return url
 
 
-model = ChatOpenAI(model=MODEL_NAME, temperature=0)
+def get_model() -> ChatOpenAI:
+    """Get the model."""
+    return ChatOpenAI(model=MODEL_NAME, temperature=0)
