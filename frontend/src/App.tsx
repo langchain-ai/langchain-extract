@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import { Playground } from "./components/Playground";
 import { Sidebar } from "./components/Sidebar";
+import { Show } from '@chakra-ui/react'
 import "./index.css";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
@@ -17,13 +18,13 @@ const Root = () => {
     <>
       <Sidebar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
       <div className="flex flex-col w-100% h-full">
-        <div className="flex justify-between bg-slate-200 mb-4 p-3 items-center">
+        <div className="flex justify-between bg-slate-200 mb-4 p-3 items-center gap-2">
           <IconButton aria-label="Menu" icon={<Bars3Icon />} onClick={onOpen} size="lg" isRound={true}></IconButton>
           <div className="text-s text-rose-800">
             <strong>Research Preview</strong>: this app is unauthenticated and all data can be found. Do not use with
             sensitive data.
           </div>
-          <div>🦜 LangChain Extract</div>
+          <div>🦜⛏️</div>
         </div>
         <div className="m-auto w-5/6">
           <Outlet />

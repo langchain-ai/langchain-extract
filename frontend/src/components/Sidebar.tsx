@@ -26,7 +26,7 @@ interface Props {
   isOpen: boolean;
 }
 
-export function Sidebar({ isOpen, onOpen, onClose }: Props) {
+export function Sidebar({ isOpen, onClose }: Props) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { data, isLoading, isError } = useQuery({ queryKey: ["getExtractors"], queryFn: listExtractors });
