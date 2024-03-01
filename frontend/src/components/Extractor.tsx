@@ -4,18 +4,12 @@ import validator from "@rjsf/validator-ajv8";
 import { useQuery } from "@tanstack/react-query";
 import { getExtractor } from "../api";
 
-import {
-  Input,
-  InputGroup,
-  InputLeftAddon,
-  VStack
-} from "@chakra-ui/react";
+import { Input, InputGroup, InputLeftAddon, VStack } from "@chakra-ui/react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
-
-export const Extractor = ({ extractor_id }: { extractor_id: string }) => {
-  const { data, isLoading, isError } = useQuery({ queryKey: ["getExtractor", extractor_id], queryFn: getExtractor });
+export const Extractor = ({ extractorId }: { extractorId: string }) => {
+  const { data, isLoading, isError } = useQuery({ queryKey: ["getExtractor", extractorId], queryFn: getExtractor });
   if (isLoading) {
     return <div>Loading...</div>;
   }

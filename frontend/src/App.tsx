@@ -1,8 +1,7 @@
 import { ChakraProvider, IconButton, useDisclosure } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
-import { ExtractorPlayground } from "./components/ExtractorPlayground";
-import { ListExtractors } from "./components/ListExtractors";
+import { Playground } from "./components/Playground";
 import { Sidebar } from "./components/Sidebar";
 import "./index.css";
 import { Bars3Icon } from "@heroicons/react/24/outline";
@@ -12,13 +11,7 @@ import ErrorPage from "./routes/ErrorPage";
 const queryClient = new QueryClient();
 
 const Root = () => {
-  const initialExtractor = "6fec248a-8846-4939-9da2-eb7db0f642a7";
-  const [extractorId, setExtractorId] = React.useState(initialExtractor);
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const onSelect = (extractorId: string) => {
-    setExtractorId(extractorId);
-  };
 
   return (
     <>
@@ -32,15 +25,8 @@ const Root = () => {
           </div>
           <div>🦜 LangChain Extract</div>
         </div>
-        <h1> temporary for convenience </h1>
-        <ListExtractors onSelect={onSelect} />
-        <div>
-      </div>
-      <Outlet/>
-        <div>
-          {/* <div className="flex m-auto w-5/6">
-            <ExtractorPlayground extractor_id={extractorId} />
-          </div> */}
+        <div className="m-auto w-5/6">
+          <Outlet />
         </div>
       </div>
     </>
@@ -48,16 +34,14 @@ const Root = () => {
 };
 
 const Main = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
       <BrowserRouter>
         <Routes>
           <Route element={<Root />}>
-            <Route path="/" element={<div>main</div>}/>
-            <Route path="/e/:extractorId" element={<ExtractorPlayground/>}/>
+            <Route path="/" element={<div>Nothing selected</div>} />
+            <Route path="/e/:extractorId" element={<Playground />} />
           </Route>
-
         </Routes>
       </BrowserRouter>
     </>
