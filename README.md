@@ -118,23 +118,48 @@ Response:
 
 ## ✅ Running locally
 
-The `backend` code is located in `/backend`. 
+The easiest way to get started is to use `docker-compose` to run the server.
 
-The backend code relies on having access to a postgres instance. 
+**Configure the environment**
 
-
-### Launch Postgres
-
-Use the `docker-compose.yml` file in the root directory to launch a postgres instance.
+Add `.local.env` file to the root directory with the following content:
 
 ```sh
-docker compose up postgres
+OPENAI_API_KEY=... # Your OpenAI API key
 ```
 
-### Launch the extraction webserver
+Build the images:
+```sh
+docker compose build
+```
 
-At the moment, we don't have the backend defined in docker compose, so
-you'll need to set up the backend.
+Run the services:
+
+```sh
+docker compose up
+```
+
+This will launch both the extraction server and the postgres instance.
+
+Verify that the server is running:
+
+```sh
+curl -X 'GET' 'http://localhost:8000/ready'
+```
+
+This should return `ok`.
+
+
+## Contributions
+
+Feel free to develop in this project for your own needs!
+For now, we are not accepting pull requests, but would love to hear [questions, ideas or issues](https://github.com/langchain-ai/langchain-extract/discussions).
+
+## Development
+
+To set up for development, you will need to install [Poetry](https://python-poetry.org/).
+
+The backend code is located in the `backend` directory.
 
 ```sh
 cd backend
@@ -157,13 +182,6 @@ From `/backend`:
 ```sh
 OPENAI_API_KEY=[YOUR API KEY] python -m server.main
 ```
-
-## Set up for development
-
-Use this if you want to develop in your own fork of the repo.
-
-For now, we will not be accepting pull requests, but would love to hear any feedback
-about ideas or issues etc.
 
 ### Testing 
 
