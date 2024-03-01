@@ -43,5 +43,3 @@ EXPOSE 8000
 FROM base as development
 
 ENTRYPOINT ["bash", "./scripts/local_entry_point.sh"]
-
-
