@@ -26,34 +26,6 @@ interface Props {
   isOpen: boolean;
 }
 
-export const ListExtractors = ({ onSelect }) => {
-  const { data: extractors, isLoading, isError } = useQuery({ queryKey: ["getExtractors"], queryFn: listExtractors });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return <div>Error</div>;
-  }
-
-  return (
-    <div className="flex-col justify-between h-full">
-      <ul className="mt-5">
-        {extractors?.map((extractor: any) => {
-          return (
-            <li key={extractor.uuid} className="hover:bg-slate-100 p-3" onClick={onSelect.bind(null, extractor.uuid)}>
-              {extractor.uuid}
-              {extractor.name}
-              {/* <button onClick={() => deleteExtractor.mutate(extractor.uuid)}>Delete</button> */}
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-};
-
 export function Sidebar({ isOpen, onOpen, onClose }: Props) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
