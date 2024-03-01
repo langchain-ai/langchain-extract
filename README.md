@@ -10,12 +10,103 @@ Please expect breaking changes, a bunch of additional features. We're just getti
 [![](https://dcbadge.vercel.app/api/server/6adMQxSpJS?compact=true&style=flat)](https://discord.gg/6adMQxSpJS)
 [![Open Issues](https://img.shields.io/github/issues-raw/langchain-ai/langchain-extract)](https://github.com/langchain-ai/langchain-extract/issues)
 
-Langchain-extract is an implementation of a locally hosted extraction service built with LangChain, FastAPI and Postgresql.
+`langchain-extract` is a simple web server that allows you to extract information from text and files using LLMs. It is build using [FastAPI](https://fastapi.tiangolo.com/), [LangChain](https://python.langchain.com/) and [Postgresql](https://www.postgresql.org/).
 
-It follows closely the [extraction use-case documentation](https://python.langchain.com/docs/use_cases/extraction) and is meant to provide
+The backend closely follows the [extraction use-case documentation](https://python.langchain.com/docs/use_cases/extraction) and provides
 a reference implementation of an app that helps to do extraction over data using LLMs.
 
-Feel free to adapt this application to your own needs.
+This repository is meant to be a starting point for building your own extraction application which
+may have slightly different requirements or use cases.
+
+## Functionality 
+
+- 🚀 FastAPI webserver with a REST API
+- 📚 OpenAPI Documentation
+- 📝 Use [JSON Schema](https://json-schema.org/) to define what to extract
+- 📊 Use examples to improve the quality of extracted results
+- 📦 Create and save extractors and examples in a database
+- 📂 Extract information from text and/or binary files
+- 🦜️🏓 [LangServe](https://github.com/langchain-ai/langserve) endpoint to integrate with LangChain `RemoteRunnnable`
+
+
+## 📚 Documentation
+
+See the example notebooks in the [documentation](https://github.com/langchain-ai/langchain-extract/tree/main/docs/source/notebooks)
+to see how to create examples to improve extraction results, upload files (e.g., HTML, PDF) and more.
+
+Documentation and server code are both under development!
+
+## 🍯 Example API
+
+Below are two sample `curl` requests to demonstrate how to use the API.
+
+These only provide minimal examples of how to use the API, 
+see the [documentation](https://github.com/langchain-ai/langchain-extract/tree/main/docs/source/notebooks) for more information
+about the API and the [extraction use-case documentation](https://python.langchain.com/docs/use_cases/extraction) for more information about how to extract
+information using LangChain.
+
+### Create an extractor
+
+```sh
+curl -X 'POST' \
+  'http://localhost:8000/extractors' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "name": "Personal Information",
+  "description": "Use to extract personal information",
+  "schema": {
+      "type": "object",
+      "title": "Person",
+      "required": [
+        "name",
+        "age"
+      ],
+      "properties": {
+        "age": {
+          "type": "integer",
+          "title": "Age"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name"
+        }
+      }
+    },
+  "instruction": "Use information about the person from the given user input."
+}'
+```
+
+Use the extract endpoint to extract information from the text (or a file)
+using an existing pre-defined extractor.
+
+```sh
+curl -s -X 'POST' \
+'http://localhost:8000/extract' \
+-H 'accept: application/json' \
+-H 'Content-Type: multipart/form-data' \
+-F 'extractor_id=32d5324a-8a48-4073-b57c-0a2ebfb0bf5e' \
+-F 'text=my name is chester and i am 20 years old. My name is eugene and I am 1 year older than chester.' \
+-F 'mode=entire_document' \
+-F 'file=' | jq .
+```
+
+Results in
+
+```json
+{
+  "data": [
+    {
+      "name": "chester",
+      "age": 20
+    },
+    {
+      "name": "eugene",
+      "age": 21
+    }
+  ]
+}
+```
 
 ## ✅ Running locally
 
