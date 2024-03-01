@@ -4,6 +4,7 @@ from unittest.mock import patch
 from uuid import UUID
 
 from langchain.text_splitter import CharacterTextSplitter
+from langchain_community.embeddings import FakeEmbeddings
 from langchain_core.runnables import RunnableLambda
 
 from tests.db import get_async_client
@@ -23,11 +24,20 @@ def mock_text_splitter(*args, **kwargs):
     return CharacterTextSplitter()
 
 
+def mock_embeddings(*args, **kwargs):
+    return FakeEmbeddings(size=10)
+
+
 @patch(
     "server.extraction_runnable.extraction_runnable",
     new=RunnableLambda(mock_extraction_runnable),
 )
+@patch(
+    "server.retrieval.extraction_runnable",
+    new=RunnableLambda(mock_extraction_runnable),
+)
 @patch("server.extraction_runnable.TokenTextSplitter", mock_text_splitter)
+@patch("server.retrieval.OpenAIEmbeddings", mock_embeddings)
 async def test_extract_from_file() -> None:
     """Test extract from file API."""
     async with get_async_client() as client:
@@ -62,6 +72,18 @@ async def test_extract_from_file() -> None:
                 "extractor_id": extractor_id,
                 "text": "Test Content",
                 "mode": "entire_document",
+            },
+        )
+        assert response.status_code == 200
+        assert response.json() == {"data": ["Test Conte"]}
+
+        # Test retrieval
+        response = await client.post(
+            "/extract",
+            data={
+                "extractor_id": extractor_id,
+                "text": "Test Content",
+                "mode": "retrieval",
             },
         )
         assert response.status_code == 200

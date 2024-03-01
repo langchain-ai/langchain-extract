@@ -69,4 +69,4 @@ async def extract_from_content(
             "instructions": extractor.instruction,
         }
     )
-    return ExtractResponse(extracted=[result.extracted])
+    return result
