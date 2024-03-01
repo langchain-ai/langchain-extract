@@ -77,6 +77,14 @@ curl -X 'POST' \
 }'
 ```
 
+Response:
+
+```json
+{
+  "uuid": "32d5324a-8a48-4073-b57c-0a2ebfb0bf5e"
+}
+```
+
 Use the extract endpoint to extract information from the text (or a file)
 using an existing pre-defined extractor.
 
@@ -91,7 +99,7 @@ curl -s -X 'POST' \
 -F 'file=' | jq .
 ```
 
-Results in
+Response:
 
 ```json
 {
