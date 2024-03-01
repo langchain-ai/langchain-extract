@@ -66,16 +66,6 @@ class Extractor(TimestampedModel):
         server_default="",
         comment="The name of the extractor.",
     )
-    created_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        comment="Time when this extracted was originally created.",
-    )
-    modified_at = Column(
-        DateTime(timezone=True),
-        onupdate=func.now(),
-        comment="Last time this was modified.",
-    )
     schema = Column(
         JSONB,
         nullable=False,

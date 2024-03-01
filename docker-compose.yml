@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 name: langchain-extract
 
 services:
@@ -7,24 +7,37 @@ services:
     # Make sure to keep in sync with CI 
     # version if being tested on CI.
     image: postgres:16
+    expose:
+      - "5432"
     ports:
       - "5432:5432"
     environment:
       POSTGRES_DB: langchain
       POSTGRES_USER: langchain
       POSTGRES_PASSWORD: langchain
+    healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U langchain -d langchain -W langchain" ]
+        interval: 10s
+        timeout: 5s
+        retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-# For rely on docker compose to spin up postgres
-# but developer using docker
-# Add backend when we actually need it
-#  backend:
-#    build: ./backend
-#    ports:
-#      - "8000:8000"
-#    depends_on:
-#      - postgres
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+      target: development
+    env_file:
+      - .local.env
+    environment:
+      - PG_HOST=postgres
+    ports:
+      - "8000:8000" # Backend is accessible on localhost:8100
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/backend
 
 volumes:
   postgres_data:

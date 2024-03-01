@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from langchain_openai import ChatOpenAI
 from sqlalchemy.engine import URL
 
@@ -9,12 +11,12 @@ CHUNK_SIZE = int(4_096 * 0.8)
 MAX_CONCURRENCY = 1
 
 
-def get_postgres_url():
+def get_postgres_url() -> URL:
     url = URL.create(
         drivername="postgresql",
         username="langchain",
         password="langchain",
-        host="localhost",
+        host=os.environ.get("PG_HOST", "localhost"),
         database="langchain",
         port=5432,
     )
