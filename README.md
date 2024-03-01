@@ -149,7 +149,6 @@ curl -X 'GET' 'http://localhost:8000/ready'
 
 This should return `ok`.
 
-
 ## Contributions
 
 Feel free to develop in this project for your own needs!
@@ -199,7 +198,7 @@ Run the tests
 make test
 ```
 
-# Linting and format
+### Linting and format
 
 Testing and formatting is done using a Makefile inside `[root]/backend`
 
