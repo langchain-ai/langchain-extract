@@ -1,23 +1,8 @@
-import {
-  Spacer,
-  Flex,
-  Link,
-  Button,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerOverlay,
-  VStack,
-  HStack,
-  IconButton,
-  Divider,
-  MenuDivider,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Link as ChakraLink, Divider, Flex, IconButton, Spacer, Text, Tooltip, VStack } from "@chakra-ui/react";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { listExtractors } from "../api";
 
 interface Props {
@@ -28,7 +13,6 @@ interface Props {
 
 export function Sidebar({ isOpen, onClose }: Props) {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const { data, isLoading, isError } = useQuery({ queryKey: ["getExtractors"], queryFn: listExtractors });
 
   const deleteExtractor = useMutation({
@@ -40,22 +24,27 @@ export function Sidebar({ isOpen, onClose }: Props) {
 
   const buttons = data?.map((extractor: any) => {
     return (
-      <Flex flexDirection="column" key={extractor.uuid} width="90%">
+      <Flex flexDirection="column" key={extractor.uuid} w="100%">
         <Flex alignItems="center">
-          <Link w="100%" onClick={() => navigate(`/e/${extractor.uuid}`)}>
+          <ChakraLink p={1} as={NavLink} to={`/e/${extractor.uuid}`} _activeLink={{ border: "5px firebrick", borderLeftStyle: "solid", borderRadius: 20, borderSpacing: 10}}>
+            <Text noOfLines={1}>
             <strong>{extractor.name}</strong>
-          </Link>
+            </Text>
+          </ChakraLink>
           <Spacer />
-          <IconButton
-            icon={<TrashIcon />}
-            aria-label="Delete Extractor"
-            size="sm"
-            onClick={() => {
-              deleteExtractor.mutate(extractor.uuid);
-            }}
-          />
+          <Tooltip label="Delete" fontSize="md">
+            <IconButton
+              icon={<TrashIcon />}
+              aria-label="Delete Extractor"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                deleteExtractor.mutate(extractor.uuid);
+              }}
+            />
+          </Tooltip>
         </Flex>
-        <Text noOfLines={1} color={"gray"}>
+        <Text p={1} noOfLines={1} color={"gray"}>
           {extractor.description}
         </Text>
       </Flex>
@@ -64,20 +53,15 @@ export function Sidebar({ isOpen, onClose }: Props) {
 
   return (
     <>
-      <Drawer placement={"left"} variant="sidebar" onClose={onClose} isOpen={isOpen}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerBody>
-            <VStack gap={5} marginTop={5}>
-              <Button w="100%" rightIcon={<PencilSquareIcon />}>
-                New
-              </Button>
-              <Divider />
-              {buttons}
-            </VStack>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+      <div>
+        <VStack>
+          <Button w="100%" rightIcon={<PencilSquareIcon />}>
+            New
+          </Button>
+          <Divider />
+          {buttons}
+        </VStack>
+      </div>
     </>
   );
 }
