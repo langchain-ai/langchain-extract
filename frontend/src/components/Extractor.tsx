@@ -1,4 +1,4 @@
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { Text, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import Form from "@rjsf/chakra-ui";
 import validator from "@rjsf/validator-ajv8";
 import { useQuery } from "@tanstack/react-query";
@@ -23,13 +23,18 @@ export const Extractor = ({ extractorId }: { extractorId: string }) => {
 
   return (
     <div className="mr-auto">
-      <VStack spacing={4} align={"stretch"}>
-        <InputGroup>
-          <InputLeftAddon>Name</InputLeftAddon>
-          <Input type="name" placeholder={data.name} disabled={true} />
-          <InputLeftAddon>Description</InputLeftAddon>
-          <Input type="name" placeholder={data.description} disabled={true} />
-        </InputGroup>
+      <VStack align={"left"}>
+        <Text>
+          <strong>Name: </strong> {data.name}
+        </Text>
+        <Text>
+          <strong>Description: </strong>
+          {data.description}
+        </Text>
+        <Text>
+          <strong>Instructions: </strong>
+          {data.instruction}
+        </Text>
       </VStack>
       <Tabs className="mt-5">
         <TabList>

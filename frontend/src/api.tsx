@@ -6,6 +6,7 @@ export type ExtractorData = {
   name: string;
   description: string;
   schema: any;
+  instruction: string;
 };
 
 export const getExtractor = async ({ queryKey }): ExtractorData => {
