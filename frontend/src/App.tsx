@@ -2,6 +2,7 @@ import { ChakraProvider, IconButton, useDisclosure } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import { Playground } from "./components/Playground";
+import CreateExtractor from "./components/CreateExtractor";
 import { Sidebar } from "./components/Sidebar";
 import "./index.css";
 import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
@@ -24,7 +25,7 @@ const Root = () => {
         </div>
         <div className="flex gap-3 ml-5 mr-5">
           <div className="w-1/6">
-          <Sidebar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
+            <Sidebar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
           </div>
           <div className="m-auto w-5/6">
             <Outlet />
@@ -41,8 +42,9 @@ const Main = () => {
       <BrowserRouter>
         <Routes>
           <Route element={<Root />}>
-            <Route path="/" element={<div>Nothing selected</div>} />
+            <Route path="/" element={<CreateExtractor />} />
             <Route path="/e/:extractorId" element={<Playground />} />
+            <Route path="/new" element={<CreateExtractor />} />
           </Route>
         </Routes>
       </BrowserRouter>

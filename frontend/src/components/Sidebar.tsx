@@ -13,8 +13,8 @@ import {
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Link, NavLink } from "react-router-dom";
-import { listExtractors } from "../api";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useDeleteExtractor, useGetExtractors } from "../api";
 
 interface Props {
   onOpen: Function;
@@ -31,15 +31,9 @@ const TrashIconImported = () => {
 };
 
 export function Sidebar({ isOpen, onClose }: Props) {
-  const queryClient = useQueryClient();
-  const { data, isLoading, isError } = useQuery({ queryKey: ["getExtractors"], queryFn: listExtractors });
-
-  const deleteExtractor = useMutation({
-    mutationFn: (uuid) => axios.delete(`/extractors/${uuid}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["getExtractors"] });
-    },
-  });
+  const navigate = useNavigate();
+  const { data, isLoading, isError } = useGetExtractors();
+  const deleteExtractor = useDeleteExtractor();
 
   const buttons = data?.map((extractor: any) => {
     return (
@@ -78,7 +72,7 @@ export function Sidebar({ isOpen, onClose }: Props) {
   return (
     <div>
       <VStack>
-        <Button rightIcon={<NewIconImported />} w="80%">
+        <Button rightIcon={<NewIconImported />} w="80%" onClick={() => navigate("/new")}>
           New
         </Button>
         <Divider />
