@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 from fastapi import HTTPException
 from jsonschema import Draft202012Validator, exceptions
@@ -41,9 +41,9 @@ class QueryAnalysisRequest(CustomUserType):
     messages: List[AnyMessage] = Field(
         ..., description="The messages to generates queries from."
     )
-    json_schema: Dict[str, Any] = Field(
+    json_schema: Union[Dict[str, Any], List[Dict[str, Any]]] = Field(
         ...,
-        description="JSON schema that describes what a query looks like",
+        description="JSON schema(s) that describes what a query looks like",
         alias="schema",
     )
     instructions: Optional[str] = Field(
@@ -56,7 +56,7 @@ class QueryAnalysisRequest(CustomUserType):
     @validator("json_schema")
     def validate_schema(cls, v: Any) -> Dict[str, Any]:
         """Validate the schema."""
-        validate_json_schema(v)
+        # validate_json_schema(v)
         return v
 
 
@@ -154,11 +154,6 @@ async def query_analyzer(request: QueryAnalysisRequest) -> QueryAnalysisResponse
     """An end point to generate queries from a list of messages."""
     # TODO: Add validation for model context window size
     schema = request.json_schema
-    try:
-        Draft202012Validator.check_schema(schema)
-    except exceptions.ValidationError as e:
-        raise HTTPException(status_code=422, detail=f"Invalid schema: {e.message}")
-
     openai_function = convert_json_schema_to_openai_schema(schema)
     function_name = openai_function["name"]
     prompt = _make_prompt_template(
