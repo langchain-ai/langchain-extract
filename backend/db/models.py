@@ -6,7 +6,6 @@ from sqlalchemy import Column, DateTime, ForeignKey, String, Text, create_engine
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, relationship, sessionmaker
-from sqlalchemy.sql import func
 
 from server.settings import get_postgres_url
 
@@ -123,3 +122,70 @@ class Example(TimestampedModel):
 
     def __repr__(self) -> str:
         return f"<Example(uuid={self.uuid}, content={self.content[:20]}>"
+
+
+class QueryAnalyzer(TimestampedModel):
+    __tablename__ = "query_analyzers"
+
+    name = Column(
+        String(100),
+        nullable=False,
+        server_default="",
+        comment="The name of the query analyser.",
+    )
+    schema = Column(
+        JSONB,
+        nullable=False,
+        comment="JSON Schema that describes schema of query",
+    )
+    description = Column(
+        String(100),
+        nullable=False,
+        server_default="",
+        comment="Surfaced via UI to the users.",
+    )
+    instruction = Column(
+        Text, nullable=False, comment="The prompt to the language model."
+    )  # TODO: This will need to evolve
+
+    examples = relationship("QueryAnalysisExample", backref="query_analyzer")
+
+    def __repr__(self) -> str:
+        return f"<QueryAnalyzer(id={self.uuid}, description={self.description})>"
+
+
+class QueryAnalysisExample(TimestampedModel):
+    """A representation of an example.
+
+    Examples consist of content together with the expected output.
+
+    The output is a JSON object that is expected to be extracted from the content.
+
+    The JSON object should be valid according to the schema of the associated extractor.
+
+    The JSON object is defined by the schema of the associated extractor, so
+    it's perfectly fine for a given example to represent the extraction
+    of multiple instances of some object from the content since
+    the JSON schema can represent a list of objects.
+    """
+
+    __tablename__ = "query_analysis_examples"
+
+    content = Column(
+        JSONB,
+        nullable=False,
+        comment="The input portion of the example.",
+    )
+    output = Column(
+        JSONB,
+        comment="The output associated with the example.",
+    )
+    query_analyzer_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("query_analyzers.uuid", ondelete="CASCADE"),
+        nullable=False,
+        comment="Foreign key referencing the associated query analyzer.",
+    )
+
+    def __repr__(self) -> str:
+        return f"<QueryAnalysisExample(uuid={self.uuid}, content={self.content[:20]}>"

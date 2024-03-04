@@ -43,10 +43,8 @@ def convert_json_schema_to_openai_schema(
     else:
         raise NotImplementedError("Only multi is supported for now.")
 
-    schema_.pop("definitions", None)
-
     return {
-        "name": "extractor",
-        "description": "Extract information matching the given schema.",
+        "name": "query_analyzer",
+        "description": "Generate optimized queries matching the given schema.",
         "parameters": _rm_titles(schema_) if rm_titles else schema_,
     }

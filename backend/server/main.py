@@ -10,6 +10,11 @@ from server.extraction_runnable import (
     ExtractResponse,
     extraction_runnable,
 )
+from server.query_analysis import (
+    QueryAnalysisRequest,
+    QueryAnalysisResponse,
+    query_analyzer,
+)
 
 app = FastAPI(
     title="Extraction Powered by LangChain",
@@ -56,6 +61,14 @@ add_routes(
     enabled_endpoints=["invoke", "batch"],
 )
 
+add_routes(
+    app,
+    query_analyzer.with_types(
+        input_type=QueryAnalysisRequest, output_type=QueryAnalysisResponse
+    ),
+    path="/query_analysis",
+    enabled_endpoints=["invoke", "batch"],
+)
 
 if __name__ == "__main__":
     import uvicorn

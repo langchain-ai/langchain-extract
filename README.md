@@ -173,13 +173,13 @@ poetry install --with lint,dev,test
 Run the following script to create a database and schema:
 
 ```sh
-python -m scripts.run_migrations create 
+poetry run python -m scripts.run_migrations create 
 ```
 
 From `/backend`:
 
 ```sh
-OPENAI_API_KEY=[YOUR API KEY] python -m server.main
+OPENAI_API_KEY=[YOUR API KEY] poetry run python -m server.main
 ```
 
 ### Testing 
@@ -189,7 +189,7 @@ separate from the main database. It will have the same schema as the main
 database.
 
 ```sh
-python -m scripts.run_migrations create-test-db
+poetry run python -m scripts.run_migrations create-test-db
 ```
 
 Run the tests
