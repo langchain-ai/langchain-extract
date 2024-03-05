@@ -144,7 +144,7 @@ class QueryAnalyzer(TimestampedModel):
         server_default="",
         comment="Surfaced via UI to the users.",
     )
-    instruction = Column(
+    instructions = Column(
         Text, nullable=False, comment="The prompt to the language model."
     )  # TODO: This will need to evolve
 

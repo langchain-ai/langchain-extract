@@ -128,6 +128,13 @@ Add `.local.env` file to the root directory with the following content:
 OPENAI_API_KEY=... # Your OpenAI API key
 ```
 
+If you want built-in LangSmith tracing add:
+
+```shell
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=... # Your LangChain API key
+```
+
 Build the images:
 ```sh
 docker compose build

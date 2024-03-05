@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import json
+import uuid
 from typing import Any, Dict, List, Optional, Sequence, Union
 
-from langchain_core.messages import AIMessage, AnyMessage
+from langchain_core.messages import AIMessage, AnyMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.prompts.chat import MessageLikeRepresentation
 from langchain_core.runnables import chain
@@ -11,8 +12,6 @@ from langserve import CustomUserType
 from pydantic import BaseModel, Field, validator
 from typing_extensions import TypedDict
 
-from db.models import QueryAnalysisExample as DBQueryAnalysisExample
-from db.models import QueryAnalyzer
 from extraction.utils import convert_json_schema_to_openai_schema
 from server.settings import get_model
 from server.validators import validate_json_schema
@@ -67,7 +66,7 @@ class QueryAnalysisResponse(TypedDict):
 
 
 def _deduplicate(
-    responses: Sequence[QueryAnalysisResponse],
+    response: QueryAnalysisResponse,
 ) -> QueryAnalysisResponse:
     """Deduplicate the results.
 
@@ -76,25 +75,14 @@ def _deduplicate(
     """
     unique = []
     seen = set()
-    for response in responses:
-        for data_item in response["data"]:
-            # Serialize the data item for comparison purposes
-            serialized = json.dumps(data_item, sort_keys=True)
-            if serialized not in seen:
-                seen.add(serialized)
-                unique.append(data_item)
+    for data_item in response["data"]:
+        # Serialize the data item for comparison purposes
+        serialized = json.dumps(data_item, sort_keys=True)
+        if serialized not in seen:
+            seen.add(serialized)
+            unique.append(data_item)
 
-    return {
-        "data": unique,
-    }
-
-
-def _cast_example_to_dict(example: DBQueryAnalysisExample) -> Dict[str, Any]:
-    """Cast example record to dictionary."""
-    return {
-        "messages": example.content,
-        "output": example.output,
-    }
+    return {"data": unique}
 
 
 def _make_prompt_template(
@@ -118,19 +106,20 @@ def _make_prompt_template(
             # TODO: We'll need to refactor this at some point to
             # support other encoding strategies. The function calling logic here
             # has some hard-coded assumptions (e.g., name of parameters like `data`).
+            tool_call_id = str(uuid.uuid4())
             tool_call = {
                 "type": "function",
                 "function": {
                     "arguments": json.dumps({"data": example.output}),
                     "name": function_name,
                 },
+                "id": tool_call_id,
             }
             prompt_components.extend(
                 [
                     *example.messages,
-                    AIMessage(
-                        content="", additional_kwargs={"tool_calls": [tool_call]}
-                    ),
+                    AIMessage("", additional_kwargs={"tool_calls": [tool_call]}),
+                    ToolMessage("", tool_call_id=tool_call_id),
                 ]
             )
 
@@ -139,13 +128,6 @@ def _make_prompt_template(
 
 
 # PUBLIC API
-
-
-def get_examples_from_query_analyzer(
-    query_analyzer: QueryAnalyzer,
-) -> List[Dict[str, Any]]:
-    """Get examples from an query_analyzer."""
-    return [_cast_example_to_dict(example) for example in query_analyzer.examples]
 
 
 @chain
@@ -160,6 +142,6 @@ async def query_analyzer(request: QueryAnalysisRequest) -> QueryAnalysisResponse
         request.examples,
         function_name,
     )
-    runnable = prompt | model.with_structured_output(openai_function)
+    runnable = prompt | model.with_structured_output(openai_function) | _deduplicate
 
     return await runnable.ainvoke({"input": request.messages})
