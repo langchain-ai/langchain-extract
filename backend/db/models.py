@@ -136,7 +136,7 @@ class QueryAnalyzer(TimestampedModel):
     schema = Column(
         JSONB,
         nullable=False,
-        comment="JSON Schema that describes schema of query",
+        comment="JSON Schema(s) that describes schema of query",
     )
     description = Column(
         String(100),

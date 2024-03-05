@@ -3,8 +3,6 @@ from __future__ import annotations
 import json
 from typing import Any, Dict, List, Optional, Sequence, Union
 
-from fastapi import HTTPException
-from jsonschema import Draft202012Validator, exceptions
 from langchain_core.messages import AIMessage, AnyMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.prompts.chat import MessageLikeRepresentation
@@ -56,7 +54,9 @@ class QueryAnalysisRequest(CustomUserType):
     @validator("json_schema")
     def validate_schema(cls, v: Any) -> Dict[str, Any]:
         """Validate the schema."""
-        # validate_json_schema(v)
+        to_validate = v if isinstance(v, list) else [v]
+        for v_ in to_validate:
+            validate_json_schema(v_)
         return v
 
 
@@ -118,19 +118,18 @@ def _make_prompt_template(
             # TODO: We'll need to refactor this at some point to
             # support other encoding strategies. The function calling logic here
             # has some hard-coded assumptions (e.g., name of parameters like `data`).
-            function_call = {
-                "arguments": json.dumps(
-                    {
-                        "data": example.output,
-                    }
-                ),
-                "name": function_name,
+            tool_call = {
+                "type": "function",
+                "function": {
+                    "arguments": json.dumps({"data": example.output}),
+                    "name": function_name,
+                },
             }
             prompt_components.extend(
                 [
                     *example.messages,
                     AIMessage(
-                        content="", additional_kwargs={"function_call": function_call}
+                        content="", additional_kwargs={"tool_calls": [tool_call]}
                     ),
                 ]
             )

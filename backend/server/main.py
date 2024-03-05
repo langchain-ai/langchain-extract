@@ -4,7 +4,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
 
-from server.api import examples, extract, extractors
+from server.api import (
+    analyze,
+    examples,
+    extract,
+    extractors,
+    qa_examples,
+    query_analyzers,
+)
 from server.extraction_runnable import (
     ExtractRequest,
     ExtractResponse,
@@ -60,6 +67,12 @@ add_routes(
     path="/extract_text",
     enabled_endpoints=["invoke", "batch"],
 )
+
+
+# Include API endpoints for extractor definitions
+app.include_router(query_analyzers.router)
+app.include_router(qa_examples.router)
+app.include_router(analyze.router)
 
 add_routes(
     app,
