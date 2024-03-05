@@ -10,7 +10,7 @@ Please expect breaking changes, a bunch of additional features. We're just getti
 [![](https://dcbadge.vercel.app/api/server/6adMQxSpJS?compact=true&style=flat)](https://discord.gg/6adMQxSpJS)
 [![Open Issues](https://img.shields.io/github/issues-raw/langchain-ai/langchain-extract)](https://github.com/langchain-ai/langchain-extract/issues)
 
-`langchain-extract` is a simple web server that allows you to extract information from text and files using LLMs. It is build using [FastAPI](https://fastapi.tiangolo.com/), [LangChain](https://python.langchain.com/) and [Postgresql](https://www.postgresql.org/).
+`langchain-extract` is a simple web server that allows you to extract information from text and files using LLMs. It is build using [FastAPI](https://fastapi.tiangolo.com/), [LangChain](https://python.langchain.com/) and [PostgreSQL](https://www.postgresql.org/).
 
 The backend closely follows the [extraction use-case documentation](https://python.langchain.com/docs/use_cases/extraction) and provides
 a reference implementation of an app that helps to do extraction over data using LLMs.
@@ -128,6 +128,13 @@ Add `.local.env` file to the root directory with the following content:
 OPENAI_API_KEY=... # Your OpenAI API key
 ```
 
+If you want built-in LangSmith tracing add:
+
+```shell
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=... # Your LangChain API key
+```
+
 Build the images:
 ```sh
 docker compose build
@@ -173,13 +180,13 @@ poetry install --with lint,dev,test
 Run the following script to create a database and schema:
 
 ```sh
-python -m scripts.run_migrations create 
+poetry run python -m scripts.run_migrations create 
 ```
 
 From `/backend`:
 
 ```sh
-OPENAI_API_KEY=[YOUR API KEY] python -m server.main
+OPENAI_API_KEY=[YOUR API KEY] poetry run python -m server.main
 ```
 
 ### Testing 
@@ -189,7 +196,7 @@ separate from the main database. It will have the same schema as the main
 database.
 
 ```sh
-python -m scripts.run_migrations create-test-db
+poetry run python -m scripts.run_migrations create-test-db
 ```
 
 Run the tests

@@ -24,8 +24,9 @@ RUN set -eux && \
       libpq-dev python3-dev
 
 # https://python-poetry.org/docs/master/#installing-with-the-official-installer
-RUN curl -sSL https://install.python-poetry.org | python -
-ENV PATH="$POETRY_HOME/bin:$PATH"
+RUN python -m pip install --no-cache-dir pipx
+ENV PATH="/root/.local/bin:$PATH"
+RUN pipx install poetry
 
 # install deps before copying project files so the cache is only invalidated
 # when the deps change

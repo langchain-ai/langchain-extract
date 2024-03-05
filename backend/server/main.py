@@ -4,11 +4,23 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
 
-from server.api import examples, extract, extractors
+from server.api import (
+    analyze,
+    examples,
+    extract,
+    extractors,
+    qa_examples,
+    query_analyzers,
+)
 from server.extraction_runnable import (
     ExtractRequest,
     ExtractResponse,
     extraction_runnable,
+)
+from server.query_analysis import (
+    QueryAnalysisRequest,
+    QueryAnalysisResponse,
+    query_analyzer,
 )
 
 app = FastAPI(
@@ -56,6 +68,20 @@ add_routes(
     enabled_endpoints=["invoke", "batch"],
 )
 
+
+# Include API endpoints for extractor definitions
+app.include_router(query_analyzers.router)
+app.include_router(qa_examples.router)
+app.include_router(analyze.router)
+
+add_routes(
+    app,
+    query_analyzer.with_types(
+        input_type=QueryAnalysisRequest, output_type=QueryAnalysisResponse
+    ),
+    path="/query_analysis",
+    enabled_endpoints=["invoke", "batch"],
+)
 
 if __name__ == "__main__":
     import uvicorn
