@@ -25,7 +25,7 @@ const createExtractor = async (extractor) => {
   return response.data;
 };
 
-const runExtraction = async (extractionRequest, file) => {
+export const runExtraction = async (extractionRequest) => {
   console.log(extractionRequest);
   const response = await axios.postForm("/extract", extractionRequest);
   return response.data;
