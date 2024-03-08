@@ -1,13 +1,11 @@
-import React from "react";
-import { LanguageSupport } from "@codemirror/language";
-import { Heading } from "./Heading";
-import CodeMirror from "@uiw/react-codemirror";
+import { Button, FormControl, FormHelperText, FormLabel, Input } from "@chakra-ui/react";
 import { json } from "@codemirror/lang-json";
-import { useCreateExtractor } from "../api";
+import { LanguageSupport } from "@codemirror/language";
+import CodeMirror from "@uiw/react-codemirror";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Input, FormControl, FormLabel, Box, Select, FormErrorMessage, FormHelperText } from "@chakra-ui/react";
-import Form from "@rjsf/core";
-import { useMutation } from "@tanstack/react-query";
+import { useCreateExtractor } from "../api";
+import { Heading } from "./Heading";
 
 const EXTENSIONS: { [key: string]: LanguageSupport[] } = {
   json: [json()],

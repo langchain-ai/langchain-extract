@@ -16,13 +16,7 @@ function getColumns(records: object[]) {
   return Array.from(uniqueKeys);
 }
 
-export const ResultsTable = ({
-  data,
-  isPending,
-}: {
-  data: { data: object[] } | undefined;
-  isPending: boolean;
-}) => {
+export const ResultsTable = ({ data, isPending }: { data: { data: object[] } | undefined; isPending: boolean }) => {
   // scan all the results to determine the columns
   // then display the results in a table
   const actualData = data?.data;

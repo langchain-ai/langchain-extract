@@ -1,12 +1,11 @@
-import { ChakraProvider, IconButton, useDisclosure } from "@chakra-ui/react";
+import { ChakraProvider, useDisclosure } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
-import { Playground } from "./components/Playground";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import CreateExtractor from "./components/CreateExtractor";
+import { Playground } from "./components/Playground";
 import { Sidebar } from "./components/Sidebar";
 import "./index.css";
-import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
-import { PhoneIcon, AddIcon, WarningIcon } from "@chakra-ui/icons";
 
 const queryClient = new QueryClient();
 
