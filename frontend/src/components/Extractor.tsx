@@ -1,10 +1,9 @@
-import { Text, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
 import Form from "@rjsf/chakra-ui";
 import validator from "@rjsf/validator-ajv8";
-import { useQuery } from "@tanstack/react-query";
 import { useGetExtractor } from "../api";
 
-import { Input, InputGroup, InputLeftAddon, VStack } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
