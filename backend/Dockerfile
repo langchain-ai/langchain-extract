@@ -18,10 +18,10 @@ RUN set -eux && \
     apt-get update && \
     apt-get install -y \
       build-essential \
-      # to install poetry
       curl \
-      # to install psycopg2
-      libpq-dev python3-dev
+      libpq-dev \
+      python3-dev \
+      libmagic1
 
 # https://python-poetry.org/docs/master/#installing-with-the-official-installer
 RUN curl -sSL https://install.python-poetry.org | python -
