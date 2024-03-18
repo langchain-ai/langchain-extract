@@ -1,4 +1,4 @@
-import { ChakraProvider, useDisclosure } from '@chakra-ui/react'
+import { ChakraProvider } from '@chakra-ui/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
@@ -10,8 +10,6 @@ import './index.css'
 const queryClient = new QueryClient()
 
 const Root = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-
   return (
     <>
       <div className="flex flex-col w-100% h-full">
@@ -24,7 +22,7 @@ const Root = () => {
         </div>
         <div className="flex gap-3 ml-5 mr-5">
           <div className="w-1/6">
-            <Sidebar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
+            <Sidebar />
           </div>
           <div className="m-auto w-5/6">
             <Outlet />

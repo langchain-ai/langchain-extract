@@ -1,10 +1,9 @@
-import { Button, Heading } from '@chakra-ui/react'
+import { Button, Textarea } from '@chakra-ui/react'
 import { useMutation } from '@tanstack/react-query'
-import { runExtraction, useRunExtraction } from '../api'
+import { useParams } from 'react-router'
+import { runExtraction } from '../api'
 import { Extractor } from './Extractor'
 import { ResultsTable } from './ResultsTable'
-import { useParams } from 'react-router'
-import { Textarea } from '@chakra-ui/react'
 
 import React from 'react'
 
