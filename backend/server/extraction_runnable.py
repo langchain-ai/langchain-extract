@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from fastapi import HTTPException
 from jsonschema import Draft202012Validator, exceptions
-from langchain.chains.openai_functions import create_openai_fn_runnable
 from langchain.text_splitter import TokenTextSplitter
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
@@ -15,9 +14,7 @@ from pydantic import BaseModel, Field, validator
 from typing_extensions import TypedDict
 
 from db.models import Example, Extractor
-from extraction.utils import (
-    convert_json_schema_to_openai_schema,
-)
+from extraction.utils import update_json_schema
 from server.settings import CHUNK_SIZE, MODEL_NAME, get_model
 from server.validators import validate_json_schema
 
@@ -161,22 +158,22 @@ def get_examples_from_extractor(extractor: Extractor) -> List[Dict[str, Any]]:
 async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResponse:
     """An end point to extract content from a given text object."""
     # TODO: Add validation for model context window size
-    schema = extraction_request.json_schema
+    schema = update_json_schema(extraction_request.json_schema)
     try:
         Draft202012Validator.check_schema(schema)
     except exceptions.ValidationError as e:
         raise HTTPException(status_code=422, detail=f"Invalid schema: {e.message}")
 
-    openai_function = convert_json_schema_to_openai_schema(schema)
-    function_name = openai_function["name"]
     prompt = _make_prompt_template(
         extraction_request.instructions,
         extraction_request.examples,
-        function_name,
+        schema["title"],
     )
-    runnable = create_openai_fn_runnable(
-        functions=[openai_function], llm=model, prompt=prompt
+    # N.B. method must be consistent with examples in _make_prompt_template
+    runnable = prompt | model.with_structured_output(
+        schema=schema, method="function_calling"
     )
+
     return await runnable.ainvoke({"text": extraction_request.text})
 
 

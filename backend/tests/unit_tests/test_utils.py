@@ -1,13 +1,11 @@
 from langchain.pydantic_v1 import BaseModel, Field
 
-from extraction.utils import (
-    convert_json_schema_to_openai_schema,
-)
+from extraction.utils import update_json_schema
 from server.extraction_runnable import ExtractionExample, _make_prompt_template
 
 
-def test_convert_json_schema_to_openai_schema() -> None:
-    """Test converting a JSON schema to an OpenAI schema."""
+def test_update_json_schema() -> None:
+    """Test updating JSON schema."""
 
     class Person(BaseModel):
         name: str = Field(..., description="The name of the person.")
@@ -33,33 +31,34 @@ def test_convert_json_schema_to_openai_schema() -> None:
         "type": "object",
     }
 
-    openai_schema = convert_json_schema_to_openai_schema(schema)
-    assert openai_schema == {
-        "description": "Extract information matching the given schema.",
-        "name": "extractor",
-        "parameters": {
-            "properties": {
-                "data": {
-                    "items": {
-                        "properties": {
-                            "age": {
-                                "description": "The age of the person.",
-                                "type": "integer",
-                            },
-                            "name": {
-                                "description": "The name of the person.",
-                                "type": "string",
-                            },
+    updated_schema = update_json_schema(schema)
+    assert updated_schema == {
+        "type": "object",
+        "properties": {
+            "data": {
+                "type": "array",
+                "items": {
+                    "title": "Person",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "title": "Name",
+                            "description": "The name of the person.",
+                            "type": "string",
                         },
-                        "required": ["name", "age"],
-                        "type": "object",
+                        "age": {
+                            "title": "Age",
+                            "description": "The age of the person.",
+                            "type": "integer",
+                        },
                     },
-                    "type": "array",
-                }
-            },
-            "required": ["data"],
-            "type": "object",
+                    "required": ["name", "age"],
+                },
+            }
         },
+        "required": ["data"],
+        "title": "extractor",
+        "description": "Extract information matching the given schema.",
     }
 
 

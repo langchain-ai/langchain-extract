@@ -20,13 +20,12 @@ def _rm_titles(kv: dict) -> dict:
 # PUBLIC API
 
 
-def convert_json_schema_to_openai_schema(
+def update_json_schema(
     schema: dict,
     *,
-    rm_titles: bool = True,
     multi: bool = True,
 ) -> dict:
-    """Convert JSON schema to a corresponding OpenAI function call."""
+    """Add missing fields to JSON schema and add support for multiple records."""
     if multi:
         # Wrap the schema in an object called "Root" with a property called: "data"
         # which will be a json array of the original schema.
@@ -43,10 +42,6 @@ def convert_json_schema_to_openai_schema(
     else:
         raise NotImplementedError("Only multi is supported for now.")
 
-    schema_.pop("definitions", None)
-
-    return {
-        "name": "extractor",
-        "description": "Extract information matching the given schema.",
-        "parameters": _rm_titles(schema_) if rm_titles else schema_,
-    }
+    schema_["title"] = "extractor"
+    schema_["description"] = "Extract information matching the given schema."
+    return schema_
