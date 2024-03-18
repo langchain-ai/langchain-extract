@@ -11,7 +11,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { useRouter } from "next/router";
 import { useDeleteExtractor, useGetExtractors } from "../utils/api";
 
 const NewIconImported = () => {
@@ -23,7 +24,7 @@ const TrashIconImported = () => {
 };
 
 export function Sidebar() {
-  const navigate = useNavigate();
+  const { push } = useRouter();
   const { data } = useGetExtractors();
   const deleteExtractor = useDeleteExtractor();
 
@@ -71,7 +72,7 @@ export function Sidebar() {
         <Button
           rightIcon={<NewIconImported />}
           w="80%"
-          onClick={() => navigate("/new")}
+          onClick={() => push("/new")}
         >
           New
         </Button>

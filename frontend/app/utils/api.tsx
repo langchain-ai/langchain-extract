@@ -1,6 +1,6 @@
 /* Expose API hooks for use in components */
 import axios from "axios";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation, MutationFunction, QueryFunctionContext } from "@tanstack/react-query";
 
 export type ExtractorData = {
   uuid: string;
@@ -9,7 +9,11 @@ export type ExtractorData = {
   schema: any;
 };
 
-const getExtractor = async ({ queryKey }): ExtractorData => {
+type GetExtractorQueryKey = [string, string]; // [queryKey, uuid]
+
+type OnSuccessFn = (data: { uuid: string }) => void;
+
+const getExtractor = async ({ queryKey }: QueryFunctionContext<GetExtractorQueryKey>): Promise<ExtractorData> => {
   const [_, uuid] = queryKey;
   const response = await axios.get(`/extractors/${uuid}`);
   return response.data;
@@ -20,12 +24,12 @@ const listExtractors = async () => {
   return response.data;
 };
 
-const createExtractor = async (extractor) => {
+const createExtractor: MutationFunction<any, any> = async (extractor) => {
   const response = await axios.post("/extractors", extractor);
   return response.data;
 };
 
-export const suggestExtractor = async ({ description, jsonSchema }) => {
+export const suggestExtractor = async ({ description, jsonSchema }: { description: string, jsonSchema: string }) => {
   if (description === "") {
     return {};
   }
@@ -33,7 +37,7 @@ export const suggestExtractor = async ({ description, jsonSchema }) => {
   return response.data;
 };
 
-export const runExtraction = async (extractionRequest) => {
+export const runExtraction: MutationFunction<any, any> = async (extractionRequest) => {
   const response = await axios.postForm("/extract", extractionRequest);
   return response.data;
 };
@@ -60,7 +64,7 @@ export const useDeleteExtractor = () => {
   });
 };
 
-export const useCreateExtractor = ({ onSuccess }) => {
+export const useCreateExtractor = ({ onSuccess }: { onSuccess: OnSuccessFn }) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createExtractor,

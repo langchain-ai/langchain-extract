@@ -2593,6 +2593,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.28.4":
+  version: 5.28.4
+  resolution: "@tanstack/query-core@npm:5.28.4"
+  checksum: d6dfbd2f14a6c7a3100e54c20b7ac42d7ea74b9d86772ae9b79f18885ebf0256f42f085abe87b8cab336e736d721ef4d68e81875b3bde8bb5145cfa362cd913f
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.28.4":
+  version: 5.28.4
+  resolution: "@tanstack/react-query@npm:5.28.4"
+  dependencies:
+    "@tanstack/query-core": 5.28.4
+  peerDependencies:
+    react: ^18.0.0
+  checksum: 1d7a4cf7ffd8b141fcb75e6c31cd8c7e0b8ecc6ff0d974ebe6226fe50df7da890bdae3349cdef89dac86b1c3506924640743dd58739f9cebfdf018ca6b609f68
+  languageName: node
+  linkType: hard
+
 "@types/dompurify@npm:^3.0.5":
   version: 3.0.5
   resolution: "@types/dompurify@npm:3.0.5"
@@ -5701,6 +5719,7 @@ __metadata:
     "@rjsf/core": ^5.17.1
     "@rjsf/utils": ^5.17.1
     "@rjsf/validator-ajv8": ^5.17.1
+    "@tanstack/react-query": ^5.28.4
     "@types/dompurify": ^3.0.5
     "@types/marked": ^5.0.1
     "@types/node": 20.4.9

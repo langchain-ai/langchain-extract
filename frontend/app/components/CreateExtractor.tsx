@@ -22,7 +22,7 @@ import validator from "@rjsf/validator-ajv8";
 import CodeMirror from "@uiw/react-codemirror";
 import Ajv from "ajv";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { suggestExtractor, useCreateExtractor } from "../utils/api";
 
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
@@ -60,10 +60,10 @@ const CreateExtractor = ({}) => {
     },
   });
 
-  const navigate = useNavigate();
-  const { mutate, isLoading } = useCreateExtractor({
+  const { push } = useRouter();
+  const { mutate } = useCreateExtractor({
     onSuccess: (data) => {
-      navigate(`/e/${data.uuid}`);
+      push(`/e/${data.uuid}`);
     },
   });
 
@@ -117,7 +117,7 @@ const CreateExtractor = ({}) => {
       <Heading size={"md"} className="m-auto w-4/5" textAlign={"center"}>
         What would you like to extract today?
       </Heading>
-      <form className="m-auto flex flex gap-2 mt-5" onSubmit={handleSuggest}>
+      <form className="m-auto flex gap-2 mt-5" onSubmit={handleSuggest}>
         <FormControl id="userInput">
           <Input
             htmlSize={4}
