@@ -55,7 +55,7 @@ async def extract_from_content(
             "schema": itemgetter("schema"),
             "instructions": lambda x: x.get("instructions"),
             "examples": lambda x: x.get("examples"),
-            "model": lambda x: x.get("model"),
+            "model_name": lambda x: x.get("model_name"),
         }
         | RunnableLambda(_make_extract_request)
         | extraction_runnable
@@ -69,7 +69,7 @@ async def extract_from_content(
             "schema": schema,
             "examples": examples,
             "instructions": extractor.instruction,
-            "model": model,
+            "model_name": model.name,
         }
     )
     return result
