@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Button,
   Link as ChakraLink,
@@ -14,64 +16,55 @@ import {
   VStack,
   useDisclosure,
 } from '@chakra-ui/react'
-
+import React from 'react'
+import axios from 'axios'
+import { ShareModal } from './ShareModal'
 import {
   ArrowTopRightOnSquareIcon,
   EllipsisVerticalIcon,
   PencilSquareIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline'
+import { useRouter } from "next/navigation";
+import { useDeleteExtractor, useGetExtractors } from "../utils/api";
 import { useMutation } from '@tanstack/react-query'
-import axios from 'axios'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { ShareModal } from './ShareModal'
-import { useDeleteExtractor, useGetExtractors } from '../api'
-import React from 'react'
-
-const NewIconImported = () => {
-  return <Icon as={PencilSquareIcon} />
-}
-
-const TrashIconImported = () => {
-  return <Icon as={TrashIcon} />
-}
-
-const EllipsisIconImported = () => {
-  return <Icon as={EllipsisVerticalIcon} />
-}
-
-const ArrowTopRightImported = () => {
-  return <Icon as={ArrowTopRightOnSquareIcon} />
-}
+import { getBaseApiUrl } from '../utils/api_url';
 
 export function Sidebar() {
-  const navigate = useNavigate()
+  const [shareUUID, setShareUUID] = React.useState('')
+
   const { isOpen, onClose, onOpen } = useDisclosure()
-  const [shareUUID, setShareUUID] = React.useState('' as string)
-  const { data } = useGetExtractors()
-  const deleteExtractor = useDeleteExtractor()
+  const { push } = useRouter();
+  const { data } = useGetExtractors();
+  const deleteExtractor = useDeleteExtractor();
+
+  const baseUrl = getBaseApiUrl();
   const mutateShare = useMutation({
-    mutationFn: (uuid: string) => axios.post(`/extractors/${uuid}/share`),
+    mutationFn: (uuid: string) => axios.post(`${baseUrl}/extractors/${uuid}/share`),
     onSuccess: (data) => {
-      console.log(data)
+      console.debug(data)
       setShareUUID(data.data.share_uuid)
       onOpen()
     },
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const buttons = data?.map((extractor: any) => {
     return (
       <Flex flexDirection="column" key={extractor.uuid} w="100%">
         <Flex alignItems="center">
-          <ChakraLink
+        <ChakraLink
             p={1}
-            as={NavLink}
-            to={`/e/${extractor.uuid}`}
+            onClick={() => push(`/e/${extractor.uuid}`)}
+            _hover={{
+              textDecoration: "none",
+            }}
             _activeLink={{
-              border: '1px black',
-              borderBottomStyle: 'solid',
+              border: "1px black",
+              borderBottomStyle: "solid",
               borderRadius: 1,
             }}
+            cursor="pointer"
           >
             <Text noOfLines={1}>
               <strong>{extractor.name}</strong>
@@ -82,23 +75,23 @@ export function Sidebar() {
             <MenuButton
               as={IconButton}
               aria-label="Options"
-              icon={<EllipsisIconImported />}
+              icon={<Icon as={EllipsisVerticalIcon} />}
               variant="outline"
             />
             <MenuList>
               <MenuItem
-                icon={<ArrowTopRightImported />}
+                icon={<Icon as={ArrowTopRightOnSquareIcon} />}
                 onClick={() => {
                   mutateShare.mutate(extractor.uuid)
                 }}
               >
                 Share
                 {isOpen && (
-                  <ShareModal shareUUID={shareUUID} isOpen={isOpen} onClose={onClose}></ShareModal>
+                  <ShareModal shareUUID={shareUUID} isOpen={isOpen} onClose={onClose} />
                 )}
               </MenuItem>
               <MenuItem
-                icon={<TrashIconImported />}
+                icon={<Icon as={TrashIcon} />}
                 onClick={() => deleteExtractor.mutate(extractor.uuid)}
               >
                 Delete
@@ -117,9 +110,9 @@ export function Sidebar() {
     <div>
       <VStack>
         <Button
-          rightIcon={<NewIconImported />}
+          rightIcon={<Icon as={PencilSquareIcon} />}
           w="80%"
-          onClick={() => navigate('/new')}
+          onClick={() => push('/new')}
         >
           New
         </Button>

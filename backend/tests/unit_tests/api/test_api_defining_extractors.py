@@ -70,3 +70,47 @@ async def test_extractors_api() -> None:
         }
         response = await client.post("/extractors", json=create_request)
         assert response.status_code == 200
+
+
+async def test_sharing_extractor() -> None:
+    """Test sharing an extractor."""
+    async with get_async_client() as client:
+        response = await client.get("/extractors")
+        assert response.status_code == 200
+        assert response.json() == []
+        # Verify that we can create an extractor
+        create_request = {
+            "name": "Test Name",
+            "description": "Test Description",
+            "schema": {"type": "object"},
+            "instruction": "Test Instruction",
+        }
+        response = await client.post("/extractors", json=create_request)
+        assert response.status_code == 200
+
+        uuid = response.json()["uuid"]
+
+        # Verify that the extractor was created
+        response = await client.post(f"/extractors/{uuid}/share")
+        assert response.status_code == 200
+        assert "share_uuid" in response.json()
+        share_uuid = response.json()["share_uuid"]
+
+        # Test idempotency
+        response = await client.post(f"/extractors/{uuid}/share")
+        assert response.status_code == 200
+        assert "share_uuid" in response.json()
+        assert response.json()["share_uuid"] == share_uuid
+
+        # Check that we can retrieve the shared extractor
+        response = await client.get(f"/s/{share_uuid}")
+        assert response.status_code == 200
+        keys = sorted(response.json())
+        assert keys == ["description", "instruction", "name", "schema"]
+
+        assert response.json() == {
+            "description": "Test Description",
+            "instruction": "Test Instruction",
+            "name": "Test Name",
+            "schema": {"type": "object"},
+        }

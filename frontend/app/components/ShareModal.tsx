@@ -1,21 +1,25 @@
 import {
   Modal,
-  ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalFooter,
   ModalBody,
   Text,
-  Link,
   Input,
   ModalCloseButton,
-  useDisclosure,
   useClipboard,
   Flex,
   Button,
 } from '@chakra-ui/react'
 
-export function ShareModal({ shareUUID, isOpen, onClose }) {
+interface ShareModalProps {
+  shareUUID: string
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function ShareModal(props: ShareModalProps) {
+  const { shareUUID, isOpen, onClose } = props
   const url = `${window.origin}/s/${shareUUID}`
   const { onCopy, hasCopied } = useClipboard(shareUUID)
 
@@ -31,7 +35,7 @@ export function ShareModal({ shareUUID, isOpen, onClose }) {
             extractor:
           </Text>
           <Flex mb={2}>
-            <Input value={url} isReadOnly="true" />
+            <Input value={url} isReadOnly={true} />
             <Button onClick={onCopy}>{hasCopied ? 'Copied!' : 'Copy'}</Button>
           </Flex>
         </ModalBody>
