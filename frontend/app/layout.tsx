@@ -19,9 +19,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <Providers>
-      <html lang="en" className="h-full">
-        <body className={`${inter.className} h-full`}>
+    <html lang="en" className="h-full">
+      <body className={`${inter.className} h-full`}>
+        <Providers>
           <div className="flex flex-col w-100% h-full">
             <div className="flex justify-between bg-slate-200 mb-4 p-3 items-center gap-2">
               <div className="font-semibold">🦜⛏️ LangChain Extract</div>
@@ -37,8 +37,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <main className="m-auto w-5/6">{children}</main>
             </div>
           </div>
-        </body>
-      </html>
-    </Providers>
+        </Providers>
+      </body>
+    </html>
   );
 }

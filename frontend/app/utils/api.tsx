@@ -20,22 +20,32 @@ type GetExtractorQueryKey = [string, string]; // [queryKey, uuid]
 
 type OnSuccessFn = (data: { uuid: string }) => void;
 
+const getBaseApiUrl = () => {
+  if (process.env.NODE_ENV === "development") {
+    return "http://localhost:8000";
+  }
+  return `https://${process.env.BASE_API_URL}`;
+};
+
 const getExtractor = async ({
   queryKey,
 }: QueryFunctionContext<GetExtractorQueryKey>): Promise<ExtractorData> => {
   const [, uuid] = queryKey;
-  const response = await axios.get(`/extractors/${uuid}`);
+  const baseUrl = getBaseApiUrl();
+  const response = await axios.get(`${baseUrl}/extractors/${uuid}`);
   return response.data;
 };
 
 const listExtractors = async () => {
-  const response = await axios.get("/extractors");
+  const baseUrl = getBaseApiUrl();
+  const response = await axios.get(`${baseUrl}/extractors`);
   return response.data;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createExtractor: MutationFunction<any, any> = async (extractor) => {
-  const response = await axios.post("/extractors", extractor);
+  const baseUrl = getBaseApiUrl();
+  const response = await axios.post(`${baseUrl}/extractors`, extractor);
   return response.data;
 };
 
@@ -49,7 +59,11 @@ export const suggestExtractor = async ({
   if (description === "") {
     return {};
   }
-  const response = await axios.post("/suggest", { description, jsonSchema });
+  const baseUrl = getBaseApiUrl();
+  const response = await axios.post(`${baseUrl}/suggest`, {
+    description,
+    jsonSchema,
+  });
   return response.data;
 };
 
@@ -57,7 +71,11 @@ export const suggestExtractor = async ({
 export const runExtraction: MutationFunction<any, any> = async (
   extractionRequest,
 ) => {
-  const response = await axios.postForm("/extract", extractionRequest);
+  const baseUrl = getBaseApiUrl();
+  const response = await axios.postForm(
+    `${baseUrl}/extract`,
+    extractionRequest,
+  );
   return response.data;
 };
 
@@ -74,9 +92,10 @@ export const useGetExtractors = () => {
 };
 
 export const useDeleteExtractor = () => {
+  const baseUrl = getBaseApiUrl();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (uuid: string) => axios.delete(`/extractors/${uuid}`),
+    mutationFn: (uuid: string) => axios.delete(`${baseUrl}/extractors/${uuid}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getExtractors"] });
     },
