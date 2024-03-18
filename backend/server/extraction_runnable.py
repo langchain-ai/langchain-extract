@@ -14,9 +14,7 @@ from pydantic import BaseModel, Field, validator
 from typing_extensions import TypedDict
 
 from db.models import Example, Extractor
-from extraction.utils import (
-    update_json_schema,
-)
+from extraction.utils import update_json_schema
 from server.settings import CHUNK_SIZE, MODEL_NAME, get_model
 from server.validators import validate_json_schema
 
