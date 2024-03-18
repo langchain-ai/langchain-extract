@@ -23,7 +23,7 @@ import CodeMirror from '@uiw/react-codemirror'
 import Ajv from 'ajv'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { suggestExtractor, useCreateExtractor } from '../api'
+import { suggestExtractor, useCreateExtractor } from '../utils/api'
 
 import { ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline'
 import { useMutation } from '@tanstack/react-query'

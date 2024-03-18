@@ -1,7 +1,7 @@
 import { Button, Textarea } from '@chakra-ui/react'
 import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router'
-import { runExtraction } from '../api'
+import { runExtraction } from '../utils/api'
 import { Extractor } from './Extractor'
 import { ResultsTable } from './ResultsTable'
 

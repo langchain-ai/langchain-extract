@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { useDeleteExtractor, useGetExtractors } from '../api'
+import { useDeleteExtractor, useGetExtractors } from '../utils/api'
 
 const NewIconImported = () => {
   return <Icon as={PencilSquareIcon} />

@@ -1,11 +1,11 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'
 import Form from '@rjsf/chakra-ui'
 import validator from '@rjsf/validator-ajv8'
-import { useGetExtractor } from '../api'
+import { useGetExtractor } from '../utils/api'
+import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import { VStack } from '@chakra-ui/react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
-import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 
 export const Extractor = ({ extractorId }: { extractorId: string }) => {
   const { data, isLoading, isError } = useGetExtractor(extractorId)
@@ -33,8 +33,7 @@ export const Extractor = ({ extractorId }: { extractorId: string }) => {
             <Form
               schema={data.schema}
               validator={validator}
-              children={true} // Hide the submit button
-            />
+            ></Form>
           </TabPanel>
           <TabPanel>
             <Text className="mt-1 mb-5">

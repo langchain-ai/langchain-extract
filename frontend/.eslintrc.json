@@ -1,22 +1,3 @@
 {
-  "parser": "@typescript-eslint/parser",
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
-  "env": {
-    "node": true
-  },
-  "rules": {
-    "@typescript-eslint/no-var-requires": 0,
-    "react/jsx-uses-react": "off",
-    "react/react-in-jsx-scope": "off"
-  },
-  "settings": {
-    "react": {
-      "version": "18"
-    }
-  }
+  "extends": "next/core-web-vitals"
 }
