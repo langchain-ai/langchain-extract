@@ -1,12 +1,13 @@
 """Endpoints for managing definition of extractors."""
 from typing import Any, Dict, List
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, validator
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from db.models import Extractor, get_session
+from db.models import Extractor, SharedExtractors, get_session
 from server.validators import validate_json_schema
 
 router = APIRouter(
@@ -39,7 +40,66 @@ class CreateExtractor(BaseModel):
 class CreateExtractorResponse(BaseModel):
     """Response for creating an extractor."""
 
-    uuid: UUID
+    uuid: UUID = Field(..., description="The UUID of the created extractor.")
+
+
+class ShareExtractorRequest(BaseModel):
+    """Response for sharing an extractor."""
+
+    uuid: UUID = Field(..., description="The UUID of the extractor to share.")
+
+
+class ShareExtractorResponse(BaseModel):
+    """Response for sharing an extractor."""
+
+    share_uuid: UUID = Field(..., description="The UUID for the shared extractor.")
+
+
+@router.post("/{uuid}/share", response_model=ShareExtractorResponse)
+def share(
+    uuid: UUID,
+    *,
+    session: Session = Depends(get_session),
+) -> ShareExtractorResponse:
+    """Endpoint to share an extractor.
+
+    Look up a shared extractor by UUID and return the share UUID if it exists.
+    If not shared, create a new shared extractor entry and return the new share UUID.
+
+    Args:
+        uuid: The UUID of the extractor to share.
+        session: The database session.
+
+    Returns:
+        The UUID for the shared extractor.
+    """
+    # Check if the extractor is already shared
+    shared_extractor = (
+        session.query(SharedExtractors)
+        .filter(SharedExtractors.extractor_id == uuid)
+        .scalar()
+    )
+
+    if shared_extractor:
+        # The extractor is already shared, return the existing share_uuid
+        return ShareExtractorResponse(share_uuid=shared_extractor.share_token)
+
+    # If not shared, create a new shared extractor entry
+    new_shared_extractor = SharedExtractors(
+        extractor_id=uuid,
+        # This will automatically generate a new UUID for share_token
+        share_token=uuid4(),
+    )
+
+    session.add(new_shared_extractor)
+    try:
+        session.commit()
+    except IntegrityError:
+        session.rollback()
+        raise HTTPException(status_code=400, detail="Failed to share the extractor.")
+
+    # Return the new share_uuid
+    return ShareExtractorResponse(share_uuid=new_shared_extractor.share_token)
 
 
 @router.post("")
@@ -47,6 +107,7 @@ def create(
     create_request: CreateExtractor, *, session: Session = Depends(get_session)
 ) -> CreateExtractorResponse:
     """Endpoint to create an extractor."""
+
     instance = Extractor(
         name=create_request.name,
         schema=create_request.json_schema,

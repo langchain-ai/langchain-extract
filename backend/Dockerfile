@@ -23,9 +23,8 @@ RUN set -eux && \
       python3-dev \
       libmagic1
 
-# https://python-poetry.org/docs/master/#installing-with-the-official-installer
-RUN curl -sSL https://install.python-poetry.org | python -
-ENV PATH="$POETRY_HOME/bin:$PATH"
+# https://python-poetry.org/docs
+RUN pip install poetry
 
 # install deps before copying project files so the cache is only invalidated
 # when the deps change
