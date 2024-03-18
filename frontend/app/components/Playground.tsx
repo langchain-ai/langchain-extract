@@ -1,17 +1,21 @@
+"use client";
+
 import { Button, Textarea } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
 import React from "react";
 import { runExtraction } from "../utils/api";
 import { Extractor } from "./Extractor";
 import { ResultsTable } from "./ResultsTable";
 
+interface PlaygroundProps {
+  extractorId: string;
+}
+
 /**
  * Playground to work with an existing extractor.
  */
-export const Playground = () => {
-  const searchParams = useSearchParams();
-  const extractorId = searchParams.get("extractorId") || "";
+export const Playground = (props: PlaygroundProps) => {
+  const { extractorId } = props;
   const { data, isPending, mutate } = useMutation({
     mutationFn: runExtraction,
   });
