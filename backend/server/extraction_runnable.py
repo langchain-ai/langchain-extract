@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from fastapi import HTTPException
 from jsonschema import Draft202012Validator, exceptions
-from langchain.chains.openai_functions import create_openai_fn_runnable
 from langchain.text_splitter import TokenTextSplitter
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
@@ -174,9 +173,7 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResp
         extraction_request.examples,
         function_name,
     )
-    runnable = create_openai_fn_runnable(
-        functions=[openai_function], llm=model, prompt=prompt
-    )
+    runnable = prompt | model.with_structured_output(schema=openai_function)
     return await runnable.ainvoke({"text": extraction_request.text})
 
 
