@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 import os
-from typing import Callable, NamedTuple, Optional
+from typing import Callable, Literal, NamedTuple, Optional
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_openai import ChatOpenAI
@@ -45,6 +45,7 @@ SUPPORTED_MODELS = (
         ),
     ),
 )
+ModelNameLiteral = Literal["gpt-3.5-turbo", "gpt-4-0125-preview"]
 
 
 def get_model(model_name: Optional[str] = None) -> BaseChatModel:

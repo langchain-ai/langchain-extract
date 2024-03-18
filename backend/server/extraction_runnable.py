@@ -15,7 +15,7 @@ from typing_extensions import TypedDict
 
 from db.models import Example, Extractor
 from extraction.utils import update_json_schema
-from server.settings import ChatModel, SUPPORTED_MODELS
+from server.settings import ChatModel, ModelNameLiteral, SUPPORTED_MODELS
 from server.validators import validate_json_schema
 
 # Instantiate the models
@@ -53,7 +53,7 @@ class ExtractRequest(CustomUserType):
     examples: Optional[List[ExtractionExample]] = Field(
         None, description="Examples of extractions."
     )
-    model_name: Optional[str] = Field(
+    model_name: Optional[ModelNameLiteral] = Field(
         "gpt-3.5-turbo", description="Chat model to use."
     )
 

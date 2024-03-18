@@ -9,7 +9,7 @@ from db.models import Extractor, get_session
 from extraction.parsing import parse_binary_input
 from server.extraction_runnable import ExtractResponse, extract_entire_document
 from server.retrieval import extract_from_content
-from server.settings import get_model
+from server.settings import get_model, ModelNameLiteral
 
 router = APIRouter(
     prefix="/extract",
@@ -25,7 +25,7 @@ async def extract_using_existing_extractor(
     text: Optional[str] = Form(None),
     mode: Literal["entire_document", "retrieval"] = Form("entire_document"),
     file: Optional[UploadFile] = File(None),
-    model_name: Optional[str] = Form("gpt-3.5-turbo"),
+    model_name: Optional[ModelNameLiteral] = Form("gpt-3.5-turbo"),
     session: Session = Depends(get_session),
 ) -> ExtractResponse:
     """Endpoint that is used with an existing extractor.
