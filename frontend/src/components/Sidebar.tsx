@@ -1,18 +1,32 @@
 import {
-  Icon,
   Button,
   Link as ChakraLink,
   Divider,
   Flex,
+  Icon,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Spacer,
   Text,
-  Tooltip,
   VStack,
+  useDisclosure,
 } from '@chakra-ui/react'
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
+
+import {
+  ArrowTopRightOnSquareIcon,
+  EllipsisVerticalIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline'
+import { useMutation } from '@tanstack/react-query'
+import axios from 'axios'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { ShareModal } from './ShareModal'
 import { useDeleteExtractor, useGetExtractors } from '../api'
+import React from 'react'
 
 const NewIconImported = () => {
   return <Icon as={PencilSquareIcon} />
@@ -22,10 +36,28 @@ const TrashIconImported = () => {
   return <Icon as={TrashIcon} />
 }
 
+const EllipsisIconImported = () => {
+  return <Icon as={EllipsisVerticalIcon} />
+}
+
+const ArrowTopRightImported = () => {
+  return <Icon as={ArrowTopRightOnSquareIcon} />
+}
+
 export function Sidebar() {
   const navigate = useNavigate()
+  const { isOpen, onClose, onOpen } = useDisclosure()
+  const [shareUUID, setShareUUID] = React.useState('' as string)
   const { data } = useGetExtractors()
   const deleteExtractor = useDeleteExtractor()
+  const mutateShare = useMutation({
+    mutationFn: (uuid: string) => axios.post(`/extractors/${uuid}/share`),
+    onSuccess: (data) => {
+      console.log(data)
+      setShareUUID(data.data.share_uuid)
+      onOpen()
+    },
+  })
 
   const buttons = data?.map((extractor: any) => {
     return (
@@ -46,17 +78,33 @@ export function Sidebar() {
             </Text>
           </ChakraLink>
           <Spacer />
-          <Tooltip label="Delete" fontSize="md">
-            <IconButton
-              icon={<TrashIconImported />}
-              aria-label="Delete Extractor"
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              aria-label="Options"
+              icon={<EllipsisIconImported />}
               variant="outline"
-              size="sm"
-              onClick={() => {
-                deleteExtractor.mutate(extractor.uuid)
-              }}
             />
-          </Tooltip>
+            <MenuList>
+              <MenuItem
+                icon={<ArrowTopRightImported />}
+                onClick={() => {
+                  mutateShare.mutate(extractor.uuid)
+                }}
+              >
+                Share
+                {isOpen && (
+                  <ShareModal shareUUID={shareUUID} isOpen={isOpen} onClose={onClose}></ShareModal>
+                )}
+              </MenuItem>
+              <MenuItem
+                icon={<TrashIconImported />}
+                onClick={() => deleteExtractor.mutate(extractor.uuid)}
+              >
+                Delete
+              </MenuItem>
+            </MenuList>
+          </Menu>
         </Flex>
         <Text p={1} noOfLines={1} color={'gray'}>
           {extractor.description}
