@@ -1,6 +1,12 @@
 name: lint
 
 on:
+  pull_request:
+    paths:
+      - '!frontend/**'
+  push:
+    paths:
+      - '!frontend/**'
   workflow_call:
     inputs:
       working-directory:

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Icon,
   Button,
@@ -9,37 +11,41 @@ import {
   Text,
   Tooltip,
   VStack,
-} from '@chakra-ui/react'
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { useDeleteExtractor, useGetExtractors } from '../api'
+} from "@chakra-ui/react";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
+import { useDeleteExtractor, useGetExtractors } from "../utils/api";
 
 const NewIconImported = () => {
-  return <Icon as={PencilSquareIcon} />
-}
+  return <Icon as={PencilSquareIcon} />;
+};
 
 const TrashIconImported = () => {
-  return <Icon as={TrashIcon} />
-}
+  return <Icon as={TrashIcon} />;
+};
 
 export function Sidebar() {
-  const navigate = useNavigate()
-  const { data } = useGetExtractors()
-  const deleteExtractor = useDeleteExtractor()
+  const { push } = useRouter();
+  const { data } = useGetExtractors();
+  const deleteExtractor = useDeleteExtractor();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const buttons = data?.map((extractor: any) => {
     return (
       <Flex flexDirection="column" key={extractor.uuid} w="100%">
         <Flex alignItems="center">
           <ChakraLink
             p={1}
-            as={NavLink}
-            to={`/e/${extractor.uuid}`}
+            onClick={() => push(`/e/${extractor.uuid}`)} // Use push for navigation
+            _hover={{
+              textDecoration: "none",
+            }}
             _activeLink={{
-              border: '1px black',
-              borderBottomStyle: 'solid',
+              border: "1px black",
+              borderBottomStyle: "solid",
               borderRadius: 1,
             }}
+            cursor="pointer" // Add cursor pointer to indicate it's clickable
           >
             <Text noOfLines={1}>
               <strong>{extractor.name}</strong>
@@ -53,17 +59,17 @@ export function Sidebar() {
               variant="outline"
               size="sm"
               onClick={() => {
-                deleteExtractor.mutate(extractor.uuid)
+                deleteExtractor.mutate(extractor.uuid);
               }}
             />
           </Tooltip>
         </Flex>
-        <Text p={1} noOfLines={1} color={'gray'}>
+        <Text p={1} noOfLines={1} color={"gray"}>
           {extractor.description}
         </Text>
       </Flex>
-    )
-  })
+    );
+  });
 
   return (
     <div>
@@ -71,7 +77,7 @@ export function Sidebar() {
         <Button
           rightIcon={<NewIconImported />}
           w="80%"
-          onClick={() => navigate('/new')}
+          onClick={() => push("/new")}
         >
           New
         </Button>
@@ -79,5 +85,5 @@ export function Sidebar() {
         {buttons}
       </VStack>
     </div>
-  )
+  );
 }
