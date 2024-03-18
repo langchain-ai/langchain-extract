@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
 
-from server.api import examples, extract, extractors
+from server.api import examples, extract, extractors, suggest
 from server.extraction_runnable import (
     ExtractRequest,
     ExtractResponse,
@@ -22,7 +22,6 @@ app = FastAPI(
         }
     ],
 )
-
 
 origins = [
     "http://localhost:5173",
@@ -46,6 +45,7 @@ def ready():
 app.include_router(extractors.router)
 app.include_router(examples.router)
 app.include_router(extract.router)
+app.include_router(suggest.router)
 
 add_routes(
     app,
