@@ -15,45 +15,46 @@ import {
   Text,
   VStack,
   useDisclosure,
-} from '@chakra-ui/react'
-import React from 'react'
-import axios from 'axios'
-import { ShareModal } from './ShareModal'
+} from "@chakra-ui/react";
+import React from "react";
+import axios from "axios";
 import {
   ArrowTopRightOnSquareIcon,
   EllipsisVerticalIcon,
   PencilSquareIcon,
   TrashIcon,
-} from '@heroicons/react/24/outline'
+} from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import { useDeleteExtractor, useGetExtractors } from "../utils/api";
-import { useMutation } from '@tanstack/react-query'
-import { getBaseApiUrl } from '../utils/api_url';
+import { getBaseApiUrl } from "../utils/api_url";
+import { ShareModal } from "./ShareModal";
 
 export function Sidebar() {
-  const [shareUUID, setShareUUID] = React.useState('')
+  const [shareUUID, setShareUUID] = React.useState("");
 
-  const { isOpen, onClose, onOpen } = useDisclosure()
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const { push } = useRouter();
   const { data } = useGetExtractors();
   const deleteExtractor = useDeleteExtractor();
 
   const baseUrl = getBaseApiUrl();
   const mutateShare = useMutation({
-    mutationFn: (uuid: string) => axios.post(`${baseUrl}/extractors/${uuid}/share`),
-    onSuccess: (data) => {
-      console.debug(data)
-      setShareUUID(data.data.share_uuid)
-      onOpen()
+    mutationFn: (uuid: string) =>
+      axios.post(`${baseUrl}/extractors/${uuid}/share`),
+    onSuccess: (onSuccessData) => {
+      console.debug(onSuccessData);
+      setShareUUID(onSuccessData.data.share_uuid);
+      onOpen();
     },
-  })
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const buttons = data?.map((extractor: any) => {
     return (
       <Flex flexDirection="column" key={extractor.uuid} w="100%">
         <Flex alignItems="center">
-        <ChakraLink
+          <ChakraLink
             p={1}
             onClick={() => push(`/e/${extractor.uuid}`)}
             _hover={{
@@ -82,12 +83,16 @@ export function Sidebar() {
               <MenuItem
                 icon={<Icon as={ArrowTopRightOnSquareIcon} />}
                 onClick={() => {
-                  mutateShare.mutate(extractor.uuid)
+                  mutateShare.mutate(extractor.uuid);
                 }}
               >
                 Share
                 {isOpen && (
-                  <ShareModal shareUUID={shareUUID} isOpen={isOpen} onClose={onClose} />
+                  <ShareModal
+                    shareUUID={shareUUID}
+                    isOpen={isOpen}
+                    onClose={onClose}
+                  />
                 )}
               </MenuItem>
               <MenuItem
@@ -99,12 +104,12 @@ export function Sidebar() {
             </MenuList>
           </Menu>
         </Flex>
-        <Text p={1} noOfLines={1} color={'gray'}>
+        <Text p={1} noOfLines={1} color={"gray"}>
           {extractor.description}
         </Text>
       </Flex>
-    )
-  })
+    );
+  });
 
   return (
     <div>
@@ -112,7 +117,7 @@ export function Sidebar() {
         <Button
           rightIcon={<Icon as={PencilSquareIcon} />}
           w="80%"
-          onClick={() => push('/new')}
+          onClick={() => push("/new")}
         >
           New
         </Button>
@@ -120,5 +125,5 @@ export function Sidebar() {
         {buttons}
       </VStack>
     </div>
-  )
+  );
 }
