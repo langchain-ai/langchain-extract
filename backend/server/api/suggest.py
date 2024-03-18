@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 
-model = get_model()
+model = get_model().constructor()
 
 
 class SuggestExtractor(BaseModel):

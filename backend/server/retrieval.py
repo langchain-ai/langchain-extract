@@ -14,6 +14,7 @@ from server.extraction_runnable import (
     extraction_runnable,
     get_examples_from_extractor,
 )
+from server.settings import ChatModel
 
 
 def _get_top_doc_content(docs: List[Document]) -> str:
@@ -30,9 +31,9 @@ def _make_extract_request(input_dict: Dict[str, Any]) -> ExtractRequest:
 async def extract_from_content(
     content: str,
     extractor: Extractor,
+    model: ChatModel,
     *,
     text_splitter_kwargs: Optional[Dict[str, Any]] = None,
-    multi: bool = True,
 ) -> ExtractResponse:
     """Extract from potentially long-form content."""
     if text_splitter_kwargs is None:
@@ -54,6 +55,7 @@ async def extract_from_content(
             "schema": itemgetter("schema"),
             "instructions": lambda x: x.get("instructions"),
             "examples": lambda x: x.get("examples"),
+            "model": lambda x: x.get("model"),
         }
         | RunnableLambda(_make_extract_request)
         | extraction_runnable
@@ -67,6 +69,7 @@ async def extract_from_content(
             "schema": schema,
             "examples": examples,
             "instructions": extractor.instruction,
+            "model": model,
         }
     )
     return result

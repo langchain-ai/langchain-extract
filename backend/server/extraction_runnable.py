@@ -15,11 +15,14 @@ from typing_extensions import TypedDict
 
 from db.models import Example, Extractor
 from extraction.utils import update_json_schema
-from server.settings import CHUNK_SIZE, MODEL_NAME, get_model
+from server.settings import ChatModel, SUPPORTED_MODELS
 from server.validators import validate_json_schema
 
-# Instantiate the model
-model = get_model()
+# Instantiate the models
+models = {
+    model.name: model.constructor()
+    for model in SUPPORTED_MODELS
+}
 
 
 class ExtractionExample(BaseModel):
@@ -49,6 +52,9 @@ class ExtractRequest(CustomUserType):
     )
     examples: Optional[List[ExtractionExample]] = Field(
         None, description="Examples of extractions."
+    )
+    model_name: Optional[str] = Field(
+        "gpt-3.5-turbo", description="Chat model to use."
     )
 
     @validator("json_schema")
@@ -169,6 +175,7 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResp
         extraction_request.examples,
         schema["title"],
     )
+    model = models[extraction_request.model_name]
     # N.B. method must be consistent with examples in _make_prompt_template
     runnable = prompt | model.with_structured_output(
         schema=schema, method="function_calling"
@@ -180,15 +187,16 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResp
 async def extract_entire_document(
     content: str,
     extractor: Extractor,
+    model: ChatModel,
 ) -> ExtractResponse:
     """Extract from entire document."""
 
     json_schema = extractor.schema
     examples = get_examples_from_extractor(extractor)
     text_splitter = TokenTextSplitter(
-        chunk_size=CHUNK_SIZE,
+        chunk_size=model.chunk_size,
         chunk_overlap=20,
-        model_name=MODEL_NAME,
+        model_name=model.name,
     )
     texts = text_splitter.split_text(content)
     extraction_requests = [
@@ -197,6 +205,7 @@ async def extract_entire_document(
             schema=json_schema,
             instructions=extractor.instruction,  # TODO: consistent naming
             examples=examples,
+            model_name=model.name,
         )
         for text in texts
     ]
