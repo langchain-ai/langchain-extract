@@ -2,7 +2,15 @@ import uuid
 from datetime import datetime
 from typing import Generator
 
-from sqlalchemy import Column, DateTime, ForeignKey, String, Text, create_engine
+from sqlalchemy import (
+    Column,
+    DateTime,
+    ForeignKey,
+    String,
+    Text,
+    UniqueConstraint,
+    create_engine,
+)
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, relationship, sessionmaker
@@ -56,37 +64,6 @@ class TimestampedModel(Base):
     )
 
 
-class Extractor(TimestampedModel):
-    __tablename__ = "extractors"
-
-    name = Column(
-        String(100),
-        nullable=False,
-        server_default="",
-        comment="The name of the extractor.",
-    )
-    schema = Column(
-        JSONB,
-        nullable=False,
-        comment="JSON Schema that describes what content will be "
-        "extracted from the document",
-    )
-    description = Column(
-        String(100),
-        nullable=False,
-        server_default="",
-        comment="Surfaced via UI to the users.",
-    )
-    instruction = Column(
-        Text, nullable=False, comment="The prompt to the language model."
-    )  # TODO: This will need to evolve
-
-    examples = relationship("Example", backref="extractor")
-
-    def __repr__(self) -> str:
-        return f"<Extractor(id={self.uuid}, description={self.description})>"
-
-
 class Example(TimestampedModel):
     """A representation of an example.
 
@@ -122,3 +99,72 @@ class Example(TimestampedModel):
 
     def __repr__(self) -> str:
         return f"<Example(uuid={self.uuid}, content={self.content[:20]}>"
+
+
+class SharedExtractors(TimestampedModel):
+    """A table for managing sharing of extractors."""
+
+    __tablename__ = "shared_extractors"
+
+    extractor_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("extractors.uuid", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+        comment="The extractor that is being shared.",
+    )
+
+    share_token = Column(
+        UUID(as_uuid=True),
+        index=True,
+        nullable=False,
+        unique=True,
+        comment="The token that is used to access the shared extractor.",
+    )
+
+    # Add unique constraint for (extractor_id, share_token)
+    __table_args__ = (
+        UniqueConstraint("extractor_id", "share_token", name="unique_share_token"),
+    )
+
+    def __repr__(self) -> str:
+        """Return a string representation of the object."""
+        return f"<SharedExtractor(id={self.id}, run_id={self.run_id})>"
+
+
+class Extractor(TimestampedModel):
+    __tablename__ = "extractors"
+
+    name = Column(
+        String(100),
+        nullable=False,
+        server_default="",
+        comment="The name of the extractor.",
+    )
+    schema = Column(
+        JSONB,
+        nullable=False,
+        comment="JSON Schema that describes what content will be "
+        "extracted from the document",
+    )
+    description = Column(
+        String(100),
+        nullable=False,
+        server_default="",
+        comment="Surfaced via UI to the users.",
+    )
+    instruction = Column(
+        Text, nullable=False, comment="The prompt to the language model."
+    )  # TODO: This will need to evolve
+
+    examples = relationship("Example", backref="extractor")
+
+    # Used for sharing the extractor with others.
+    share_uuid = Column(
+        UUID(as_uuid=True),
+        nullable=True,
+        comment="The uuid of the shareable link.",
+    )
+
+    def __repr__(self) -> str:
+        return f"<Extractor(id={self.uuid}, description={self.description})>"
