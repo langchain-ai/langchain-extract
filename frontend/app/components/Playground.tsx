@@ -1,57 +1,57 @@
-import { Button, Textarea } from '@chakra-ui/react'
-import { useMutation } from '@tanstack/react-query'
-import { useParams } from 'react-router'
-import { runExtraction } from '../utils/api'
-import { Extractor } from './Extractor'
-import { ResultsTable } from './ResultsTable'
+import { Button, Textarea } from "@chakra-ui/react";
+import { useMutation } from "@tanstack/react-query";
+import { useParams } from "react-router";
+import { runExtraction } from "../utils/api";
+import { Extractor } from "./Extractor";
+import { ResultsTable } from "./ResultsTable";
 
-import React from 'react'
+import React from "react";
 
 /**
  * Playground to work with an existing extractor.
  */
 export const Playground = () => {
-  const { extractorId } = useParams()
+  const { extractorId } = useParams();
   const { data, isPending, mutate } = useMutation({
     mutationFn: runExtraction,
-  })
-  const [isDisabled, setIsDisabled] = React.useState(false)
+  });
+  const [isDisabled, setIsDisabled] = React.useState(false);
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const request = {
       extractor_id: extractorId,
-    }
+    };
 
     if (event.currentTarget.text.value) {
-      Object.assign(request, { text: event.currentTarget.text.value })
+      Object.assign(request, { text: event.currentTarget.text.value });
     } else {
-      Object.assign(request, { file: event.currentTarget.file.files[0] })
+      Object.assign(request, { file: event.currentTarget.file.files[0] });
     }
 
-    mutate(request)
-  }
+    mutate(request);
+  };
 
   const handleChange = (event: React.FormEvent<HTMLFormElement>) => {
     if (
-      event.currentTarget.text.value === '' &&
+      event.currentTarget.text.value === "" &&
       event.currentTarget.file.files.length === 0
     ) {
-      setIsDisabled(true)
-      return
+      setIsDisabled(true);
+      return;
     } else {
       // Also disable if both are present
       if (
-        event.currentTarget.text.value !== '' &&
+        event.currentTarget.text.value !== "" &&
         event.currentTarget.file.files.length !== 0
       ) {
-        setIsDisabled(true)
-        return
+        setIsDisabled(true);
+        return;
       }
     }
 
-    setIsDisabled(false)
-  }
+    setIsDisabled(false);
+  };
 
   return (
     <div className="w-full flex-col justify-between">
@@ -81,5 +81,5 @@ export const Playground = () => {
         <ResultsTable data={data} isPending={isPending} />
       </div>
     </div>
-  )
-}
+  );
+};

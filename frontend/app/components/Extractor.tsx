@@ -1,39 +1,43 @@
-import { Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'
-import Form from '@rjsf/chakra-ui'
-import validator from '@rjsf/validator-ajv8'
-import { useGetExtractor } from '../utils/api'
-import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import {
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from "@chakra-ui/react";
+import Form from "@rjsf/chakra-ui";
+import validator from "@rjsf/validator-ajv8";
+import { useGetExtractor } from "../utils/api";
+import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
-import { VStack } from '@chakra-ui/react'
-import SyntaxHighlighter from 'react-syntax-highlighter'
+import { VStack } from "@chakra-ui/react";
+import SyntaxHighlighter from "react-syntax-highlighter";
 
 export const Extractor = ({ extractorId }: { extractorId: string }) => {
-  const { data, isLoading, isError } = useGetExtractor(extractorId)
+  const { data, isLoading, isError } = useGetExtractor(extractorId);
   if (isLoading) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
   if (isError) {
-    return <div>Error</div>
+    return <div>Error</div>;
   }
 
   if (data === undefined) {
-    throw new Error('Data is undefined')
+    throw new Error("Data is undefined");
   }
-  console.log(data.schema)
+  console.log(data.schema);
 
   return (
     <div className="mr-auto">
-      <Tabs className="mt-5" variant={'enclosed'} colorScheme="blue" size="sm">
+      <Tabs className="mt-5" variant={"enclosed"} colorScheme="blue" size="sm">
         <TabList>
           <Tab>Form</Tab>
           <Tab>Code</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
-            <Form
-              schema={data.schema}
-              validator={validator}
-            ></Form>
+            <Form schema={data.schema} validator={validator}></Form>
           </TabPanel>
           <TabPanel>
             <Text className="mt-1 mb-5">
@@ -46,7 +50,7 @@ export const Extractor = ({ extractorId }: { extractorId: string }) => {
           </TabPanel>
         </TabPanels>
       </Tabs>
-      <VStack align={'left'}>
+      <VStack align={"left"}>
         {/* TO DO ADD SYSTEM MESSAGE */}
         {/* <Text>
           <strong>System Message: </strong>
@@ -54,5 +58,5 @@ export const Extractor = ({ extractorId }: { extractorId: string }) => {
         </Text> */}
       </VStack>
     </div>
-  )
-}
+  );
+};

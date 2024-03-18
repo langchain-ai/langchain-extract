@@ -1,3 +1,3 @@
-import CreateExtractor from '../components/CreateExtractor'
+import CreateExtractor from "../components/CreateExtractor";
 
 export default CreateExtractor;

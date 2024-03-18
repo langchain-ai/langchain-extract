@@ -9,23 +9,23 @@ import {
   Text,
   Tooltip,
   VStack,
-} from '@chakra-ui/react'
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { useDeleteExtractor, useGetExtractors } from '../utils/api'
+} from "@chakra-ui/react";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDeleteExtractor, useGetExtractors } from "../utils/api";
 
 const NewIconImported = () => {
-  return <Icon as={PencilSquareIcon} />
-}
+  return <Icon as={PencilSquareIcon} />;
+};
 
 const TrashIconImported = () => {
-  return <Icon as={TrashIcon} />
-}
+  return <Icon as={TrashIcon} />;
+};
 
 export function Sidebar() {
-  const navigate = useNavigate()
-  const { data } = useGetExtractors()
-  const deleteExtractor = useDeleteExtractor()
+  const navigate = useNavigate();
+  const { data } = useGetExtractors();
+  const deleteExtractor = useDeleteExtractor();
 
   const buttons = data?.map((extractor: any) => {
     return (
@@ -36,8 +36,8 @@ export function Sidebar() {
             as={NavLink}
             to={`/e/${extractor.uuid}`}
             _activeLink={{
-              border: '1px black',
-              borderBottomStyle: 'solid',
+              border: "1px black",
+              borderBottomStyle: "solid",
               borderRadius: 1,
             }}
           >
@@ -53,17 +53,17 @@ export function Sidebar() {
               variant="outline"
               size="sm"
               onClick={() => {
-                deleteExtractor.mutate(extractor.uuid)
+                deleteExtractor.mutate(extractor.uuid);
               }}
             />
           </Tooltip>
         </Flex>
-        <Text p={1} noOfLines={1} color={'gray'}>
+        <Text p={1} noOfLines={1} color={"gray"}>
           {extractor.description}
         </Text>
       </Flex>
-    )
-  })
+    );
+  });
 
   return (
     <div>
@@ -71,7 +71,7 @@ export function Sidebar() {
         <Button
           rightIcon={<NewIconImported />}
           w="80%"
-          onClick={() => navigate('/new')}
+          onClick={() => navigate("/new")}
         >
           New
         </Button>
@@ -79,5 +79,5 @@ export function Sidebar() {
         {buttons}
       </VStack>
     </div>
-  )
+  );
 }

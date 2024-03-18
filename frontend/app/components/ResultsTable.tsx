@@ -8,35 +8,35 @@ import {
   Th,
   Thead,
   Tr,
-} from '@chakra-ui/react'
+} from "@chakra-ui/react";
 
 function getColumns(records: object[]) {
   // Create a set to store unique keys
-  const uniqueKeys = new Set()
+  const uniqueKeys = new Set();
 
   // Iterate over each record in the list
   records.forEach((record) => {
     // For each key in the current record, add it to the set
     Object.keys(record).forEach((key) => {
-      uniqueKeys.add(key)
-    })
-  })
+      uniqueKeys.add(key);
+    });
+  });
 
   // Convert the set back into an array and return it
-  return Array.from(uniqueKeys)
+  return Array.from(uniqueKeys);
 }
 
 export const ResultsTable = ({
   data,
   isPending,
 }: {
-  data: { data: object[] } | undefined
-  isPending: boolean
+  data: { data: object[] } | undefined;
+  isPending: boolean;
 }) => {
   // scan all the results to determine the columns
   // then display the results in a table
-  const actualData = data?.data
-  const columns = actualData ? getColumns(actualData) : []
+  const actualData = data?.data;
+  const columns = actualData ? getColumns(actualData) : [];
 
   if (isPending) {
     return (
@@ -47,7 +47,7 @@ export const ResultsTable = ({
         color="blue.500"
         size="xl"
       />
-    )
+    );
   }
 
   return (
@@ -70,11 +70,11 @@ export const ResultsTable = ({
                     <Td>{row[column]}</Td>
                   ))}
                 </Tr>
-              )
+              );
             })}
           </Tbody>
         </Table>
       </TableContainer>
     </div>
-  )
-}
+  );
+};
