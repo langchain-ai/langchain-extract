@@ -78,7 +78,7 @@ async def test_extraction_api() -> None:
             json={
                 "input": {
                     "text": text,
-                    "schema": Person(),
+                    "schema": Person.schema(),
                     "instructions": "Redact all names using the characters `######`",
                     "examples": examples,
                 }
