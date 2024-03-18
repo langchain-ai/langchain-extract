@@ -32,6 +32,8 @@ services:
       - .local.env
     environment:
       - PG_HOST=postgres
+        # Define CORS origins for dev work on UI
+      - CORS_ORIGINS=http://localhost:5173
     ports:
       - "8000:8000" # Backend is accessible on localhost:8100
     depends_on:

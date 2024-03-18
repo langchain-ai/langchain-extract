@@ -1,4 +1,5 @@
 """Entry point into the server."""
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,21 +24,20 @@ app = FastAPI(
     ],
 )
 
-origins = [
-    "http://localhost:5173",
-]
+ORIGINS = os.environ.get("CORS_ORIGINS", "").split(",")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 @app.get("/ready")
-def ready():
+def ready() -> str:
     return "ok"
 
 
