@@ -10,7 +10,8 @@ import {
   Tr,
 } from "@chakra-ui/react";
 
-function getColumns(records: object[]) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getColumns(records: Array<Record<string, any>>): Array<any> {
   // Create a set to store unique keys
   const uniqueKeys = new Set();
 
@@ -30,7 +31,8 @@ export const ResultsTable = ({
   data,
   isPending,
 }: {
-  data: { data: object[] } | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: { data: Array<Record<string, any>> } | undefined;
   isPending: boolean;
 }) => {
   // scan all the results to determine the columns
@@ -57,8 +59,8 @@ export const ResultsTable = ({
           <TableCaption>Extraction Results</TableCaption>
           <Thead>
             <Tr>
-              {columns.map((column) => (
-                <Th>{column}</Th>
+              {columns.map((column, idx) => (
+                <Th key={`table-header-${idx}`}>{column}</Th>
               ))}
             </Tr>
           </Thead>
@@ -66,8 +68,8 @@ export const ResultsTable = ({
             {actualData?.map((row, index) => {
               return (
                 <Tr key={index}>
-                  {columns.map((column) => (
-                    <Td>{row[column]}</Td>
+                  {columns.map((column, idx) => (
+                    <Td key={`table-data-${idx}`}>{row[column]}</Td>
                   ))}
                 </Tr>
               );

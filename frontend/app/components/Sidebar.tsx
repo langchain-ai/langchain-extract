@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Icon,
   Button,
@@ -11,8 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { NavLink } from "react-router-dom";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useDeleteExtractor, useGetExtractors } from "../utils/api";
 
 const NewIconImported = () => {
@@ -28,19 +29,23 @@ export function Sidebar() {
   const { data } = useGetExtractors();
   const deleteExtractor = useDeleteExtractor();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const buttons = data?.map((extractor: any) => {
     return (
       <Flex flexDirection="column" key={extractor.uuid} w="100%">
         <Flex alignItems="center">
           <ChakraLink
             p={1}
-            as={NavLink}
-            to={`/e/${extractor.uuid}`}
+            onClick={() => push(`/e/${extractor.uuid}`)} // Use push for navigation
+            _hover={{
+              textDecoration: "none",
+            }}
             _activeLink={{
               border: "1px black",
               borderBottomStyle: "solid",
               borderRadius: 1,
             }}
+            cursor="pointer" // Add cursor pointer to indicate it's clickable
           >
             <Text noOfLines={1}>
               <strong>{extractor.name}</strong>

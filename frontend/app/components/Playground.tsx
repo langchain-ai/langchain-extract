@@ -1,17 +1,17 @@
 import { Button, Textarea } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import { useParams } from "react-router";
+import { useSearchParams } from "next/navigation";
+import React from "react";
 import { runExtraction } from "../utils/api";
 import { Extractor } from "./Extractor";
 import { ResultsTable } from "./ResultsTable";
-
-import React from "react";
 
 /**
  * Playground to work with an existing extractor.
  */
 export const Playground = () => {
-  const { extractorId } = useParams();
+  const searchParams = useSearchParams();
+  const extractorId = searchParams.get("extractorId") || "";
   const { data, isPending, mutate } = useMutation({
     mutationFn: runExtraction,
   });

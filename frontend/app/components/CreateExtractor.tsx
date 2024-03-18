@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Accordion,
   AccordionButton,
@@ -23,23 +25,21 @@ import CodeMirror from "@uiw/react-codemirror";
 import Ajv from "ajv";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { suggestExtractor, useCreateExtractor } from "../utils/api";
 
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
-
-const ArrowUpIconImported = (props) => {
-  return <Icon as={ChatBubbleBottomCenterTextIcon} {...props} />;
-};
+import { suggestExtractor, useCreateExtractor } from "../utils/api";
 
 const ajc = new Ajv();
 
 /**
- * Component to create a new extractor with fields for name, description, schema, and examples
+ * Component to create a new extractor with fields
+ * for name, description, schema, and examples
  */
 const CreateExtractor = ({}) => {
   const startSchema = "{}";
-  // You might use a mutation hook here if you're using something like React Query for state management
+  // You might use a mutation hook here if you're
+  // using something like React Query for state management
   const [schema, setSchema] = React.useState(startSchema);
   const [lastValidSchema, setLastValidSchema] = React.useState(
     JSON.parse(startSchema),
@@ -105,7 +105,7 @@ const CreateExtractor = ({}) => {
     if (description === "") {
       return;
     }
-    console.log(
+    console.debug(
       `Making request with description: ${description} and schema: ${schema}`,
     );
     suggestMutation.mutate({ description, jsonSchema: schema });
@@ -134,7 +134,7 @@ const CreateExtractor = ({}) => {
         ) : (
           <IconButton
             type="submit"
-            icon={<ArrowUpIconImported />}
+            icon={<Icon as={ChatBubbleBottomCenterTextIcon} />}
             aria-label="OK"
             colorScheme="blue"
           />
@@ -188,8 +188,7 @@ const CreateExtractor = ({}) => {
                   schema={lastValidSchema}
                   validator={validator}
                   disabled={!currentSchemaValid || suggestMutation.isPending}
-                  children={true} // Hide the submit button
-                />
+                ></Form>
               </CardBody>
             </Card>
           </>

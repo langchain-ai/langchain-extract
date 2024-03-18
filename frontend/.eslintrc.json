@@ -1,3 +1,98 @@
 {
-  "extends": "next/core-web-vitals"
+  "plugins": ["react", "@typescript-eslint", "eslint-plugin-import"],
+  "env": {
+    "es2021": true,
+    "commonjs": true,
+    "es6": true,
+    "node": true,
+    "browser": true
+  },
+  "globals": {
+    "window": true,
+    "process": true
+  },
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "rules": {
+    "import/no-extraneous-dependencies": "error",
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": ["__typename"]
+      }
+    ],
+    "react/display-name": "off",
+    "react/prop-types": "off",
+    "@typescript-eslint/class-methods-use-this": [
+      "error",
+      {
+        "ignoreOverrideMethods": true
+      }
+    ],
+    "@typescript-eslint/consistent-type-assertions": [
+      "error",
+      {
+        "assertionStyle": "never"
+      }
+    ],
+    "@typescript-eslint/default-param-last": "error",
+    "@typescript-eslint/no-empty-function": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-shadow": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "@typescript-eslint/no-useless-constructor": "error",
+    "camelcase": "off",
+    "class-methods-use-this": "off",
+    "default-case": "off",
+    "default-param-last": "off",
+    "import/extensions": "off",
+    "import/prefer-default-export": "off",
+    "import/order": "error",
+    "linebreak-style": ["error", "unix"],
+    "max-len": [
+      "warn",
+      {
+        "code": 80,
+        "tabWidth": 2,
+        "comments": 80,
+        "ignoreComments": false,
+        "ignoreTrailingComments": true,
+        "ignoreUrls": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true,
+        "ignoreRegExpLiterals": true
+      }
+    ],
+    "no-console": ["warn", { "allow": ["warn", "error", "debug"] }],
+    "no-empty-function": "off",
+    "no-plusplus": [
+      "error",
+      {
+        "allowForLoopAfterthoughts": true
+      }
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
+  }
 }

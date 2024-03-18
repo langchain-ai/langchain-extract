@@ -8,11 +8,11 @@ import {
 } from "@chakra-ui/react";
 import Form from "@rjsf/chakra-ui";
 import validator from "@rjsf/validator-ajv8";
-import { useGetExtractor } from "../utils/api";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 import { VStack } from "@chakra-ui/react";
 import SyntaxHighlighter from "react-syntax-highlighter";
+import { useGetExtractor } from "../utils/api";
 
 export const Extractor = ({ extractorId }: { extractorId: string }) => {
   const { data, isLoading, isError } = useGetExtractor(extractorId);
@@ -26,7 +26,7 @@ export const Extractor = ({ extractorId }: { extractorId: string }) => {
   if (data === undefined) {
     throw new Error("Data is undefined");
   }
-  console.log(data.schema);
+  console.debug(data.schema);
 
   return (
     <div className="mr-auto">

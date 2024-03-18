@@ -1,11 +1,18 @@
 /* Expose API hooks for use in components */
 import axios from "axios";
-import { useQuery, useQueryClient, useMutation, MutationFunction, QueryFunctionContext } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+  useMutation,
+  MutationFunction,
+  QueryFunctionContext,
+} from "@tanstack/react-query";
 
-export type ExtractorData = {
+type ExtractorData = {
   uuid: string;
   name: string;
   description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema: any;
 };
 
@@ -13,8 +20,10 @@ type GetExtractorQueryKey = [string, string]; // [queryKey, uuid]
 
 type OnSuccessFn = (data: { uuid: string }) => void;
 
-const getExtractor = async ({ queryKey }: QueryFunctionContext<GetExtractorQueryKey>): Promise<ExtractorData> => {
-  const [_, uuid] = queryKey;
+const getExtractor = async ({
+  queryKey,
+}: QueryFunctionContext<GetExtractorQueryKey>): Promise<ExtractorData> => {
+  const [, uuid] = queryKey;
   const response = await axios.get(`/extractors/${uuid}`);
   return response.data;
 };
@@ -24,12 +33,19 @@ const listExtractors = async () => {
   return response.data;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createExtractor: MutationFunction<any, any> = async (extractor) => {
   const response = await axios.post("/extractors", extractor);
   return response.data;
 };
 
-export const suggestExtractor = async ({ description, jsonSchema }: { description: string, jsonSchema: string }) => {
+export const suggestExtractor = async ({
+  description,
+  jsonSchema,
+}: {
+  description: string;
+  jsonSchema: string;
+}) => {
   if (description === "") {
     return {};
   }
@@ -37,7 +53,10 @@ export const suggestExtractor = async ({ description, jsonSchema }: { descriptio
   return response.data;
 };
 
-export const runExtraction: MutationFunction<any, any> = async (extractionRequest) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const runExtraction: MutationFunction<any, any> = async (
+  extractionRequest,
+) => {
   const response = await axios.postForm("/extract", extractionRequest);
   return response.data;
 };
@@ -64,7 +83,11 @@ export const useDeleteExtractor = () => {
   });
 };
 
-export const useCreateExtractor = ({ onSuccess }: { onSuccess: OnSuccessFn }) => {
+export const useCreateExtractor = ({
+  onSuccess,
+}: {
+  onSuccess: OnSuccessFn;
+}) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createExtractor,
