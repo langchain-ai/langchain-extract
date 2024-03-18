@@ -6,7 +6,6 @@ from sqlalchemy import Column, DateTime, ForeignKey, String, Text, create_engine
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, relationship, sessionmaker
-from sqlalchemy.sql import func
 
 from server.settings import get_postgres_url
 
