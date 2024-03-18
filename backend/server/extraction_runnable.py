@@ -169,6 +169,7 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResp
         extraction_request.examples,
         schema["title"],
     )
+    # N.B. method must be consistent with examples in _make_prompt_template
     runnable = prompt | model.with_structured_output(
         schema=schema, method="function_calling"
     )
