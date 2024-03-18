@@ -169,7 +169,9 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResp
         extraction_request.examples,
         schema["title"],
     )
-    runnable = prompt | model.with_structured_output(schema=schema)
+    runnable = prompt | model.with_structured_output(
+        schema=schema, method="function_calling"
+    )
 
     return await runnable.ainvoke({"text": extraction_request.text})
 
