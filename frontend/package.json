@@ -5,7 +5,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "fix": "eslint --fix --ext=js,jsx,ts,tsx . && prettier --write .",
+    "fix": "prettier --write .",
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 && prettier --check"
@@ -53,6 +53,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "postcss": "^8.4.35",
+    "prettier": "3.2.5",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.2",
     "typescript-eslint": "^7.2.0",

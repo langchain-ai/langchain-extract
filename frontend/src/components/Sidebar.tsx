@@ -9,29 +9,29 @@ import {
   Text,
   Tooltip,
   VStack,
-} from "@chakra-ui/react";
-import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useDeleteExtractor, useGetExtractors } from "../api";
+} from '@chakra-ui/react'
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useDeleteExtractor, useGetExtractors } from '../api'
 
 interface Props {
-  onOpen: Function;
-  onClose: Function;
-  isOpen: boolean;
+  onOpen: Function
+  onClose: Function
+  isOpen: boolean
 }
 
 const NewIconImported = () => {
-  return <Icon as={PencilSquareIcon} />;
-};
+  return <Icon as={PencilSquareIcon} />
+}
 
 const TrashIconImported = () => {
-  return <Icon as={TrashIcon} />;
-};
+  return <Icon as={TrashIcon} />
+}
 
 export function Sidebar({ isOpen, onClose }: Props) {
-  const navigate = useNavigate();
-  const { data, isLoading, isError } = useGetExtractors();
-  const deleteExtractor = useDeleteExtractor();
+  const navigate = useNavigate()
+  const { data, isLoading, isError } = useGetExtractors()
+  const deleteExtractor = useDeleteExtractor()
 
   const buttons = data?.map((extractor: any) => {
     return (
@@ -41,7 +41,11 @@ export function Sidebar({ isOpen, onClose }: Props) {
             p={1}
             as={NavLink}
             to={`/e/${extractor.uuid}`}
-            _activeLink={{ border: "1px black", borderBottomStyle: "solid", borderRadius: 1 }}
+            _activeLink={{
+              border: '1px black',
+              borderBottomStyle: 'solid',
+              borderRadius: 1,
+            }}
           >
             <Text noOfLines={1}>
               <strong>{extractor.name}</strong>
@@ -55,27 +59,31 @@ export function Sidebar({ isOpen, onClose }: Props) {
               variant="outline"
               size="sm"
               onClick={() => {
-                deleteExtractor.mutate(extractor.uuid);
+                deleteExtractor.mutate(extractor.uuid)
               }}
             />
           </Tooltip>
         </Flex>
-        <Text p={1} noOfLines={1} color={"gray"}>
+        <Text p={1} noOfLines={1} color={'gray'}>
           {extractor.description}
         </Text>
       </Flex>
-    );
-  });
+    )
+  })
 
   return (
     <div>
       <VStack>
-        <Button rightIcon={<NewIconImported />} w="80%" onClick={() => navigate("/new")}>
+        <Button
+          rightIcon={<NewIconImported />}
+          w="80%"
+          onClick={() => navigate('/new')}
+        >
           New
         </Button>
         <Divider />
         {buttons}
       </VStack>
     </div>
-  );
+  )
 }

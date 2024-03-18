@@ -1,16 +1,16 @@
-import { ChakraProvider, useDisclosure } from "@chakra-ui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
-import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
-import CreateExtractor from "./components/CreateExtractor";
-import { Playground } from "./components/Playground";
-import { Sidebar } from "./components/Sidebar";
-import "./index.css";
+import { ChakraProvider, useDisclosure } from '@chakra-ui/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import React from 'react'
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
+import CreateExtractor from './components/CreateExtractor'
+import { Playground } from './components/Playground'
+import { Sidebar } from './components/Sidebar'
+import './index.css'
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
 const Root = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
     <>
@@ -18,8 +18,8 @@ const Root = () => {
         <div className="flex justify-between bg-slate-200 mb-4 p-3 items-center gap-2">
           <div className="font-semibold">🦜⛏️ LangChain Extract</div>
           <div className="text-s text-rose-800">
-            <strong>Research Preview</strong>: this app is unauthenticated and all data can be found. Do not use with
-            sensitive data.
+            <strong>Research Preview</strong>: this app is unauthenticated and
+            all data can be found. Do not use with sensitive data.
           </div>
         </div>
         <div className="flex gap-3 ml-5 mr-5">
@@ -32,8 +32,8 @@ const Root = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
 const Main = () => {
   return (
@@ -48,8 +48,8 @@ const Main = () => {
         </Routes>
       </BrowserRouter>
     </>
-  );
-};
+  )
+}
 
 const App = () => {
   return (
@@ -60,7 +60,7 @@ const App = () => {
         </ChakraProvider>
       </QueryClientProvider>
     </React.StrictMode>
-  );
-};
+  )
+}
 
-export default App;
+export default App
