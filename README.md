@@ -1,6 +1,8 @@
 🚧 Under Active Development 🚧
 
-Please expect breaking changes, a bunch of additional features. We're just getting started.
+This repo is under active developments. Do not use code from `main`. Instead please checkout code from [releases](https://github.com/langchain-ai/langchain-extract/releases)
+
+This repository is not a library, but a jumping point for your own application -- so do not be surprised to find breaking changes between releases!
 
 # 🦜⛏️ LangChain Extract
 
