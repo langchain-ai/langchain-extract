@@ -20,11 +20,11 @@ def get_postgres_url() -> URL:
     return url
 
 
-
 class ChatModel(NamedTuple):
     name: str
     chunk_size: int
     constructor: Callable
+
 
 SUPPORTED_MODELS = (
     ChatModel(  # Default
@@ -58,5 +58,7 @@ def get_model(model_name: Optional[str] = None) -> BaseChatModel:
                 f"Model {model_name} not found. Supported models: {supported_model_names}"
             )
         else:
-            model = next(model for model in SUPPORTED_MODELS if model.name == model_name)
+            model = next(
+                model for model in SUPPORTED_MODELS if model.name == model_name
+            )
     return model

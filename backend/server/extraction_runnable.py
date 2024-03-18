@@ -15,14 +15,11 @@ from typing_extensions import TypedDict
 
 from db.models import Example, Extractor
 from extraction.utils import update_json_schema
-from server.settings import ChatModel, ModelNameLiteral, SUPPORTED_MODELS
+from server.settings import SUPPORTED_MODELS, ChatModel, ModelNameLiteral
 from server.validators import validate_json_schema
 
 # Instantiate the models
-models = {
-    model.name: model.constructor()
-    for model in SUPPORTED_MODELS
-}
+models = {model.name: model.constructor() for model in SUPPORTED_MODELS}
 
 
 class ExtractionExample(BaseModel):

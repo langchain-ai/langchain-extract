@@ -9,7 +9,7 @@ from db.models import Extractor, get_session
 from extraction.parsing import parse_binary_input
 from server.extraction_runnable import ExtractResponse, extract_entire_document
 from server.retrieval import extract_from_content
-from server.settings import get_model, ModelNameLiteral
+from server.settings import ModelNameLiteral, get_model
 
 router = APIRouter(
     prefix="/extract",

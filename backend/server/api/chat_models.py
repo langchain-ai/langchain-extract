@@ -11,6 +11,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get("")
 def list_chat_models() -> List[str]:
     """Endpoint to get all chat models."""
