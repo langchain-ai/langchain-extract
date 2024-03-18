@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
 
-from server.api import examples, extract, extractors, suggest
+from server.api import chat_models, examples, extract, extractors, suggest
 from server.extraction_runnable import (
     ExtractRequest,
     ExtractResponse,
@@ -46,6 +46,7 @@ app.include_router(extractors.router)
 app.include_router(examples.router)
 app.include_router(extract.router)
 app.include_router(suggest.router)
+app.include_router(chat_models.router)
 
 add_routes(
     app,
