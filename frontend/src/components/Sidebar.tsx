@@ -14,12 +14,6 @@ import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useDeleteExtractor, useGetExtractors } from '../api'
 
-interface Props {
-  onOpen: Function
-  onClose: Function
-  isOpen: boolean
-}
-
 const NewIconImported = () => {
   return <Icon as={PencilSquareIcon} />
 }
@@ -28,9 +22,9 @@ const TrashIconImported = () => {
   return <Icon as={TrashIcon} />
 }
 
-export function Sidebar({ isOpen, onClose }: Props) {
+export function Sidebar() {
   const navigate = useNavigate()
-  const { data, isLoading, isError } = useGetExtractors()
+  const { data } = useGetExtractors()
   const deleteExtractor = useDeleteExtractor()
 
   const buttons = data?.map((extractor: any) => {

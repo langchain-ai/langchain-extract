@@ -10,7 +10,6 @@ import {
   CardBody,
   CircularProgress,
   FormControl,
-  FormLabel,
   Heading,
   Icon,
   IconButton,
@@ -86,9 +85,10 @@ const CreateExtractor = ({}) => {
     // Extract information from schema like name, and description
     const name = objectSchema.title || 'Unnamed'
     const description = objectSchema.description || ''
+    // backend uses varchar(100) for description
     const shortDescription =
       description.length > 100
-        ? description.substring(0, 100) + '...'
+        ? description.substring(0, 95) + '...'
         : description
 
     mutate({
