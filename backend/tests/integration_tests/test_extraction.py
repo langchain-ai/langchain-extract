@@ -50,7 +50,6 @@ async def test_extraction_api() -> None:
         )
         assert result.status_code == 200, result.text
         response_data = result.json()
-        assert response_data == {}
         assert isinstance(response_data["output"]["data"], list)
 
         # Test with instructions
