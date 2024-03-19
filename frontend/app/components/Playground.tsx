@@ -8,7 +8,8 @@ import { Extractor } from "./Extractor";
 import { ResultsTable } from "./ResultsTable";
 
 interface PlaygroundProps {
-  // The playground currently support viewing both shared and non-shared extractors
+  // The playground currently support viewing 
+  // both shared and non-shared extractors
   extractorId: string;
   isShared?: boolean;
 }
@@ -80,9 +81,7 @@ export const Playground = (props: PlaygroundProps) => {
             autoFocus
           />
           {isShared ? (
-            <div>
-              Extraction using shared extractor is not supported yet
-            </div>
+            <div>Extraction using shared extractor is not supported yet</div>
           ) : (
             <Button type="submit" disabled={isDisabled}>
               Run
