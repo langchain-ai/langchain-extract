@@ -14,7 +14,19 @@ SUPPORTED_MODELS = {
         api_key=os.environ["TOGETHER_API_KEY"],
         model="mistralai/Mixtral-8x7B-Instruct-v0.1",
     ),
-}
+
+def get_supported_models(): 
+   models = {}
+   if 'OPENAI_API_KEY' in env: 
+      models['gpt-3.5-turbo'] = ChatOpenAI()..
+    if ... in os.environ:
+      models[...] = ChatFireworks()
+      
+   return models
+     
+SUPPORTED_MODELS = get_supported_models()
+DEFAULT_MODEL = 'gpt-3.5-turbo' # Can  hard code for now to keep simple
+
 
 CHUNK_SIZES = {  # in tokens, defaults to int(4_096 * 0.8). Override here.
     "gpt-4-0125-preview": int(128_000 * 0.8),
