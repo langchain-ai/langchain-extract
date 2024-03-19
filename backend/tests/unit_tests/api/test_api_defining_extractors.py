@@ -75,8 +75,10 @@ async def test_extractors_api() -> None:
         extractor_uuid = response.json()["uuid"]
         assert response.status_code == 200
         response = await client.get(f"/extractors/{extractor_uuid}")
-        assert extractor_uuid == response.json()["uuid"]
-        assert owner_id == response.json()["owner_id"]
+        response_data = response.json()
+        assert extractor_uuid == response_data["uuid"]
+        assert owner_id == response_data["owner_id"]
+        assert "my extractor" == response_data["name"]
 
 
 async def test_sharing_extractor() -> None:
