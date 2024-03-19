@@ -40,7 +40,9 @@ async def test_extractors_api() -> None:
         # Check we need cookie to delete
         uuid_str = get_response[0]["uuid"]
         _ = uuid.UUID(uuid_str)  # assert valid uuid
-        bad_response = await client.delete(f"/extractors/{uuid_str}", cookies=bad_cookies)
+        bad_response = await client.delete(
+            f"/extractors/{uuid_str}", cookies=bad_cookies
+        )
         # Check extractor was not deleted
         response = await client.get("/extractors", cookies=cookies)
         assert len(response.json()) == 1
@@ -137,7 +139,9 @@ async def test_sharing_extractor() -> None:
 
         # Check cookies
         bad_cookies = {"owner_id": str(uuid.uuid4())}
-        response = await client.post(f"/extractors/{uuid_str}/share", cookies=bad_cookies)
+        response = await client.post(
+            f"/extractors/{uuid_str}/share", cookies=bad_cookies
+        )
         assert response.status_code == 404
 
         # Check that we can retrieve the shared extractor

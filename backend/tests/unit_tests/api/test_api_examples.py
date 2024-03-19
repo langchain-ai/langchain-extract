@@ -54,7 +54,9 @@ async def test_examples_api() -> None:
 
         # Check cookies
         bad_cookies = {"owner_id": str(uuid.uuid4())}
-        response = await client.post("/examples", json=create_request, cookies=bad_cookies)
+        response = await client.post(
+            "/examples", json=create_request, cookies=bad_cookies
+        )
         assert response.status_code == 404
 
         # Verify that the example was created
