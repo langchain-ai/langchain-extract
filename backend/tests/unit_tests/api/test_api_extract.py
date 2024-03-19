@@ -1,7 +1,7 @@
 """Code to test API endpoints."""
 import tempfile
 from unittest.mock import patch
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.embeddings import FakeEmbeddings
@@ -53,8 +53,10 @@ async def test_extract_from_file() -> None:
         assert response.status_code == 404, response.text
 
         # First create an extractor
+        owner_id = str(uuid4())
         create_request = {
             "name": "Test Name",
+            "owner_id": owner_id,
             "description": "Test Description",
             "schema": {"type": "object"},
             "instruction": "Test Instruction",

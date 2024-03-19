@@ -1,4 +1,5 @@
 """Code to test API endpoints."""
+import uuid
 
 from tests.db import get_async_client
 
@@ -14,9 +15,11 @@ async def test_examples_api() -> None:
     """Runs through a set of API calls to test the examples API."""
     async with get_async_client() as client:
         # First create an extractor
+        owner_id = str(uuid.uuid4())
         create_request = {
             "description": "Test Description",
             "name": "Test Name",
+            "owner_id": owner_id,
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
         }
