@@ -16,14 +16,14 @@ async def test_examples_api() -> None:
     async with get_async_client() as client:
         # First create an extractor
         owner_id = str(uuid.uuid4())
+        cookies = {"owner_id": owner_id}
         create_request = {
             "description": "Test Description",
             "name": "Test Name",
-            "owner_id": owner_id,
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
         }
-        response = await client.post("/extractors", json=create_request)
+        response = await client.post("/extractors", json=create_request, cookies=cookies)
         assert response.status_code == 200
         # Get the extractor id
         extractor_id = response.json()["uuid"]
@@ -44,7 +44,7 @@ async def test_examples_api() -> None:
                 }
             ],
         }
-        response = await client.post("/examples", json=create_request)
+        response = await client.post("/examples", json=create_request, cookies=cookies)
         assert response.status_code == 200
         example_id = response.json()["uuid"]
 

@@ -54,14 +54,14 @@ async def test_extract_from_file() -> None:
 
         # First create an extractor
         owner_id = str(uuid4())
+        cookies = {"owner_id": owner_id}
         create_request = {
             "name": "Test Name",
-            "owner_id": owner_id,
             "description": "Test Description",
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
         }
-        response = await client.post("/extractors", json=create_request)
+        response = await client.post("/extractors", json=create_request, cookies=cookies)
         assert response.status_code == 200, response.text
         # Get the extractor id
         extractor_id = response.json()["uuid"]

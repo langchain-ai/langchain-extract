@@ -2,7 +2,7 @@
 from typing import Any, Dict, List
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Cookie, Depends, HTTPException
 from pydantic import BaseModel, Field, validator
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -21,8 +21,6 @@ class CreateExtractor(BaseModel):
     """A request to create an extractor."""
 
     name: str = Field(default="", description="The name of the extractor.")
-
-    owner_id: UUID = Field(..., description="The UUID of the owner of the extractor.")
 
     description: str = Field(
         default="", description="Short description of the extractor."
@@ -106,13 +104,16 @@ def share(
 
 @router.post("")
 def create(
-    create_request: CreateExtractor, *, session: Session = Depends(get_session)
+    create_request: CreateExtractor,
+    *,
+    session: Session = Depends(get_session),
+    owner_id: UUID = Cookie(...),
 ) -> CreateExtractorResponse:
     """Endpoint to create an extractor."""
 
     instance = Extractor(
         name=create_request.name,
-        owner_id=create_request.owner_id,
+        owner_id=owner_id,
         schema=create_request.json_schema,
         description=create_request.description,
         instruction=create_request.instruction,

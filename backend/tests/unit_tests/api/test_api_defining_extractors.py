@@ -15,12 +15,14 @@ async def test_extractors_api() -> None:
         # Verify that we can create an extractor
         owner_id = str(uuid.uuid4())
         create_request = {
-            "owner_id": owner_id,
             "description": "Test Description",
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
         }
-        response = await client.post("/extractors", json=create_request)
+        cookies = {"owner_id": owner_id}
+        response = await client.post(
+            "/extractors", json=create_request, cookies=cookies
+        )
         assert response.status_code == 200
 
         # Verify that the extractor was created
@@ -41,12 +43,13 @@ async def test_extractors_api() -> None:
 
         # Verify that we can create an extractor
         create_request = {
-            "owner_id": owner_id,
             "description": "Test Description",
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
         }
-        response = await client.post("/extractors", json=create_request)
+        response = await client.post(
+            "/extractors", json=create_request, cookies=cookies
+        )
         assert response.status_code == 200
 
         # Verify that the extractor was created
@@ -69,12 +72,13 @@ async def test_extractors_api() -> None:
         owner_id = str(uuid.uuid4())
         create_request = {
             "name": "my extractor",
-            "owner_id": owner_id,
             "description": "Test Description",
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
         }
-        response = await client.post("/extractors", json=create_request)
+        response = await client.post(
+            "/extractors", json=create_request, cookies=cookies
+        )
         extractor_uuid = response.json()["uuid"]
         assert response.status_code == 200
         response = await client.get(f"/extractors/{extractor_uuid}")
@@ -92,14 +96,16 @@ async def test_sharing_extractor() -> None:
         assert response.json() == []
         # Verify that we can create an extractor
         owner_id = str(uuid.uuid4())
+        cookies = {"owner_id": owner_id}
         create_request = {
             "name": "Test Name",
-            "owner_id": owner_id,
             "description": "Test Description",
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
         }
-        response = await client.post("/extractors", json=create_request)
+        response = await client.post(
+            "/extractors", json=create_request, cookies=cookies
+        )
         assert response.status_code == 200
 
         uuid_str = response.json()["uuid"]
