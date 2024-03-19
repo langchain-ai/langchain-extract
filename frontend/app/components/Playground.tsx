@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Textarea } from "@chakra-ui/react";
+import { Button, Textarea, Heading } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import { runExtraction } from "../utils/api";
@@ -8,14 +8,19 @@ import { Extractor } from "./Extractor";
 import { ResultsTable } from "./ResultsTable";
 
 interface PlaygroundProps {
+  /**
+   * The playground currently support viewing
+   * both shared and non-shared extractors
+   */
   extractorId: string;
+  isShared: boolean;
 }
 
 /**
  * Playground to work with an existing extractor.
  */
 export const Playground = (props: PlaygroundProps) => {
-  const { extractorId } = props;
+  const { extractorId, isShared } = props;
   const { data, isPending, mutate } = useMutation({
     mutationFn: runExtraction,
   });
@@ -59,8 +64,9 @@ export const Playground = (props: PlaygroundProps) => {
   return (
     <div className="w-full flex-col justify-between">
       <div className="m-auto">
+        {isShared && <Heading>Using a shared exractor</Heading>}
         <div>
-          <Extractor extractorId={extractorId} />
+          <Extractor extractorId={extractorId} isShared={isShared} />
         </div>
         <form
           className="m-auto flex flex-col content-between gap-5 mt-10 mb-10"
@@ -75,9 +81,13 @@ export const Playground = (props: PlaygroundProps) => {
             className="textarea textarea-bordered h-3/4"
             autoFocus
           />
-          <Button type="submit" disabled={isDisabled}>
-            Run
-          </Button>
+          {isShared ? (
+            <div>Extraction using shared extractor is not supported yet</div>
+          ) : (
+            <Button type="submit" disabled={isDisabled}>
+              Run
+            </Button>
+          )}
         </form>
       </div>
       <div className="m-auto">

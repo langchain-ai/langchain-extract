@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from db.models import Extractor, SharedExtractors, get_session
 
 router = APIRouter(
-    prefix="/s",
+    prefix="/shared/extractors",
     tags=["extractor definitions"],
     responses={404: {"description": "Not found"}},
 )
