@@ -4,10 +4,10 @@ import { Playground } from "../../components/Playground";
 
 interface ExtractorPageProps {
   params: {
-    extractorId: string;
+    sharedExtractorId: string;
   };
 }
 
 export default function Page({ params }: ExtractorPageProps) {
-  return <Playground extractorId={params.extractorId} isShared={false} />;
+  return <Playground extractorId={params.sharedExtractorId} isShared={true} />;
 }

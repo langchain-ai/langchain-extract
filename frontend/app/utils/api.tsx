@@ -7,6 +7,7 @@ import {
   MutationFunction,
   QueryFunctionContext,
 } from "@tanstack/react-query";
+import { getBaseApiUrl } from "./api_url";
 
 type ExtractorData = {
   uuid: string;
@@ -16,27 +17,22 @@ type ExtractorData = {
   schema: any;
 };
 
-type GetExtractorQueryKey = [string, string]; // [queryKey, uuid]
+type GetExtractorQueryKey = [string, string, boolean]; // [queryKey, uuid, isShared]
 
 type OnSuccessFn = (data: { uuid: string }) => void;
-
-const getBaseApiUrl = () => {
-  if (process.env.NODE_ENV === "development") {
-    return "http://localhost:8000";
-  }
-  if (!process.env.BASE_API_URL) {
-    throw new Error("BASE_API_URL must be set if not in development.");
-  }
-  return process.env.BASE_API_URL;
-};
 
 const getExtractor = async ({
   queryKey,
 }: QueryFunctionContext<GetExtractorQueryKey>): Promise<ExtractorData> => {
-  const [, uuid] = queryKey;
+  const [, uuid, isShared] = queryKey;
   const baseUrl = getBaseApiUrl();
-  const response = await axios.get(`${baseUrl}/extractors/${uuid}`);
-  return response.data;
+  if (isShared) {
+    const response = await axios.get(`${baseUrl}/shared/extractors/${uuid}`);
+    return response.data;
+  } else {
+    const response = await axios.get(`${baseUrl}/extractors/${uuid}`);
+    return response.data;
+  }
 };
 
 const listExtractors = async () => {
@@ -86,8 +82,11 @@ export const useRunExtraction = () => {
   return useMutation({ mutationFn: runExtraction });
 };
 
-export const useGetExtractor = (uuid: string) => {
-  return useQuery({ queryKey: ["getExtractor", uuid], queryFn: getExtractor });
+export const useGetExtractor = (uuid: string, isShared: boolean) => {
+  return useQuery({
+    queryKey: ["getExtractor", uuid, isShared],
+    queryFn: getExtractor,
+  });
 };
 
 export const useGetExtractors = () => {
