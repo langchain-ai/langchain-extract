@@ -6,10 +6,11 @@ from langchain_fireworks import ChatFireworks
 from langchain_openai import ChatOpenAI
 
 
-def get_supported_models(): 
+def get_supported_models():
+    """Get models according to environment secrets."""
     models = {}
     if "OPENAI_API_KEY" in os.environ: 
-        models["gpt-3.5-turbo"] = ChatOpenAI(model="gpt-3.5-turbo", temperature=0),
+        models["gpt-3.5-turbo"] = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
         models["gpt-4-0125-preview"] = ChatOpenAI(model="gpt-4-0125-preview", temperature=0)
     if "FIREWORKS_API_KEY" in os.environ: 
         models["fireworks"] = ChatFireworks(model="accounts/fireworks/models/firefunction-v1")
