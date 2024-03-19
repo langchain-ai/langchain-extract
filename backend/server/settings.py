@@ -46,13 +46,27 @@ SUPPORTED_MODELS = (
     ),
     ChatModel(
         name="fireworks",
-        chunk_size=int(128_000 * 0.8),
+        chunk_size=int(4_096 * 0.8),
         constructor=lambda: ChatFireworks(
             model="accounts/fireworks/models/firefunction-v1"
         ),
     ),
+    ChatModel(
+        name="together-ai-mistral-8x7b-instruct-v0.1",
+        chunk_size=int(4_096 * 0.8),
+        constructor = lambda: ChatOpenAI(
+            base_url="https://api.together.xyz/v1",
+            api_key=os.environ["TOGETHER_API_KEY"],
+            model="mistralai/Mixtral-8x7B-Instruct-v0.1",
+        )
+    ),
 )
-ModelNameLiteral = Literal["gpt-3.5-turbo", "gpt-4-0125-preview", "fireworks"]
+ModelNameLiteral = Literal[
+    "gpt-3.5-turbo",
+    "gpt-4-0125-preview",
+    "fireworks",
+    "together-ai-mistral-8x7b-instruct-v0.1",
+]
 
 
 def get_model(model_name: Optional[str] = None) -> BaseChatModel:
