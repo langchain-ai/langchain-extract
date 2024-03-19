@@ -105,9 +105,6 @@ const CreateExtractor = ({}) => {
     if (description === "") {
       return;
     }
-    console.debug(
-      `Making request with description: ${description} and schema: ${schema}`,
-    );
     suggestMutation.mutate({ description, jsonSchema: schema });
     setUserInput("");
   };
@@ -127,7 +124,7 @@ const CreateExtractor = ({}) => {
             placeholder="Describe your extraction task..."
             value={userInput}
             onChange={(event) => setUserInput(event.target.value)}
-          ></Input>
+          />
         </FormControl>
         {suggestMutation.isPending ? (
           <CircularProgress isIndeterminate />
@@ -188,7 +185,7 @@ const CreateExtractor = ({}) => {
                   schema={lastValidSchema}
                   validator={validator}
                   disabled={!currentSchemaValid || suggestMutation.isPending}
-                ></Form>
+                />
               </CardBody>
             </Card>
           </>

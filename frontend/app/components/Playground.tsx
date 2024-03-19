@@ -43,15 +43,14 @@ export const Playground = (props: PlaygroundProps) => {
     ) {
       setIsDisabled(true);
       return;
-    } else {
-      // Also disable if both are present
-      if (
-        event.currentTarget.text.value !== "" &&
-        event.currentTarget.file.files.length !== 0
-      ) {
-        setIsDisabled(true);
-        return;
-      }
+    }
+    // Also disable if both are present
+    if (
+      event.currentTarget.text.value !== "" &&
+      event.currentTarget.file.files.length !== 0
+    ) {
+      setIsDisabled(true);
+      return;
     }
 
     setIsDisabled(false);

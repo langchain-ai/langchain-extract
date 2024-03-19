@@ -28,7 +28,6 @@ export const Extractor = ({ extractorId }: { extractorId: string }) => {
   if (data === undefined) {
     throw new Error("Data is undefined");
   }
-  console.debug(data.schema);
 
   return (
     <div className="mr-auto">
@@ -39,7 +38,7 @@ export const Extractor = ({ extractorId }: { extractorId: string }) => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <Form schema={data.schema} validator={validator}></Form>
+            <Form schema={data.schema} validator={validator} />
           </TabPanel>
           <TabPanel>
             <Text className="mt-1 mb-5">
