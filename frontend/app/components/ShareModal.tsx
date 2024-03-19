@@ -21,7 +21,7 @@ interface ShareModalProps {
 export function ShareModal(props: ShareModalProps) {
   const { shareUUID, isOpen, onClose } = props;
   const url = `${window.origin}/s/${shareUUID}`;
-  const { onCopy, hasCopied } = useClipboard(shareUUID);
+  const { onCopy, hasCopied } = useClipboard(url);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

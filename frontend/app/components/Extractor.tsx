@@ -16,13 +16,18 @@ import { VStack } from "@chakra-ui/react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { useGetExtractor } from "../utils/api";
 
-export const Extractor = ({ extractorId }: { extractorId: string }) => {
-  const { data, isLoading, isError } = useGetExtractor(extractorId);
+type ExtractorProps = {
+  extractorId: string;
+  isShared: boolean;
+};
+
+export const Extractor = ({ extractorId, isShared }: ExtractorProps) => {
+  const { data, isLoading, isError } = useGetExtractor(extractorId, isShared);
   if (isLoading) {
     return <div>Loading...</div>;
   }
   if (isError) {
-    return <div>Error</div>;
+    return <div>Unable to load extractor with ID: {extractorId}</div>;
   }
 
   if (data === undefined) {
