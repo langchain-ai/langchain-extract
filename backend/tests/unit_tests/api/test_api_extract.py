@@ -77,6 +77,19 @@ async def test_extract_from_file() -> None:
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
 
+        # Vary chat model
+        response = await client.post(
+            "/extract",
+            data={
+                "extractor_id": extractor_id,
+                "text": "Test Content",
+                "mode": "entire_document",
+                "model_name": "gpt-3.5-turbo",
+            },
+        )
+        assert response.status_code == 200
+        assert response.json() == {"data": ["Test Conte"]}
+
         # Test retrieval
         response = await client.post(
             "/extract",

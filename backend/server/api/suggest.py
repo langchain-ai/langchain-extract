@@ -8,7 +8,7 @@ from fastapi import APIRouter
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 
-from server.settings import get_model
+from server.models import get_model
 
 router = APIRouter(
     prefix="/suggest",

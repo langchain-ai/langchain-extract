@@ -30,9 +30,9 @@ def _make_extract_request(input_dict: Dict[str, Any]) -> ExtractRequest:
 async def extract_from_content(
     content: str,
     extractor: Extractor,
+    model_name: str,
     *,
     text_splitter_kwargs: Optional[Dict[str, Any]] = None,
-    multi: bool = True,
 ) -> ExtractResponse:
     """Extract from potentially long-form content."""
     if text_splitter_kwargs is None:
@@ -54,6 +54,7 @@ async def extract_from_content(
             "schema": itemgetter("schema"),
             "instructions": lambda x: x.get("instructions"),
             "examples": lambda x: x.get("examples"),
+            "model_name": lambda x: x.get("model_name"),
         }
         | RunnableLambda(_make_extract_request)
         | extraction_runnable
@@ -67,6 +68,7 @@ async def extract_from_content(
             "schema": schema,
             "examples": examples,
             "instructions": extractor.instruction,
+            "model_name": model_name,
         }
     )
     return result
