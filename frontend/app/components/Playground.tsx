@@ -8,10 +8,10 @@ import { Extractor } from "./Extractor";
 import { ResultsTable } from "./ResultsTable";
 
 interface PlaygroundProps {
-  // The playground currently support viewing 
+  // The playground currently support viewing
   // both shared and non-shared extractors
   extractorId: string;
-  isShared?: boolean;
+  isShared: boolean;
 }
 
 /**
@@ -65,7 +65,7 @@ export const Playground = (props: PlaygroundProps) => {
       <div className="m-auto">
         {isShared && <Heading>Using a shared exractor</Heading>}
         <div>
-          <Extractor extractorId={extractorId} isShared={isShared || false} />
+          <Extractor extractorId={extractorId} isShared={isShared} />
         </div>
         <form
           className="m-auto flex flex-col content-between gap-5 mt-10 mb-10"
