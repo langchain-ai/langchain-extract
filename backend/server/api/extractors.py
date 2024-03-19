@@ -22,6 +22,10 @@ class CreateExtractor(BaseModel):
 
     name: str = Field(default="", description="The name of the extractor.")
 
+    owner_id: UUID = Field(
+        default_factory=uuid4, description="The UUID of the owner of the extractor."
+    )
+
     description: str = Field(
         default="", description="Short description of the extractor."
     )
@@ -110,6 +114,7 @@ def create(
 
     instance = Extractor(
         name=create_request.name,
+        owner_id=create_request.owner_id,
         schema=create_request.json_schema,
         description=create_request.description,
         instruction=create_request.instruction,
@@ -127,6 +132,7 @@ def get(uuid: UUID, *, session: Session = Depends(get_session)) -> Dict[str, Any
         raise HTTPException(status_code=404, detail="Extractor not found.")
     return {
         "uuid": extractor.uuid,
+        "owner_id": extractor.owner_id,
         "name": extractor.name,
         "description": extractor.description,
         "schema": extractor.schema,

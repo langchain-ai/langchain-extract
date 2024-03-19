@@ -141,6 +141,11 @@ class Extractor(TimestampedModel):
         server_default="",
         comment="The name of the extractor.",
     )
+    owner_id = Column(
+        UUID(as_uuid=True),
+        nullable=False,
+        comment="Owner uuid.",
+    )
     schema = Column(
         JSONB,
         nullable=False,

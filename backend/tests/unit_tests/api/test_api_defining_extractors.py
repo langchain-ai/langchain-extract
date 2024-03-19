@@ -62,14 +62,21 @@ async def test_extractors_api() -> None:
         assert get_response.status_code == 200
         assert get_response.json() == []
 
-        # Verify that we can create an extractor
+        # Verify that we can create an extractor, including other properties
+        owner_id = str(uuid.uuid4())
         create_request = {
+            "name": "my extractor",
+            "owner_id": owner_id,
             "description": "Test Description",
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
         }
         response = await client.post("/extractors", json=create_request)
+        extractor_uuid = response.json()["uuid"]
         assert response.status_code == 200
+        response = await client.get(f"/extractors/{extractor_uuid}")
+        assert extractor_uuid == response.json()["uuid"]
+        assert owner_id == response.json()["owner_id"]
 
 
 async def test_sharing_extractor() -> None:
