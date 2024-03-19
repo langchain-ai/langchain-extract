@@ -78,7 +78,7 @@ async def test_extract_from_file() -> None:
                 "text": "Test Content",
                 "mode": "entire_document",
             },
-            cookies = {"owner_id": owner_id},
+            cookies={"owner_id": owner_id},
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
@@ -92,7 +92,7 @@ async def test_extract_from_file() -> None:
                 "mode": "entire_document",
                 "model_name": "gpt-3.5-turbo",
             },
-            cookies = {"owner_id": owner_id},
+            cookies={"owner_id": owner_id},
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
@@ -105,7 +105,7 @@ async def test_extract_from_file() -> None:
                 "text": "Test Content",
                 "mode": "retrieval",
             },
-            cookies = {"owner_id": owner_id},
+            cookies={"owner_id": owner_id},
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
@@ -123,7 +123,7 @@ async def test_extract_from_file() -> None:
                     "mode": "entire_document",
                 },
                 files={"file": f},
-                cookies = {"owner_id": owner_id},
+                cookies={"owner_id": owner_id},
             )
 
         assert response.status_code == 200, response.text

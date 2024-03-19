@@ -37,7 +37,11 @@ async def extract_using_existing_extractor(
     if text is None and file is None:
         raise HTTPException(status_code=422, detail="No text or file provided.")
 
-    extractor = session.query(Extractor).filter_by(uuid=extractor_id, owner_id=owner_id).scalar()
+    extractor = (
+        session.query(Extractor)
+        .filter_by(uuid=extractor_id, owner_id=owner_id)
+        .scalar()
+    )
     if extractor is None:
         raise HTTPException(status_code=404, detail="Extractor not found for owner.")
 
