@@ -43,7 +43,6 @@ export function Sidebar() {
     mutationFn: (uuid: string) =>
       axios.post(`${baseUrl}/extractors/${uuid}/share`),
     onSuccess: (onSuccessData) => {
-      console.debug(onSuccessData);
       setShareUUID(onSuccessData.data.share_uuid);
       onOpen();
     },
