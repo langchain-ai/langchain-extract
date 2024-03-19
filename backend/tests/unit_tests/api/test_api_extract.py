@@ -61,7 +61,9 @@ async def test_extract_from_file() -> None:
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
         }
-        response = await client.post("/extractors", json=create_request, cookies=cookies)
+        response = await client.post(
+            "/extractors", json=create_request, cookies=cookies
+        )
         assert response.status_code == 200, response.text
         # Get the extractor id
         extractor_id = response.json()["uuid"]

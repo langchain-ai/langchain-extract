@@ -40,7 +40,9 @@ def create(
 ) -> CreateExampleResponse:
     """Endpoint to create an example."""
     extractor = (
-        session.query(Extractor).filter_by(uuid=create_request["extractor_id"], owner_id=owner_id).first()
+        session.query(Extractor)
+        .filter_by(uuid=create_request["extractor_id"], owner_id=owner_id)
+        .first()
     )
     if extractor is None:
         raise HTTPException(status_code=404, detail="Extractor not found for owner.")
