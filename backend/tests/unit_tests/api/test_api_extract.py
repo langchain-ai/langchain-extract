@@ -41,6 +41,8 @@ def mock_embeddings(*args, **kwargs):
 async def test_extract_from_file() -> None:
     """Test extract from file API."""
     async with get_async_client() as client:
+        owner_id = str(uuid4())
+        cookies = {"owner_id": owner_id}
         # Test with invalid extractor
         extractor_id = UUID(int=1027)  # 1027 is a good number.
         response = await client.post(
@@ -49,12 +51,11 @@ async def test_extract_from_file() -> None:
                 "extractor_id": str(extractor_id),
                 "text": "Test Content",
             },
+            cookies=cookies,
         )
         assert response.status_code == 404, response.text
 
         # First create an extractor
-        owner_id = str(uuid4())
-        cookies = {"owner_id": owner_id}
         create_request = {
             "name": "Test Name",
             "description": "Test Description",
@@ -77,6 +78,7 @@ async def test_extract_from_file() -> None:
                 "text": "Test Content",
                 "mode": "entire_document",
             },
+            cookies = {"owner_id": owner_id},
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
@@ -90,6 +92,7 @@ async def test_extract_from_file() -> None:
                 "mode": "entire_document",
                 "model_name": "gpt-3.5-turbo",
             },
+            cookies = {"owner_id": owner_id},
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
@@ -102,6 +105,7 @@ async def test_extract_from_file() -> None:
                 "text": "Test Content",
                 "mode": "retrieval",
             },
+            cookies = {"owner_id": owner_id},
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
@@ -119,6 +123,7 @@ async def test_extract_from_file() -> None:
                     "mode": "entire_document",
                 },
                 files={"file": f},
+                cookies = {"owner_id": owner_id},
             )
 
         assert response.status_code == 200, response.text

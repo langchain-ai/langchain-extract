@@ -47,10 +47,6 @@ def create(
     if extractor is None:
         raise HTTPException(status_code=404, detail="Extractor not found for owner.")
 
-    if extractor.owner_id != owner_id:
-        raise HTTPException(
-            status_code=403, detail="Owner ID does not match the owner of the extractor"
-        )
     instance = Example(
         extractor_id=create_request["extractor_id"],
         content=create_request["content"],
