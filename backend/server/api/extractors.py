@@ -22,9 +22,7 @@ class CreateExtractor(BaseModel):
 
     name: str = Field(default="", description="The name of the extractor.")
 
-    owner_id: UUID = Field(
-        ..., description="The UUID of the owner of the extractor."
-    )
+    owner_id: UUID = Field(..., description="The UUID of the owner of the extractor.")
 
     description: str = Field(
         default="", description="Short description of the extractor."
