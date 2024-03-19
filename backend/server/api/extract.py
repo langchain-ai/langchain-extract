@@ -25,7 +25,7 @@ async def extract_using_existing_extractor(
     text: Optional[str] = Form(None),
     mode: Literal["entire_document", "retrieval"] = Form("entire_document"),
     file: Optional[UploadFile] = File(None),
-    model_name: Optional[ModelNameLiteral] = Form("gpt-3.5-turbo"),
+    model_name: Optional[ModelNameLiteral] = Form("default") # <-- could we do this?
     session: Session = Depends(get_session),
 ) -> ExtractResponse:
     """Endpoint that is used with an existing extractor.
