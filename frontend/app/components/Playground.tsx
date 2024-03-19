@@ -8,8 +8,10 @@ import { Extractor } from "./Extractor";
 import { ResultsTable } from "./ResultsTable";
 
 interface PlaygroundProps {
-  // The playground currently support viewing
-  // both shared and non-shared extractors
+  /**
+   * The playground currently support viewing
+   * both shared and non-shared extractors
+   */
   extractorId: string;
   isShared: boolean;
 }
