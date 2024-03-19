@@ -16,5 +16,5 @@ router = APIRouter(
 def get_configurables() -> Dict[str, Any]:
     """Endpoint to get all chat models."""
     return {
-        "models": list(SUPPORTED_MODELS.keys()),
+        "models": sorted(SUPPORTED_MODELS.keys()),
     }
