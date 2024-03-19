@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, validator
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from db.models import Extractor, SharedExtractors, get_session
+from db.models import Extractor, SharedExtractors, get_session, validate_extractor_owner
 from server.validators import validate_json_schema
 
 router = APIRouter(
@@ -60,6 +60,7 @@ def share(
     uuid: UUID,
     *,
     session: Session = Depends(get_session),
+    owner_id: UUID = Cookie(...),
 ) -> ShareExtractorResponse:
     """Endpoint to share an extractor.
 
@@ -73,6 +74,8 @@ def share(
     Returns:
         The UUID for the shared extractor.
     """
+    if not validate_extractor_owner(session, uuid, owner_id):
+        raise HTTPException(status_code=404, detail="Extractor not found for owner.")
     # Check if the extractor is already shared
     shared_extractor = (
         session.query(SharedExtractors)

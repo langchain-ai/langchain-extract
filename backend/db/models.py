@@ -173,3 +173,16 @@ class Extractor(TimestampedModel):
 
     def __repr__(self) -> str:
         return f"<Extractor(id={self.uuid}, description={self.description})>"
+
+
+def validate_extractor_owner(
+    session: Session, extractor_id: UUID, owner_id: UUID
+) -> Extractor:
+    """Validate the extractor id."""
+    extractor = (
+        session.query(Extractor).filter_by(uuid=extractor_id, owner_id=owner_id).first()
+    )
+    if extractor is None:
+        return False
+    else:
+        return True

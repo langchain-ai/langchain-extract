@@ -123,17 +123,22 @@ async def test_sharing_extractor() -> None:
 
         uuid_str = response.json()["uuid"]
 
-        # Verify that the extractor was created
-        response = await client.post(f"/extractors/{uuid_str}/share")
+        # Generate a share uuid
+        response = await client.post(f"/extractors/{uuid_str}/share", cookies=cookies)
         assert response.status_code == 200
         assert "share_uuid" in response.json()
         share_uuid = response.json()["share_uuid"]
 
         # Test idempotency
-        response = await client.post(f"/extractors/{uuid_str}/share")
+        response = await client.post(f"/extractors/{uuid_str}/share", cookies=cookies)
         assert response.status_code == 200
         assert "share_uuid" in response.json()
         assert response.json()["share_uuid"] == share_uuid
+
+        # Check cookies
+        bad_cookies = {"owner_id": str(uuid.uuid4())}
+        response = await client.post(f"/extractors/{uuid_str}/share", cookies=bad_cookies)
+        assert response.status_code == 404
 
         # Check that we can retrieve the shared extractor
         response = await client.get(f"/s/{share_uuid}")

@@ -6,7 +6,7 @@ from fastapi import APIRouter, Cookie, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated, TypedDict
 
-from db.models import Example, Extractor, get_session
+from db.models import Example, get_session, validate_extractor_owner
 
 router = APIRouter(
     prefix="/examples",
@@ -31,19 +31,6 @@ class CreateExampleResponse(TypedDict):
     uuid: UUID
 
 
-def _validate_extractor_owner(
-    session: Session, extractor_id: UUID, owner_id: UUID
-) -> Extractor:
-    """Validate the extractor id."""
-    extractor = (
-        session.query(Extractor).filter_by(uuid=extractor_id, owner_id=owner_id).first()
-    )
-    if extractor is None:
-        raise HTTPException(status_code=404, detail="Extractor not found for owner.")
-    else:
-        pass
-
-
 @router.post("")
 def create(
     create_request: CreateExample,
@@ -52,7 +39,8 @@ def create(
     owner_id: UUID = Cookie(...),
 ) -> CreateExampleResponse:
     """Endpoint to create an example."""
-    _validate_extractor_owner(session, create_request["extractor_id"], owner_id)
+    if not validate_extractor_owner(session, create_request["extractor_id"], owner_id):
+        raise HTTPException(status_code=404, detail="Extractor not found for owner.")
 
     instance = Example(
         extractor_id=create_request["extractor_id"],
@@ -74,7 +62,8 @@ def list(
     owner_id: UUID = Cookie(...),
 ) -> List[Any]:
     """Endpoint to get all examples."""
-    _validate_extractor_owner(session, extractor_id, owner_id)
+    if not validate_extractor_owner(session, extractor_id, owner_id):
+        raise HTTPException(status_code=404, detail="Extractor not found for owner.")
     return (
         session.query(Example)
         .filter(Example.extractor_id == extractor_id)
@@ -91,6 +80,7 @@ def delete(
 ) -> None:
     """Endpoint to delete an example."""
     extractor_id = session.query(Example).filter_by(uuid=str(uuid)).first().extractor_id
-    _validate_extractor_owner(session, extractor_id, owner_id)
+    if not validate_extractor_owner(session, extractor_id, owner_id):
+        raise HTTPException(status_code=404, detail="Extractor not found for owner.")
     session.query(Example).filter_by(uuid=str(uuid)).delete()
     session.commit()
