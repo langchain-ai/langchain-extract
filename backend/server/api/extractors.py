@@ -124,11 +124,11 @@ def create(
 
 
 @router.get("/{uuid}")
-def get(uuid: UUID, *, session: Session = Depends(get_session)) -> Dict[str, Any]:
+def get(uuid: UUID, *, session: Session = Depends(get_session), owner_id: UUID = Cookie(...)) -> Dict[str, Any]:
     """Endpoint to get an extractor."""
-    extractor = session.query(Extractor).filter(Extractor.uuid == str(uuid)).scalar()
+    extractor = session.query(Extractor).filter_by(uuid=str(uuid), owner_id=owner_id).scalar()
     if extractor is None:
-        raise HTTPException(status_code=404, detail="Extractor not found.")
+        raise HTTPException(status_code=404, detail="Extractor not found for owner.")
     return {
         "uuid": extractor.uuid,
         "name": extractor.name,
@@ -144,13 +144,14 @@ def list(
     limit: int = 10,
     offset: int = 0,
     session=Depends(get_session),
+    owner_id: UUID = Cookie(...),
 ) -> List[Any]:
     """Endpoint to get all extractors."""
-    return session.query(Extractor).limit(limit).offset(offset).all()
+    return session.query(Extractor).filter_by(owner_id=owner_id).limit(limit).offset(offset).all()
 
 
 @router.delete("/{uuid}")
-def delete(uuid: UUID, *, session: Session = Depends(get_session)) -> None:
+def delete(uuid: UUID, *, session: Session = Depends(get_session), owner_id: UUID = Cookie(...)) -> None:
     """Endpoint to delete an extractor."""
-    session.query(Extractor).filter(Extractor.uuid == str(uuid)).delete()
+    session.query(Extractor).filter_by(uuid=str(uuid), owner_id=owner_id).delete()
     session.commit()
