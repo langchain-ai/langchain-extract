@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 from db.models import Extractor, get_session
 from extraction.parsing import parse_binary_input
 from server.extraction_runnable import ExtractResponse, extract_entire_document
-from server.models import ModelNameLiteral, get_model
+from server.models import ModelNameLiteral
 from server.retrieval import extract_from_content
 
 router = APIRouter(

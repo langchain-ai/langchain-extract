@@ -5,7 +5,6 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_fireworks import ChatFireworks
 from langchain_openai import ChatOpenAI
 
-
 SUPPORTED_MODELS = {
     "gpt-3.5-turbo": ChatOpenAI(model="gpt-3.5-turbo", temperature=0),
     "gpt-4-0125-preview": ChatOpenAI(model="gpt-4-0125-preview", temperature=0),
@@ -27,6 +26,7 @@ ModelNameLiteral = Literal[
     "fireworks",
     "together-ai-mistral-8x7b-instruct-v0.1",
 ]
+
 
 def get_chunk_size(model_name: ModelNameLiteral) -> int:
     """Get the chunk size."""
