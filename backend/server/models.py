@@ -9,20 +9,25 @@ from langchain_openai import ChatOpenAI
 def get_supported_models():
     """Get models according to environment secrets."""
     models = {}
-    if "OPENAI_API_KEY" in os.environ: 
+    if "OPENAI_API_KEY" in os.environ:
         models["gpt-3.5-turbo"] = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
-        models["gpt-4-0125-preview"] = ChatOpenAI(model="gpt-4-0125-preview", temperature=0)
-    if "FIREWORKS_API_KEY" in os.environ: 
-        models["fireworks"] = ChatFireworks(model="accounts/fireworks/models/firefunction-v1")
+        models["gpt-4-0125-preview"] = ChatOpenAI(
+            model="gpt-4-0125-preview", temperature=0
+        )
+    if "FIREWORKS_API_KEY" in os.environ:
+        models["fireworks"] = ChatFireworks(
+            model="accounts/fireworks/models/firefunction-v1"
+        )
     if "TOGETHER_API_KEY" in os.environ:
         models["together-ai-mistral-8x7b-instruct-v0.1"] = ChatOpenAI(
-        base_url="https://api.together.xyz/v1",
-        api_key=os.environ["TOGETHER_API_KEY"],
-        model="mistralai/Mixtral-8x7B-Instruct-v0.1",
-    )
+            base_url="https://api.together.xyz/v1",
+            api_key=os.environ["TOGETHER_API_KEY"],
+            model="mistralai/Mixtral-8x7B-Instruct-v0.1",
+        )
 
     return models
-     
+
+
 SUPPORTED_MODELS = get_supported_models()
 DEFAULT_MODEL = "gpt-3.5-turbo"
 

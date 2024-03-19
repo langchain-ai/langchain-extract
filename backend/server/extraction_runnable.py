@@ -47,9 +47,7 @@ class ExtractRequest(CustomUserType):
     examples: Optional[List[ExtractionExample]] = Field(
         None, description="Examples of extractions."
     )
-    model_name: Optional[str] = Field(
-        "gpt-3.5-turbo", description="Chat model to use."
-    )
+    model_name: Optional[str] = Field("gpt-3.5-turbo", description="Chat model to use.")
 
     @validator("json_schema")
     def validate_schema(cls, v: Any) -> Dict[str, Any]:
