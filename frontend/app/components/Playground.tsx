@@ -79,9 +79,15 @@ export const Playground = (props: PlaygroundProps) => {
             className="textarea textarea-bordered h-3/4"
             autoFocus
           />
-          <Button type="submit" disabled={isDisabled}>
-            Run
-          </Button>
+          {isShared ? (
+            <div>
+              Extraction using shared extractor is not supported yet
+            </div>
+          ) : (
+            <Button type="submit" disabled={isDisabled}>
+              Run
+            </Button>
+          )}
         </form>
       </div>
       <div className="m-auto">

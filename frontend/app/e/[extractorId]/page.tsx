@@ -9,5 +9,5 @@ interface ExtractorPageProps {
 }
 
 export default function Page({ params }: ExtractorPageProps) {
-  return <Playground extractorId={params.extractorId} isShared={false}/>;
+  return <Playground extractorId={params.extractorId} isShared={false} />;
 }
