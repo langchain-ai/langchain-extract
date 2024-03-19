@@ -4,6 +4,7 @@ import os
 from typing import Callable, Literal, NamedTuple, Optional
 
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_fireworks import ChatFireworks
 from langchain_openai import ChatOpenAI
 from sqlalchemy.engine import URL
 
@@ -43,8 +44,15 @@ SUPPORTED_MODELS = (
             temperature=0,
         ),
     ),
+    ChatModel(
+        name="fireworks",
+        chunk_size=int(128_000 * 0.8),
+        constructor=lambda: ChatFireworks(
+            model="accounts/fireworks/models/firefunction-v1"
+        ),
+    ),
 )
-ModelNameLiteral = Literal["gpt-3.5-turbo", "gpt-4-0125-preview"]
+ModelNameLiteral = Literal["gpt-3.5-turbo", "gpt-4-0125-preview", "fireworks"]
 
 
 def get_model(model_name: Optional[str] = None) -> BaseChatModel:
