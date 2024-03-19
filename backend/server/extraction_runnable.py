@@ -15,11 +15,8 @@ from typing_extensions import TypedDict
 
 from db.models import Example, Extractor
 from extraction.utils import update_json_schema
-from server.settings import SUPPORTED_MODELS, ChatModel, ModelNameLiteral
+from server.models import ModelNameLiteral, get_chunk_size, get_model
 from server.validators import validate_json_schema
-
-# Instantiate the models
-models = {model.name: model.constructor() for model in SUPPORTED_MODELS}
 
 
 class ExtractionExample(BaseModel):
@@ -172,7 +169,7 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResp
         extraction_request.examples,
         schema["title"],
     )
-    model = models[extraction_request.model_name]
+    model = get_model(extraction_request.model_name)
     # N.B. method must be consistent with examples in _make_prompt_template
     runnable = prompt | model.with_structured_output(
         schema=schema, method="function_calling"
@@ -184,16 +181,16 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResp
 async def extract_entire_document(
     content: str,
     extractor: Extractor,
-    model: ChatModel,
+    model_name: ModelNameLiteral,
 ) -> ExtractResponse:
     """Extract from entire document."""
 
     json_schema = extractor.schema
     examples = get_examples_from_extractor(extractor)
     text_splitter = TokenTextSplitter(
-        chunk_size=model.chunk_size,
+        chunk_size=get_chunk_size(model_name),
         chunk_overlap=20,
-        model_name=model.name,
+        model_name=model_name,
     )
     texts = text_splitter.split_text(content)
     extraction_requests = [
@@ -202,7 +199,7 @@ async def extract_entire_document(
             schema=json_schema,
             instructions=extractor.instruction,  # TODO: consistent naming
             examples=examples,
-            model_name=model.name,
+            model_name=model_name,
         )
         for text in texts
     ]

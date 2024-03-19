@@ -8,8 +8,8 @@ from typing_extensions import Annotated
 from db.models import Extractor, get_session
 from extraction.parsing import parse_binary_input
 from server.extraction_runnable import ExtractResponse, extract_entire_document
+from server.models import ModelNameLiteral, get_model
 from server.retrieval import extract_from_content
-from server.settings import ModelNameLiteral, get_model
 
 router = APIRouter(
     prefix="/extract",
@@ -49,9 +49,9 @@ async def extract_using_existing_extractor(
         text_ = "\n".join([document.page_content for document in documents])
 
     if mode == "entire_document":
-        return await extract_entire_document(text_, extractor, get_model(model_name))
+        return await extract_entire_document(text_, extractor, model_name)
     elif mode == "retrieval":
-        return await extract_from_content(text_, extractor, get_model(model_name))
+        return await extract_from_content(text_, extractor, model_name)
     else:
         raise ValueError(
             f"Invalid mode {mode}. Expected one of 'entire_document', 'retrieval'."

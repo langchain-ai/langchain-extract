@@ -14,7 +14,7 @@ from server.extraction_runnable import (
     extraction_runnable,
     get_examples_from_extractor,
 )
-from server.settings import ChatModel
+from server.models import ModelNameLiteral
 
 
 def _get_top_doc_content(docs: List[Document]) -> str:
@@ -31,7 +31,7 @@ def _make_extract_request(input_dict: Dict[str, Any]) -> ExtractRequest:
 async def extract_from_content(
     content: str,
     extractor: Extractor,
-    model: ChatModel,
+    model_name: ModelNameLiteral,
     *,
     text_splitter_kwargs: Optional[Dict[str, Any]] = None,
 ) -> ExtractResponse:
@@ -69,7 +69,7 @@ async def extract_from_content(
             "schema": schema,
             "examples": examples,
             "instructions": extractor.instruction,
-            "model_name": model.name,
+            "model_name": model_name,
         }
     )
     return result

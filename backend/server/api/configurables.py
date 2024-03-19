@@ -1,9 +1,9 @@
 """Endpoint for listing available chat models for extraction."""
-from typing import Any, Dict, get_args
+from typing import Any, Dict
 
 from fastapi import APIRouter
 
-from server.settings import ModelNameLiteral
+from server.models import SUPPORTED_MODELS
 
 router = APIRouter(
     prefix="/configurables",
@@ -16,5 +16,5 @@ router = APIRouter(
 def get_configurables() -> Dict[str, Any]:
     """Endpoint to get all chat models."""
     return {
-        "models": list(get_args(ModelNameLiteral)),
+        "models": list(SUPPORTED_MODELS.keys()),
     }
