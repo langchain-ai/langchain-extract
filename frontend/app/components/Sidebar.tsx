@@ -40,7 +40,7 @@ export function Sidebar() {
 
   const baseUrl = getBaseApiUrl();
   const mutateShare = useMutation({
-    mutationFn: (uuid: string) =>
+    mutationFn: async (uuid: string) =>
       axios.post(`${baseUrl}/extractors/${uuid}/share`),
     onSuccess: (onSuccessData) => {
       setShareUUID(onSuccessData.data.share_uuid);
