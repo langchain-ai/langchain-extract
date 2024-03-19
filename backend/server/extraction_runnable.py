@@ -15,7 +15,7 @@ from typing_extensions import TypedDict
 
 from db.models import Example, Extractor
 from extraction.utils import update_json_schema
-from server.models import ModelNameLiteral, get_chunk_size, get_model
+from server.models import get_chunk_size, get_model
 from server.validators import validate_json_schema
 
 
@@ -47,7 +47,7 @@ class ExtractRequest(CustomUserType):
     examples: Optional[List[ExtractionExample]] = Field(
         None, description="Examples of extractions."
     )
-    model_name: Optional[ModelNameLiteral] = Field(
+    model_name: Optional[str] = Field(
         "gpt-3.5-turbo", description="Chat model to use."
     )
 
@@ -181,7 +181,7 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResp
 async def extract_entire_document(
     content: str,
     extractor: Extractor,
-    model_name: ModelNameLiteral,
+    model_name: str,
 ) -> ExtractResponse:
     """Extract from entire document."""
 

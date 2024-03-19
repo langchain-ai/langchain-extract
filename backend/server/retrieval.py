@@ -14,7 +14,6 @@ from server.extraction_runnable import (
     extraction_runnable,
     get_examples_from_extractor,
 )
-from server.models import ModelNameLiteral
 
 
 def _get_top_doc_content(docs: List[Document]) -> str:
@@ -31,7 +30,7 @@ def _make_extract_request(input_dict: Dict[str, Any]) -> ExtractRequest:
 async def extract_from_content(
     content: str,
     extractor: Extractor,
-    model_name: ModelNameLiteral,
+    model_name: str,
     *,
     text_splitter_kwargs: Optional[Dict[str, Any]] = None,
 ) -> ExtractResponse:
