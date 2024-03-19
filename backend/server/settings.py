@@ -54,11 +54,11 @@ SUPPORTED_MODELS = (
     ChatModel(
         name="together-ai-mistral-8x7b-instruct-v0.1",
         chunk_size=int(4_096 * 0.8),
-        constructor = lambda: ChatOpenAI(
+        constructor=lambda: ChatOpenAI(
             base_url="https://api.together.xyz/v1",
             api_key=os.environ["TOGETHER_API_KEY"],
             model="mistralai/Mixtral-8x7B-Instruct-v0.1",
-        )
+        ),
     ),
 )
 ModelNameLiteral = Literal[
@@ -77,7 +77,8 @@ def get_model(model_name: Optional[str] = None) -> BaseChatModel:
         supported_model_names = [model.name for model in SUPPORTED_MODELS]
         if model_name not in supported_model_names:
             raise ValueError(
-                f"Model {model_name} not found. Supported models: {supported_model_names}"
+                f"Model {model_name} not found. "
+                f"Supported models: {supported_model_names}"
             )
         else:
             model = next(
