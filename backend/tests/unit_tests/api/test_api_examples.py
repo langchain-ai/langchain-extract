@@ -31,7 +31,9 @@ async def test_examples_api() -> None:
         extractor_id = response.json()["uuid"]
 
         # Let's verify that there are no examples
-        response = await client.get("/examples?extractor_id=" + extractor_id)
+        response = await client.get(
+            "/examples?extractor_id=" + extractor_id, cookies=cookies
+        )
         assert response.status_code == 200
         assert response.json() == []
 
@@ -50,8 +52,15 @@ async def test_examples_api() -> None:
         assert response.status_code == 200
         example_id = response.json()["uuid"]
 
+        # Check cookies
+        bad_cookies = {"owner_id": str(uuid.uuid4())}
+        response = await client.post("/examples", json=create_request, cookies=bad_cookies)
+        assert response.status_code == 404
+
         # Verify that the example was created
-        response = await client.get("/examples?extractor_id=" + extractor_id)
+        response = await client.get(
+            "/examples?extractor_id=" + extractor_id, cookies=cookies
+        )
         assert response.status_code == 200
         assert len(response.json()) == 1
 
@@ -71,11 +80,23 @@ async def test_examples_api() -> None:
             "uuid": example_id,
         }
 
+        # Check cookies
+        response = await client.get(
+            "/examples?extractor_id=" + extractor_id, cookies=bad_cookies
+        )
+        assert response.status_code == 404
+
+        # Check we need cookie to delete
+        response = await client.delete(f"/examples/{example_id}", cookies=bad_cookies)
+        assert response.status_code == 404
+
         # Verify that we can delete an example
-        response = await client.delete(f"/examples/{example_id}")
+        response = await client.delete(f"/examples/{example_id}", cookies=cookies)
         assert response.status_code == 200
 
         # Verify that the example was deleted
-        response = await client.get("/examples?extractor_id=" + extractor_id)
+        response = await client.get(
+            "/examples?extractor_id=" + extractor_id, cookies=cookies
+        )
         assert response.status_code == 200
         assert response.json() == []
