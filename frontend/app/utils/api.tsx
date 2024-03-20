@@ -23,7 +23,6 @@ type OnSuccessFn = (data: { uuid: string }) => void;
 
 axios.defaults.withCredentials = true;
 
-
 const getExtractor = async ({
   queryKey,
 }: QueryFunctionContext<GetExtractorQueryKey>): Promise<ExtractorData> => {
