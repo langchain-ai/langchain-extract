@@ -29,7 +29,7 @@ app = FastAPI(
     ],
 )
 
-ROOT = Path(__file__).parent.parent.parent
+ROOT = Path(__file__).parent.parent
 
 ORIGINS = os.environ.get("CORS_ORIGINS", "").split(",")
 
@@ -67,7 +67,7 @@ add_routes(
 
 
 # Serve the frontend
-ui_dir = str(ROOT / "frontend" / ".next" / "server" / "app")
+ui_dir = str(ROOT / "ui")
 
 if os.path.exists(ui_dir):
     app.mount("/", StaticFiles(directory=ui_dir, html=True), name="ui")
