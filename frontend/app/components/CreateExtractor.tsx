@@ -111,9 +111,6 @@ const CreateExtractor = ({}) => {
     if (description === "") {
       return;
     }
-    console.debug(
-      `Making request with description: ${description} and schema: ${schema}`,
-    );
     suggestMutation.mutate({ description, jsonSchema: schema });
     setUserInput("");
   };
