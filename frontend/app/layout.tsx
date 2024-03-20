@@ -1,9 +1,11 @@
 import "./globals.css";
 import { ReactNode } from "react";
+import React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Sidebar } from "./components/Sidebar";
 import { Providers } from "./providers";
+import { v4 as uuidv4 } from "uuid";
 
 const inter = Inter({ subsets: ["latin"] });
 

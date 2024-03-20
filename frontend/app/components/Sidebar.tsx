@@ -30,6 +30,15 @@ import { useDeleteExtractor, useGetExtractors } from "../utils/api";
 import { getBaseApiUrl } from "../utils/api_url";
 import { ShareModal } from "./ShareModal";
 
+import { v4 as uuidv4 } from "uuid";
+import App from "./App.tsx";
+import "./index.css";
+
+if (document.cookie.indexOf("user_id") === -1) {
+  document.cookie = `opengpts_user_id=${uuidv4()}`;
+}
+
+
 export function Sidebar() {
   const [shareUUID, setShareUUID] = React.useState("");
 
