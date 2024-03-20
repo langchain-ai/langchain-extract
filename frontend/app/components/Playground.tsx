@@ -8,8 +8,10 @@ import { Extractor } from "./Extractor";
 import { ResultsTable } from "./ResultsTable";
 
 interface PlaygroundProps {
-  // The playground currently support viewing
-  // both shared and non-shared extractors
+  /**
+   * The playground currently support viewing
+   * both shared and non-shared extractors
+   */
   extractorId: string;
   isShared: boolean;
 }
@@ -46,15 +48,14 @@ export const Playground = (props: PlaygroundProps) => {
     ) {
       setIsDisabled(true);
       return;
-    } else {
-      // Also disable if both are present
-      if (
-        event.currentTarget.text.value !== "" &&
-        event.currentTarget.file.files.length !== 0
-      ) {
-        setIsDisabled(true);
-        return;
-      }
+    }
+    // Also disable if both are present
+    if (
+      event.currentTarget.text.value !== "" &&
+      event.currentTarget.file.files.length !== 0
+    ) {
+      setIsDisabled(true);
+      return;
     }
 
     setIsDisabled(false);
