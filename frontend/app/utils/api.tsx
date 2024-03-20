@@ -21,6 +21,8 @@ type GetExtractorQueryKey = [string, string, boolean]; // [queryKey, uuid, isSha
 
 type OnSuccessFn = (data: { uuid: string }) => void;
 
+axios.defaults.withCredentials = true;
+
 const getExtractor = async ({
   queryKey,
 }: QueryFunctionContext<GetExtractorQueryKey>): Promise<ExtractorData> => {
@@ -66,13 +68,21 @@ export const suggestExtractor = async ({
   return response.data;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const runExtraction: MutationFunction<any, any> = async (
-  extractionRequest,
-) => {
+type ExtractionRequest = {
+  extractor_id: string;
+  text?: string;
+  file?: File;
+};
+
+export const runExtraction: MutationFunction<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any,
+  [ExtractionRequest, boolean]
+> = async ([extractionRequest, isShared]) => {
+  const endpoint = isShared ? "extract/shared" : "extract";
   const baseUrl = getBaseApiUrl();
   const response = await axios.postForm(
-    `${baseUrl}/extract`,
+    `${baseUrl}/${endpoint}`,
     extractionRequest,
   );
   return response.data;

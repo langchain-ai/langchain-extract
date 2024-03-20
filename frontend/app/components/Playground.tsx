@@ -38,7 +38,7 @@ export const Playground = (props: PlaygroundProps) => {
       Object.assign(request, { file: event.currentTarget.file.files[0] });
     }
 
-    mutate(request);
+    mutate([request, isShared]);
   };
 
   const handleChange = (event: React.FormEvent<HTMLFormElement>) => {
@@ -81,13 +81,9 @@ export const Playground = (props: PlaygroundProps) => {
             className="textarea textarea-bordered h-3/4"
             autoFocus
           />
-          {isShared ? (
-            <div>Extraction using shared extractor is not supported yet</div>
-          ) : (
-            <Button type="submit" disabled={isDisabled}>
-              Run
-            </Button>
-          )}
+          <Button type="submit" disabled={isDisabled}>
+            Run
+          </Button>
         </form>
       </div>
       <div className="m-auto">
