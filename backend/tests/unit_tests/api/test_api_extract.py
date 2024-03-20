@@ -132,7 +132,7 @@ async def test_extract_from_file() -> None:
         # Test file size constraint
         with (
             tempfile.NamedTemporaryFile(mode="w+t", delete=False) as f,
-            patch("extraction.parsing._get_file_size_in_mb", return_value=20)
+            patch("extraction.parsing._get_file_size_in_mb", return_value=20),
         ):
             f.write("This is a named temporary file.")
             f.seek(0)

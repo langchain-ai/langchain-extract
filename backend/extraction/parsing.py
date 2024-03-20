@@ -90,7 +90,7 @@ def convert_binary_input_to_blob(data: BinaryIO) -> Blob:
                 status_code=413,
                 detail=(
                     f"PDF has too many pages: {number_of_pages}, "
-                    f"exceeding the maximum of {MAX_PAGES}.",
+                    f"exceeding the maximum of {MAX_PAGES}."
                 ),
             )
 
