@@ -28,7 +28,7 @@ export const Playground = (props: PlaygroundProps) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    let request = {
+    const request = {
       extractor_id: extractorId,
     };
 
