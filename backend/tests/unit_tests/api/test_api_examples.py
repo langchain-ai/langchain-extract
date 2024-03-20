@@ -15,8 +15,8 @@ async def test_examples_api() -> None:
     """Runs through a set of API calls to test the examples API."""
     async with get_async_client() as client:
         # First create an extractor
-        owner_id = str(uuid.uuid4())
-        cookies = {"owner_id": owner_id}
+        user_id = str(uuid.uuid4())
+        cookies = {"user_id": user_id}
         create_request = {
             "description": "Test Description",
             "name": "Test Name",
@@ -53,7 +53,7 @@ async def test_examples_api() -> None:
         example_id = response.json()["uuid"]
 
         # Check cookies
-        bad_cookies = {"owner_id": str(uuid.uuid4())}
+        bad_cookies = {"user_id": str(uuid.uuid4())}
         response = await client.post(
             "/examples", json=create_request, cookies=bad_cookies
         )

@@ -60,7 +60,7 @@ def share(
     uuid: UUID,
     *,
     session: Session = Depends(get_session),
-    owner_id: UUID = Cookie(...),
+    user_id: UUID = Cookie(...),
 ) -> ShareExtractorResponse:
     """Endpoint to share an extractor.
 
@@ -74,7 +74,7 @@ def share(
     Returns:
         The UUID for the shared extractor.
     """
-    if not validate_extractor_owner(session, uuid, owner_id):
+    if not validate_extractor_owner(session, uuid, user_id):
         raise HTTPException(status_code=404, detail="Extractor not found for owner.")
     # Check if the extractor is already shared
     shared_extractor = (
@@ -110,13 +110,13 @@ def create(
     create_request: CreateExtractor,
     *,
     session: Session = Depends(get_session),
-    owner_id: UUID = Cookie(...),
+    user_id: UUID = Cookie(...),
 ) -> CreateExtractorResponse:
     """Endpoint to create an extractor."""
 
     instance = Extractor(
         name=create_request.name,
-        owner_id=owner_id,
+        owner_id=user_id,
         schema=create_request.json_schema,
         description=create_request.description,
         instruction=create_request.instruction,
@@ -128,11 +128,11 @@ def create(
 
 @router.get("/{uuid}")
 def get(
-    uuid: UUID, *, session: Session = Depends(get_session), owner_id: UUID = Cookie(...)
+    uuid: UUID, *, session: Session = Depends(get_session), user_id: UUID = Cookie(...)
 ) -> Dict[str, Any]:
     """Endpoint to get an extractor."""
     extractor = (
-        session.query(Extractor).filter_by(uuid=str(uuid), owner_id=owner_id).scalar()
+        session.query(Extractor).filter_by(uuid=str(uuid), owner_id=user_id).scalar()
     )
     if extractor is None:
         raise HTTPException(status_code=404, detail="Extractor not found for owner.")
@@ -151,12 +151,12 @@ def list(
     limit: int = 10,
     offset: int = 0,
     session=Depends(get_session),
-    owner_id: UUID = Cookie(...),
+    user_id: UUID = Cookie(...),
 ) -> List[Any]:
     """Endpoint to get all extractors."""
     return (
         session.query(Extractor)
-        .filter_by(owner_id=owner_id)
+        .filter_by(owner_id=user_id)
         .limit(limit)
         .offset(offset)
         .all()
@@ -165,8 +165,8 @@ def list(
 
 @router.delete("/{uuid}")
 def delete(
-    uuid: UUID, *, session: Session = Depends(get_session), owner_id: UUID = Cookie(...)
+    uuid: UUID, *, session: Session = Depends(get_session), user_id: UUID = Cookie(...)
 ) -> None:
     """Endpoint to delete an extractor."""
-    session.query(Extractor).filter_by(uuid=str(uuid), owner_id=owner_id).delete()
+    session.query(Extractor).filter_by(uuid=str(uuid), owner_id=user_id).delete()
     session.commit()

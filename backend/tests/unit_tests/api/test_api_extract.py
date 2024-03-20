@@ -41,8 +41,8 @@ def mock_embeddings(*args, **kwargs):
 async def test_extract_from_file() -> None:
     """Test extract from file API."""
     async with get_async_client() as client:
-        owner_id = str(uuid4())
-        cookies = {"owner_id": owner_id}
+        user_id = str(uuid4())
+        cookies = {"user_id": user_id}
         # Test with invalid extractor
         extractor_id = UUID(int=1027)  # 1027 is a good number.
         response = await client.post(
@@ -131,8 +131,8 @@ async def test_extract_from_file() -> None:
 
 
 async def test_extract_from_large_file() -> None:
-    owner_id = str(uuid4())
-    cookies = {"owner_id": owner_id}
+    user_id = str(uuid4())
+    cookies = {"user_id": user_id}
     async with get_async_client() as client:
         # First create an extractor
         create_request = {

@@ -27,7 +27,7 @@ async def extract_using_existing_extractor(
     file: Optional[UploadFile] = File(None),
     model_name: Optional[str] = Form(DEFAULT_MODEL),
     session: Session = Depends(get_session),
-    owner_id: UUID = Cookie(...),
+    user_id: UUID = Cookie(...),
 ) -> ExtractResponse:
     """Endpoint that is used with an existing extractor.
 
@@ -38,9 +38,7 @@ async def extract_using_existing_extractor(
         raise HTTPException(status_code=422, detail="No text or file provided.")
 
     extractor = (
-        session.query(Extractor)
-        .filter_by(uuid=extractor_id, owner_id=owner_id)
-        .scalar()
+        session.query(Extractor).filter_by(uuid=extractor_id, owner_id=user_id).scalar()
     )
     if extractor is None:
         raise HTTPException(status_code=404, detail="Extractor not found for owner.")

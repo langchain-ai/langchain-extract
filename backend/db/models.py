@@ -176,11 +176,11 @@ class Extractor(TimestampedModel):
 
 
 def validate_extractor_owner(
-    session: Session, extractor_id: UUID, owner_id: UUID
+    session: Session, extractor_id: UUID, user_id: UUID
 ) -> Extractor:
     """Validate the extractor id."""
     extractor = (
-        session.query(Extractor).filter_by(uuid=extractor_id, owner_id=owner_id).first()
+        session.query(Extractor).filter_by(uuid=extractor_id, owner_id=user_id).first()
     )
     if extractor is None:
         return False
