@@ -112,7 +112,7 @@ async def test_extract_from_file() -> None:
 
         # We'll use multi-form data here.
         # Create a named temporary file
-        with tempfile.NamedTemporaryFile(mode="w+t", delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as f:
             f.write("This is a named temporary file.")
             f.seek(0)
             f.flush()
@@ -130,42 +130,38 @@ async def test_extract_from_file() -> None:
         assert response.json() == {"data": ["This is a "]}
 
         # Test file size constraint
-        with (
-            tempfile.NamedTemporaryFile(mode="w+t", delete=False) as f,
-            patch("extraction.parsing._get_file_size_in_mb", return_value=20),
-        ):
+        with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as f:
             f.write("This is a named temporary file.")
             f.seek(0)
             f.flush()
-            response = await client.post(
-                "/extract",
-                data={
-                    "extractor_id": extractor_id,
-                    "mode": "entire_document",
-                },
-                files={"file": f},
-                cookies={"owner_id": owner_id},
-            )
+            with patch("extraction.parsing._get_file_size_in_mb", return_value=20):
+                response = await client.post(
+                    "/extract",
+                    data={
+                        "extractor_id": extractor_id,
+                        "mode": "entire_document",
+                    },
+                    files={"file": f},
+                    cookies={"owner_id": owner_id},
+                )
         assert response.status_code == 413
 
         # Test page number constraint
-        with (
-            tempfile.NamedTemporaryFile(mode="w+t", delete=False) as f,
-            patch("extraction.parsing._guess_mimetype", return_value="application/pdf"),
-            patch("extraction.parsing._get_pdf_page_count", return_value=100),
-        ):
+        with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as f:
             f.write("This is a named temporary file.")
             f.seek(0)
             f.flush()
-
-            response = await client.post(
-                "/extract",
-                data={
-                    "extractor_id": extractor_id,
-                    "mode": "entire_document",
-                },
-                files={"file": f.name},
-                cookies={"owner_id": owner_id},
-            )
-
-            assert response.status_code == 413
+            with patch(
+                "extraction.parsing._guess_mimetype", return_value="application/pdf"
+            ):
+                with patch("extraction.parsing._get_pdf_page_count", return_value=100):
+                    response = await client.post(
+                        "/extract",
+                        data={
+                            "extractor_id": extractor_id,
+                            "mode": "entire_document",
+                        },
+                        files={"file": f.name},
+                        cookies={"owner_id": owner_id},
+                    )
+        assert response.status_code == 413
