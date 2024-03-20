@@ -1,4 +1,5 @@
 """Code to test API endpoints."""
+import uuid
 
 from tests.db import get_async_client
 
@@ -14,19 +15,25 @@ async def test_examples_api() -> None:
     """Runs through a set of API calls to test the examples API."""
     async with get_async_client() as client:
         # First create an extractor
+        owner_id = str(uuid.uuid4())
+        cookies = {"owner_id": owner_id}
         create_request = {
             "description": "Test Description",
             "name": "Test Name",
             "schema": {"type": "object"},
             "instruction": "Test Instruction",
         }
-        response = await client.post("/extractors", json=create_request)
+        response = await client.post(
+            "/extractors", json=create_request, cookies=cookies
+        )
         assert response.status_code == 200
         # Get the extractor id
         extractor_id = response.json()["uuid"]
 
         # Let's verify that there are no examples
-        response = await client.get("/examples?extractor_id=" + extractor_id)
+        response = await client.get(
+            "/examples?extractor_id=" + extractor_id, cookies=cookies
+        )
         assert response.status_code == 200
         assert response.json() == []
 
@@ -41,12 +48,21 @@ async def test_examples_api() -> None:
                 }
             ],
         }
-        response = await client.post("/examples", json=create_request)
+        response = await client.post("/examples", json=create_request, cookies=cookies)
         assert response.status_code == 200
         example_id = response.json()["uuid"]
 
+        # Check cookies
+        bad_cookies = {"owner_id": str(uuid.uuid4())}
+        response = await client.post(
+            "/examples", json=create_request, cookies=bad_cookies
+        )
+        assert response.status_code == 404
+
         # Verify that the example was created
-        response = await client.get("/examples?extractor_id=" + extractor_id)
+        response = await client.get(
+            "/examples?extractor_id=" + extractor_id, cookies=cookies
+        )
         assert response.status_code == 200
         assert len(response.json()) == 1
 
@@ -66,11 +82,23 @@ async def test_examples_api() -> None:
             "uuid": example_id,
         }
 
+        # Check cookies
+        response = await client.get(
+            "/examples?extractor_id=" + extractor_id, cookies=bad_cookies
+        )
+        assert response.status_code == 404
+
+        # Check we need cookie to delete
+        response = await client.delete(f"/examples/{example_id}", cookies=bad_cookies)
+        assert response.status_code == 404
+
         # Verify that we can delete an example
-        response = await client.delete(f"/examples/{example_id}")
+        response = await client.delete(f"/examples/{example_id}", cookies=cookies)
         assert response.status_code == 200
 
         # Verify that the example was deleted
-        response = await client.get("/examples?extractor_id=" + extractor_id)
+        response = await client.get(
+            "/examples?extractor_id=" + extractor_id, cookies=cookies
+        )
         assert response.status_code == 200
         assert response.json() == []
