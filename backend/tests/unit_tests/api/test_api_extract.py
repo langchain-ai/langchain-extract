@@ -145,3 +145,23 @@ async def test_extract_from_file() -> None:
                     cookies={"owner_id": owner_id},
                 )
             assert response.status_code == 413
+
+        # Test page number constraint
+        with patch("extraction.parsing._get_pdf_page_count", return_value=100), patch(
+            "extraction.parsing._guess_mimetype", return_value="application/pdf"
+        ), tempfile.NamedTemporaryFile(mode="w+t", delete=False) as f:
+            f.write("This is a named temporary file.")
+            f.seek(0)
+            f.flush()
+
+            response = await client.post(
+                "/extract",
+                data={
+                    "extractor_id": extractor_id,
+                    "mode": "entire_document",
+                },
+                files={"file": f.name},
+                cookies={"owner_id": owner_id},
+            )
+
+            assert response.status_code == 413
