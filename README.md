@@ -30,6 +30,9 @@ may have slightly different requirements or use cases.
 - 📂 Extract information from text and/or binary files
 - 🦜️🏓 [LangServe](https://github.com/langchain-ai/langserve) endpoint to integrate with LangChain `RemoteRunnnable`
 
+## Releases:
+
+0.0.1: https://github.com/langchain-ai/langchain-extract/releases/tag/0.0.1
 
 ## 📚 Documentation
 
