@@ -1,7 +1,9 @@
 """Adapters to convert between different formats."""
 from __future__ import annotations
 
+
 from langchain_core.utils.json_schema import dereference_refs
+q   woijdqwoij
 
 
 def _rm_titles(kv: dict) -> dict:
