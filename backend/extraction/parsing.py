@@ -28,7 +28,7 @@ HANDLERS = {
 SUPPORTED_MIMETYPES = sorted(HANDLERS.keys())
 
 MAX_FILE_SIZE = 10  # in MB
-MAX_PAGES = 20  # for PDFs
+MAX_PAGES = 50  # for PDFs
 
 
 def _guess_mimetype(file_bytes: bytes) -> str:
