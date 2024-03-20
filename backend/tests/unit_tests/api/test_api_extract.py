@@ -128,3 +128,20 @@ async def test_extract_from_file() -> None:
 
         assert response.status_code == 200, response.text
         assert response.json() == {"data": ["This is a "]}
+
+        # Test file size constraint
+        with patch("extraction.parsing._get_file_size_in_mb", return_value=20):
+            with tempfile.NamedTemporaryFile(mode="w+t", delete=False) as f:
+                f.write("This is a named temporary file.")
+                f.seek(0)
+                f.flush()
+                response = await client.post(
+                    "/extract",
+                    data={
+                        "extractor_id": extractor_id,
+                        "mode": "entire_document",
+                    },
+                    files={"file": f},
+                    cookies={"owner_id": owner_id},
+                )
+            assert response.status_code == 413
