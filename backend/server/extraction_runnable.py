@@ -15,7 +15,7 @@ from typing_extensions import TypedDict
 
 from db.models import Example, Extractor
 from extraction.utils import update_json_schema
-from server.models import get_chunk_size, get_model
+from server.models import DEFAULT_MODEL, get_chunk_size, get_model
 from server.validators import validate_json_schema
 
 
@@ -188,7 +188,7 @@ async def extract_entire_document(
     text_splitter = TokenTextSplitter(
         chunk_size=get_chunk_size(model_name),
         chunk_overlap=20,
-        model_name=model_name,
+        model_name=DEFAULT_MODEL,
     )
     texts = text_splitter.split_text(content)
     extraction_requests = [

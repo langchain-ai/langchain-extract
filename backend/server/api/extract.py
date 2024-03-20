@@ -1,13 +1,14 @@
 from typing import Literal, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Cookie, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
 from db.models import Extractor, get_session
 from extraction.parsing import parse_binary_input
 from server.extraction_runnable import ExtractResponse, extract_entire_document
+from server.models import DEFAULT_MODEL
 from server.retrieval import extract_from_content
 
 router = APIRouter(
@@ -24,8 +25,9 @@ async def extract_using_existing_extractor(
     text: Optional[str] = Form(None),
     mode: Literal["entire_document", "retrieval"] = Form("entire_document"),
     file: Optional[UploadFile] = File(None),
-    model_name: Optional[str] = Form("default"),
+    model_name: Optional[str] = Form(DEFAULT_MODEL),
     session: Session = Depends(get_session),
+    owner_id: UUID = Cookie(...),
 ) -> ExtractResponse:
     """Endpoint that is used with an existing extractor.
 
@@ -35,9 +37,13 @@ async def extract_using_existing_extractor(
     if text is None and file is None:
         raise HTTPException(status_code=422, detail="No text or file provided.")
 
-    extractor = session.query(Extractor).filter(Extractor.uuid == extractor_id).scalar()
+    extractor = (
+        session.query(Extractor)
+        .filter_by(uuid=extractor_id, owner_id=owner_id)
+        .scalar()
+    )
     if extractor is None:
-        raise HTTPException(status_code=404, detail="Extractor not found.")
+        raise HTTPException(status_code=404, detail="Extractor not found for owner.")
 
     if text:
         text_ = text

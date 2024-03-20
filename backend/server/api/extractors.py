@@ -2,12 +2,12 @@
 from typing import Any, Dict, List
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Cookie, Depends, HTTPException
 from pydantic import BaseModel, Field, validator
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from db.models import Extractor, SharedExtractors, get_session
+from db.models import Extractor, SharedExtractors, get_session, validate_extractor_owner
 from server.validators import validate_json_schema
 
 router = APIRouter(
@@ -60,6 +60,7 @@ def share(
     uuid: UUID,
     *,
     session: Session = Depends(get_session),
+    owner_id: UUID = Cookie(...),
 ) -> ShareExtractorResponse:
     """Endpoint to share an extractor.
 
@@ -73,6 +74,8 @@ def share(
     Returns:
         The UUID for the shared extractor.
     """
+    if not validate_extractor_owner(session, uuid, owner_id):
+        raise HTTPException(status_code=404, detail="Extractor not found for owner.")
     # Check if the extractor is already shared
     shared_extractor = (
         session.query(SharedExtractors)
@@ -104,12 +107,16 @@ def share(
 
 @router.post("")
 def create(
-    create_request: CreateExtractor, *, session: Session = Depends(get_session)
+    create_request: CreateExtractor,
+    *,
+    session: Session = Depends(get_session),
+    owner_id: UUID = Cookie(...),
 ) -> CreateExtractorResponse:
     """Endpoint to create an extractor."""
 
     instance = Extractor(
         name=create_request.name,
+        owner_id=owner_id,
         schema=create_request.json_schema,
         description=create_request.description,
         instruction=create_request.instruction,
@@ -120,11 +127,15 @@ def create(
 
 
 @router.get("/{uuid}")
-def get(uuid: UUID, *, session: Session = Depends(get_session)) -> Dict[str, Any]:
+def get(
+    uuid: UUID, *, session: Session = Depends(get_session), owner_id: UUID = Cookie(...)
+) -> Dict[str, Any]:
     """Endpoint to get an extractor."""
-    extractor = session.query(Extractor).filter(Extractor.uuid == str(uuid)).scalar()
+    extractor = (
+        session.query(Extractor).filter_by(uuid=str(uuid), owner_id=owner_id).scalar()
+    )
     if extractor is None:
-        raise HTTPException(status_code=404, detail="Extractor not found.")
+        raise HTTPException(status_code=404, detail="Extractor not found for owner.")
     return {
         "uuid": extractor.uuid,
         "name": extractor.name,
@@ -140,13 +151,22 @@ def list(
     limit: int = 10,
     offset: int = 0,
     session=Depends(get_session),
+    owner_id: UUID = Cookie(...),
 ) -> List[Any]:
     """Endpoint to get all extractors."""
-    return session.query(Extractor).limit(limit).offset(offset).all()
+    return (
+        session.query(Extractor)
+        .filter_by(owner_id=owner_id)
+        .limit(limit)
+        .offset(offset)
+        .all()
+    )
 
 
 @router.delete("/{uuid}")
-def delete(uuid: UUID, *, session: Session = Depends(get_session)) -> None:
+def delete(
+    uuid: UUID, *, session: Session = Depends(get_session), owner_id: UUID = Cookie(...)
+) -> None:
     """Endpoint to delete an extractor."""
-    session.query(Extractor).filter(Extractor.uuid == str(uuid)).delete()
+    session.query(Extractor).filter_by(uuid=str(uuid), owner_id=owner_id).delete()
     session.commit()
