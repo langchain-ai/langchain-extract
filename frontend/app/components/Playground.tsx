@@ -8,10 +8,8 @@ import { Extractor } from "./Extractor";
 import { ResultsTable } from "./ResultsTable";
 
 interface PlaygroundProps {
-  /**
-   * The playground currently support viewing
-   * both shared and non-shared extractors
-   */
+  // The playground currently support viewing
+  // both shared and non-shared extractors
   extractorId: string;
   isShared: boolean;
 }
@@ -28,7 +26,7 @@ export const Playground = (props: PlaygroundProps) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const request = {
+    let request = {
       extractor_id: extractorId,
     };
 
@@ -38,7 +36,7 @@ export const Playground = (props: PlaygroundProps) => {
       Object.assign(request, { file: event.currentTarget.file.files[0] });
     }
 
-    mutate(request);
+    mutate([request, isShared]);
   };
 
   const handleChange = (event: React.FormEvent<HTMLFormElement>) => {
@@ -48,14 +46,15 @@ export const Playground = (props: PlaygroundProps) => {
     ) {
       setIsDisabled(true);
       return;
-    }
-    // Also disable if both are present
-    if (
-      event.currentTarget.text.value !== "" &&
-      event.currentTarget.file.files.length !== 0
-    ) {
-      setIsDisabled(true);
-      return;
+    } else {
+      // Also disable if both are present
+      if (
+        event.currentTarget.text.value !== "" &&
+        event.currentTarget.file.files.length !== 0
+      ) {
+        setIsDisabled(true);
+        return;
+      }
     }
 
     setIsDisabled(false);
@@ -81,13 +80,9 @@ export const Playground = (props: PlaygroundProps) => {
             className="textarea textarea-bordered h-3/4"
             autoFocus
           />
-          {isShared ? (
-            <div>Extraction using shared extractor is not supported yet</div>
-          ) : (
-            <Button type="submit" disabled={isDisabled}>
-              Run
-            </Button>
-          )}
+          <Button type="submit" disabled={isDisabled}>
+            Run
+          </Button>
         </form>
       </div>
       <div className="m-auto">

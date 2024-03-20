@@ -66,13 +66,24 @@ export const suggestExtractor = async ({
   return response.data;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const runExtraction: MutationFunction<any, any> = async (
-  extractionRequest,
-) => {
+type ExtractionRequest = {
+  extractor_id: string;
+  text?: string;
+  file?: File;
+};
+
+type ExtractionResponse = {
+  data: unknown[];
+};
+
+export const runExtraction: MutationFunction<
+  ExtractionResponse,
+  [ExtractionRequest, boolean]
+> = async ([extractionRequest, isShared]) => {
+  const endpoint = isShared ? "extract/shared" : "extract";
   const baseUrl = getBaseApiUrl();
   const response = await axios.postForm(
-    `${baseUrl}/extract`,
+    `${baseUrl}/${endpoint}`,
     extractionRequest,
   );
   return response.data;
