@@ -48,7 +48,8 @@
     "react-dom": "18.2.0",
     "react-syntax-highlighter": "^15.5.0",
     "react-textarea-autosize": "^8.5.3",
-    "tailwindcss": "3.3.3"
+    "tailwindcss": "3.3.3",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/react-syntax-highlighter": "^15.5.11",

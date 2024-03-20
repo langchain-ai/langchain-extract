@@ -78,7 +78,7 @@ async def test_extract_from_file() -> None:
                 "text": "Test Content",
                 "mode": "entire_document",
             },
-            cookies={"owner_id": owner_id},
+            cookies=cookies,
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
@@ -92,7 +92,7 @@ async def test_extract_from_file() -> None:
                 "mode": "entire_document",
                 "model_name": "gpt-3.5-turbo",
             },
-            cookies={"owner_id": owner_id},
+            cookies=cookies,
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
@@ -105,14 +105,14 @@ async def test_extract_from_file() -> None:
                 "text": "Test Content",
                 "mode": "retrieval",
             },
-            cookies={"owner_id": owner_id},
+            cookies=cookies,
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
 
         # We'll use multi-form data here.
         # Create a named temporary file
-        with tempfile.NamedTemporaryFile(mode="w+t", delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as f:
             f.write("This is a named temporary file.")
             f.seek(0)
             f.flush()
@@ -123,8 +123,64 @@ async def test_extract_from_file() -> None:
                     "mode": "entire_document",
                 },
                 files={"file": f},
-                cookies={"owner_id": owner_id},
+                cookies=cookies,
             )
 
         assert response.status_code == 200, response.text
         assert response.json() == {"data": ["This is a "]}
+
+
+async def test_extract_from_large_file() -> None:
+    owner_id = str(uuid4())
+    cookies = {"owner_id": owner_id}
+    async with get_async_client() as client:
+        # First create an extractor
+        create_request = {
+            "name": "Test Name",
+            "description": "Test Description",
+            "schema": {"type": "object"},
+            "instruction": "Test Instruction",
+        }
+        response = await client.post(
+            "/extractors", json=create_request, cookies=cookies
+        )
+        assert response.status_code == 200, response.text
+        # Get the extractor id
+        extractor_id = response.json()["uuid"]
+
+        # Test file size constraint
+        with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as f:
+            f.write("This is a named temporary file.")
+            f.seek(0)
+            f.flush()
+            with patch("extraction.parsing._get_file_size_in_mb", return_value=20):
+                response = await client.post(
+                    "/extract",
+                    data={
+                        "extractor_id": extractor_id,
+                        "mode": "entire_document",
+                    },
+                    files={"file": f},
+                    cookies=cookies,
+                )
+        assert response.status_code == 413
+
+        # Test page number constraint
+        with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as f:
+            f.write("This is a named temporary file.")
+            f.seek(0)
+            f.flush()
+            with patch(
+                "extraction.parsing._guess_mimetype", return_value="application/pdf"
+            ):
+                with patch("extraction.parsing._get_pdf_page_count", return_value=100):
+                    response = await client.post(
+                        "/extract",
+                        data={
+                            "extractor_id": extractor_id,
+                            "mode": "entire_document",
+                        },
+                        files={"file": f.name},
+                        cookies=cookies,
+                    )
+        assert response.status_code == 413
