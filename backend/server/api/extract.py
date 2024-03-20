@@ -27,7 +27,7 @@ async def extract_using_existing_extractor(
     file: Optional[UploadFile] = File(None),
     model_name: Optional[str] = Form(DEFAULT_MODEL),
     session: Session = Depends(get_session),
-    owner_id: UUID = Cookie(...),
+    user_id: UUID = Cookie(...),
 ) -> ExtractResponse:
     """Endpoint that is used with an existing extractor.
 
@@ -39,7 +39,7 @@ async def extract_using_existing_extractor(
 
     extractor = (
         session.query(Extractor)
-        .filter_by(uuid=extractor_id, owner_id=owner_id)
+        .filter_by(uuid=extractor_id, owner_id=user_id)
         .scalar()
     )
     if extractor is None:

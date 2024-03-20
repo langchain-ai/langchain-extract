@@ -36,10 +36,10 @@ def create(
     create_request: CreateExample,
     *,
     session: Session = Depends(get_session),
-    owner_id: UUID = Cookie(...),
+    user_id: UUID = Cookie(...),
 ) -> CreateExampleResponse:
     """Endpoint to create an example."""
-    if not validate_extractor_owner(session, create_request["extractor_id"], owner_id):
+    if not validate_extractor_owner(session, create_request["extractor_id"], user_id):
         raise HTTPException(status_code=404, detail="Extractor not found for owner.")
 
     instance = Example(
@@ -59,10 +59,10 @@ def list(
     limit: int = 10,
     offset: int = 0,
     session=Depends(get_session),
-    owner_id: UUID = Cookie(...),
+    user_id: UUID = Cookie(...),
 ) -> List[Any]:
     """Endpoint to get all examples."""
-    if not validate_extractor_owner(session, extractor_id, owner_id):
+    if not validate_extractor_owner(session, extractor_id, user_id):
         raise HTTPException(status_code=404, detail="Extractor not found for owner.")
     return (
         session.query(Example)
@@ -76,11 +76,11 @@ def list(
 
 @router.delete("/{uuid}")
 def delete(
-    uuid: UUID, *, session: Session = Depends(get_session), owner_id: UUID = Cookie(...)
+    uuid: UUID, *, session: Session = Depends(get_session), user_id: UUID = Cookie(...)
 ) -> None:
     """Endpoint to delete an example."""
     extractor_id = session.query(Example).filter_by(uuid=str(uuid)).first().extractor_id
-    if not validate_extractor_owner(session, extractor_id, owner_id):
+    if not validate_extractor_owner(session, extractor_id, user_id):
         raise HTTPException(status_code=404, detail="Extractor not found for owner.")
     session.query(Example).filter_by(uuid=str(uuid)).delete()
     session.commit()

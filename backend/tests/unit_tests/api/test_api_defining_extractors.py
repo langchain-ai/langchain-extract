@@ -8,8 +8,8 @@ async def test_extractors_api() -> None:
     """This will test a few of the extractors API endpoints."""
     # First verify that the database is empty
     async with get_async_client() as client:
-        owner_id = str(uuid.uuid4())
-        cookies = {"owner_id": owner_id}
+        user_id = str(uuid.uuid4())
+        cookies = {"user_id": user_id}
         response = await client.get("/extractors", cookies=cookies)
         assert response.status_code == 200
         assert response.json() == []
@@ -32,7 +32,7 @@ async def test_extractors_api() -> None:
         assert len(get_response) == 1
 
         # Check cookies
-        bad_cookies = {"owner_id": str(uuid.uuid4())}
+        bad_cookies = {"user_id": str(uuid.uuid4())}
         bad_response = await client.get("/extractors", cookies=bad_cookies)
         assert bad_response.status_code == 200
         assert len(bad_response.json()) == 0
@@ -84,7 +84,7 @@ async def test_extractors_api() -> None:
         assert get_response.json() == []
 
         # Verify that we can create an extractor, including other properties
-        owner_id = str(uuid.uuid4())
+        user_id = str(uuid.uuid4())
         create_request = {
             "name": "my extractor",
             "description": "Test Description",
@@ -100,14 +100,14 @@ async def test_extractors_api() -> None:
         response_data = response.json()
         assert extractor_uuid == response_data["uuid"]
         assert "my extractor" == response_data["name"]
-        assert "owner_id" not in response_data
+        assert "user_id" not in response_data
 
 
 async def test_sharing_extractor() -> None:
     """Test sharing an extractor."""
     async with get_async_client() as client:
-        owner_id = str(uuid.uuid4())
-        cookies = {"owner_id": owner_id}
+        user_id = str(uuid.uuid4())
+        cookies = {"user_id": user_id}
         response = await client.get("/extractors", cookies=cookies)
         assert response.status_code == 200
         assert response.json() == []
@@ -138,7 +138,7 @@ async def test_sharing_extractor() -> None:
         assert response.json()["share_uuid"] == share_uuid
 
         # Check cookies
-        bad_cookies = {"owner_id": str(uuid.uuid4())}
+        bad_cookies = {"user_id": str(uuid.uuid4())}
         response = await client.post(
             f"/extractors/{uuid_str}/share", cookies=bad_cookies
         )
