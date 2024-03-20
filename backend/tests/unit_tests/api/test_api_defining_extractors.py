@@ -145,7 +145,7 @@ async def test_sharing_extractor() -> None:
         assert response.status_code == 404
 
         # Check that we can retrieve the shared extractor
-        response = await client.get(f"/s/{share_uuid}")
+        response = await client.get(f"/shared/extractors/{share_uuid}")
         assert response.status_code == 200
         keys = sorted(response.json())
         assert keys == ["description", "instruction", "name", "schema"]
