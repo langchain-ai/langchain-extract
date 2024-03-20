@@ -1,8 +1,11 @@
 """Entry point into the server."""
+import logging
 import os
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from langserve import add_routes
 
 from server.api import configurables, examples, extract, extractors, shared, suggest
@@ -11,6 +14,8 @@ from server.extraction_runnable import (
     ExtractResponse,
     extraction_runnable,
 )
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Extraction Powered by LangChain",
@@ -23,6 +28,8 @@ app = FastAPI(
         }
     ],
 )
+
+ROOT = Path(__file__).parent.parent
 
 ORIGINS = os.environ.get("CORS_ORIGINS", "").split(",")
 
@@ -57,6 +64,15 @@ add_routes(
     path="/extract_text",
     enabled_endpoints=["invoke", "batch"],
 )
+
+
+# Serve the frontend
+ui_dir = str(ROOT / "ui")
+
+if os.path.exists(ui_dir):
+    app.mount("/", StaticFiles(directory=ui_dir, html=True), name="ui")
+else:
+    logger.warning("No UI directory found, serving API only.")
 
 
 if __name__ == "__main__":
