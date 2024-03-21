@@ -3,10 +3,13 @@ import logging
 import os
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from langserve import add_routes
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.responses import Response
+import uuid
 
 from server.api import configurables, examples, extract, extractors, shared, suggest
 from server.extraction_runnable import (
@@ -28,6 +31,25 @@ app = FastAPI(
         }
     ],
 )
+
+
+class EnsureUserIDMiddleware(BaseHTTPMiddleware):
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        user_id = request.cookies.get("user_id")
+        if not user_id:
+            user_id = str(uuid.uuid4())  # Generate a new user_id
+            request.state.user_id = user_id  # Set user_id in request state
+            response = await call_next(request)
+            response.set_cookie(key="user_id", value=user_id, httponly=True)
+        else:
+            request.state.user_id = user_id  # Set existing user_id in request state
+            response = await call_next(request)
+        return response
+
+
+app.add_middleware(EnsureUserIDMiddleware)
 
 ROOT = Path(__file__).parent.parent
 
