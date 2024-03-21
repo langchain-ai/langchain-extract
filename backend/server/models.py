@@ -16,13 +16,15 @@ def get_supported_models():
         )
     if "FIREWORKS_API_KEY" in os.environ:
         models["fireworks"] = ChatFireworks(
-            model="accounts/fireworks/models/firefunction-v1"
+            model="accounts/fireworks/models/firefunction-v1",
+            temperature=0,
         )
     if "TOGETHER_API_KEY" in os.environ:
         models["together-ai-mistral-8x7b-instruct-v0.1"] = ChatOpenAI(
             base_url="https://api.together.xyz/v1",
             api_key=os.environ["TOGETHER_API_KEY"],
             model="mistralai/Mixtral-8x7B-Instruct-v0.1",
+            temperature=0,
         )
 
     return models
