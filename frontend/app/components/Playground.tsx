@@ -107,11 +107,7 @@ export const Playground = (props: PlaygroundProps) => {
             autoFocus
             onKeyDown={handleKeyDown}
           />
-          <Button
-            type="submit"
-            disabled={isDisabled}
-            colorScheme={isDisabled ? "blue" : "gray"}
-          >
+          <Button type="submit" isDisabled={isDisabled}>
             Run
           </Button>
         </form>
