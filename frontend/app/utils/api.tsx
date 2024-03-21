@@ -21,33 +21,56 @@ type GetExtractorQueryKey = [string, string, boolean]; // [queryKey, uuid, isSha
 
 type OnSuccessFn = (data: { uuid: string }) => void;
 
-axios.defaults.withCredentials = true;
-
 const getExtractor = async ({
   queryKey,
 }: QueryFunctionContext<GetExtractorQueryKey>): Promise<ExtractorData> => {
   const [, uuid, isShared] = queryKey;
   const baseUrl = getBaseApiUrl();
   if (isShared) {
-    const response = await axios.get(`${baseUrl}/shared/extractors/${uuid}`);
-    return response.data;
+    const response = await fetch(`${baseUrl}/shared/extractors/${uuid}`, {
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return response.json();
   } else {
-    const response = await axios.get(`${baseUrl}/extractors/${uuid}`);
-    return response.data;
+    const response = await fetch(`${baseUrl}/extractors/${uuid}`, {
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return response.json();
   }
 };
 
 const listExtractors = async () => {
   const baseUrl = getBaseApiUrl();
-  const response = await axios.get(`${baseUrl}/extractors`);
-  return response.data;
+  const response = await fetch(`${baseUrl}/extractors`, {
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json();
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createExtractor: MutationFunction<any, any> = async (extractor) => {
   const baseUrl = getBaseApiUrl();
-  const response = await axios.post(`${baseUrl}/extractors`, extractor);
-  return response.data;
+  const response = await fetch(`${baseUrl}/extractors`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(extractor),
+  });
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json();
 };
 
 export type ServerConfiguration = {
@@ -58,8 +81,13 @@ export type ServerConfiguration = {
 
 const getConfiguration = async (): Promise<ServerConfiguration> => {
   const baseUrl = getBaseApiUrl();
-  const response = await axios.get(`${baseUrl}/configuration`);
-  return response.data;
+  const response = await fetch(`${baseUrl}/configuration`, {
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json();
 };
 
 export const useConfiguration = () => {
@@ -80,11 +108,21 @@ export const suggestExtractor = async ({
     return {};
   }
   const baseUrl = getBaseApiUrl();
-  const response = await axios.post(`${baseUrl}/suggest`, {
-    description,
-    jsonSchema,
+  const response = await fetch(`${baseUrl}/suggest`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      description,
+      jsonSchema,
+    }),
   });
-  return response.data;
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json();
 };
 
 type ExtractionRequest = {
@@ -103,11 +141,18 @@ export const runExtraction: MutationFunction<
 > = async ([extractionRequest, isShared]) => {
   const endpoint = isShared ? "extract/shared" : "extract";
   const baseUrl = getBaseApiUrl();
-  const response = await axios.postForm(
-    `${baseUrl}/${endpoint}`,
-    extractionRequest,
-  );
-  return response.data;
+  const response = await fetch(`${baseUrl}/${endpoint}`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(extractionRequest),
+  });
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json();
 };
 
 export const useRunExtraction = () => {
