@@ -27,7 +27,7 @@ HANDLERS = {
 
 SUPPORTED_MIMETYPES = sorted(HANDLERS.keys())
 
-MAX_FILE_SIZE = 10  # in MB
+MAX_FILE_SIZE_MB = 10  # in MB
 MAX_PAGES = 50  # for PDFs
 
 
@@ -73,10 +73,10 @@ def convert_binary_input_to_blob(data: BinaryIO) -> Blob:
     """Convert ingestion input to blob."""
     file_size_in_mb = _get_file_size_in_mb(data)
 
-    if file_size_in_mb > MAX_FILE_SIZE:
+    if file_size_in_mb > MAX_FILE_SIZE_MB:
         raise HTTPException(
             status_code=413,
-            detail=f"File size exceeds the maximum limit of {MAX_FILE_SIZE} MB.",
+            detail=f"File size exceeds the maximum limit of {MAX_FILE_SIZE_MB} MB.",
         )
 
     file_data = data.read()
