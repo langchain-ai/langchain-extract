@@ -91,8 +91,6 @@ export const Playground = (props: PlaygroundProps) => {
     setIsDisabled(false);
   };
 
-  console.log(requestServerConfig);
-
   return (
     <div className="w-full flex-col justify-between">
       <div className="m-auto">
@@ -131,13 +129,6 @@ export const Playground = (props: PlaygroundProps) => {
             Run
           </Button>
         </form>
-      </div>
-      <div>
-        Models:
-        {requestServerConfig.data &&
-          requestServerConfig.data?.available_models.map((model) => (
-            <Text key={model}>{model}</Text>
-          ))}
       </div>
       <div className="m-auto">
         <Tabs variant={"enclosed"} colorScheme="blue" size="sm">

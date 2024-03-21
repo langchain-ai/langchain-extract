@@ -63,9 +63,11 @@ const getConfiguration = async (): Promise<ServerConfiguration> => {
 };
 
 export const useConfiguration = () => {
-  return useQuery({ queryKey: ["getConfiguration"], queryFn: getConfiguration });
+  return useQuery({
+    queryKey: ["getConfiguration"],
+    queryFn: getConfiguration,
+  });
 };
-
 
 export const suggestExtractor = async ({
   description,
