@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "packageManager": "yarn@1.22.19",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -29,6 +30,7 @@
     "@types/node": "20.4.9",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",
+    "@types/uuid": "^9.0.8",
     "@uiw/react-codemirror": "^4.21.24",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
