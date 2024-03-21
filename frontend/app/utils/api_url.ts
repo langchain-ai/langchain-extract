@@ -4,5 +4,5 @@ export const getBaseApiUrl = () => {
   }
 
   // If not defined assume assume served from same domain
-  return "./"
+  return "./";
 };
