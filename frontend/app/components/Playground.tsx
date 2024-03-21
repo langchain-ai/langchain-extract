@@ -99,7 +99,7 @@ export const Playground = (props: PlaygroundProps) => {
         </form>
       </div>
       <div className="m-auto">
-        <Tabs>
+        <Tabs variant={"enclosed"} colorScheme="blue" size="sm">
           <TabList>
             <Tab>Table</Tab>
             <Tab>JSON</Tab>
