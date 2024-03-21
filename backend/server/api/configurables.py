@@ -17,9 +17,9 @@ router = APIRouter(
 class ConfigurationResponse(TypedDict):
     """Response for configuration."""
 
-    available_models: Annotated[List[str], "List of available models for extraction."]
-    supported_mimetypes: Annotated[List[str], "List of supported mimetypes."]
-    max_file_size_mb: Annotated[int, "Maximum file size in MB."]
+    available_models: List[str]
+    supported_mimetypes: List[str]
+    max_file_size_mb: int
 
 
 @router.get("")
