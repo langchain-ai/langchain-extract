@@ -1,8 +1,20 @@
 "use client";
 
-import { Button, Textarea, Heading } from "@chakra-ui/react";
+import {
+  Button,
+  Textarea,
+  Heading,
+  Tab,
+  Tabs,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Text,
+} from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import React from "react";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { runExtraction } from "../utils/api";
 import { Extractor } from "./Extractor";
 import { ResultsTable } from "./ResultsTable";
@@ -87,7 +99,26 @@ export const Playground = (props: PlaygroundProps) => {
         </form>
       </div>
       <div className="m-auto">
-        <ResultsTable data={data} isPending={isPending} />
+        <Tabs>
+          <TabList>
+            <Tab>Table</Tab>
+            <Tab>JSON</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <ResultsTable data={data} isPending={isPending} />
+            </TabPanel>
+            <TabPanel>
+              <Text className="mt-1 mb-5">
+                This shows the raw JSON Schema that describes what information
+                the extractor will be extracting from the content.
+              </Text>
+              <SyntaxHighlighter language="json" style={docco}>
+                {JSON.stringify(data, null, 2)}
+              </SyntaxHighlighter>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </div>
     </div>
   );
