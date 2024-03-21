@@ -166,8 +166,7 @@ export const Playground = (props: PlaygroundProps) => {
             </TabPanel>
             <TabPanel>
               <Text className="mt-1 mb-5">
-                This shows the raw JSON Schema that describes what information
-                the extractor will be extracting from the content.
+                Shows the output from the extractor in JSON format.
               </Text>
               <SyntaxHighlighter language="json" style={docco}>
                 {JSON.stringify(data, null, 2)}
