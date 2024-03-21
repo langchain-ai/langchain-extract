@@ -12,7 +12,9 @@ export function middleware(request: NextRequest) {
   const userId = request.cookies.get(USER_ID_COOKIE_KEY);
 
   if (!userId) {
-    response.cookies.set(USER_ID_COOKIE_KEY, uuidv4());
+    response.cookies.set(USER_ID_COOKIE_KEY, uuidv4(), {
+      
+    });
   }
   return response;
 }

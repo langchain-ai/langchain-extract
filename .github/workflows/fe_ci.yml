@@ -28,7 +28,7 @@ jobs:
     name: Build frontend
     runs-on: ubuntu-latest
     env:
-      BASE_API_URL: http://localhost:8000
+      NEXT_PUBLIC_BASE_API_URL: http://localhost:8000
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 18.x
