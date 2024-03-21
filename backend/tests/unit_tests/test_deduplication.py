@@ -1,9 +1,9 @@
-from server.extraction_runnable import ExtractResponse, _deduplicate
+from server.extraction_runnable import ExtractResponse, deduplicate
 
 
 async def test_deduplication_different_resutls() -> None:
     """Test deduplication of extraction results."""
-    result = _deduplicate(
+    result = deduplicate(
         [
             {"data": [{"name": "Chester", "age": 42}]},
             {"data": [{"name": "Jane", "age": 42}]},
@@ -17,7 +17,7 @@ async def test_deduplication_different_resutls() -> None:
     )
     assert expected == result
 
-    result = _deduplicate(
+    result = deduplicate(
         [
             {
                 "data": [
@@ -44,11 +44,11 @@ async def test_deduplication_different_resutls() -> None:
     assert expected == result
 
     # Test with data being a list of strings
-    result = _deduplicate([{"data": ["1", "2"]}, {"data": ["1", "3"]}])
+    result = deduplicate([{"data": ["1", "2"]}, {"data": ["1", "3"]}])
     expected = ExtractResponse(data=["1", "2", "3"])
     assert expected == result
 
     # Test with data being a mix of integer and string
-    result = _deduplicate([{"data": [1, "2"]}, {"data": ["1", "3"]}])
+    result = deduplicate([{"data": [1, "2"]}, {"data": ["1", "3"]}])
     expected = ExtractResponse(data=[1, "2", "1", "3"])
     assert expected == result

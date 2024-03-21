@@ -3,15 +3,14 @@ from typing import Any, Dict, List, Optional
 
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_core.documents import Document
 from langchain_core.runnables import RunnableLambda
 from langchain_openai import OpenAIEmbeddings
 
 from db.models import Extractor
 from server.extraction_runnable import (
-    _deduplicate,
     ExtractRequest,
     ExtractResponse,
+    deduplicate,
     extraction_runnable,
     get_examples_from_extractor,
 )
@@ -19,10 +18,7 @@ from server.extraction_runnable import (
 
 def _make_extract_requests(input_dict: Dict[str, Any]) -> List[ExtractRequest]:
     docs = input_dict.pop("text")
-    return [
-        ExtractRequest(text=doc.page_content, **input_dict)
-        for doc in docs
-    ]
+    return [ExtractRequest(text=doc.page_content, **input_dict) for doc in docs]
 
 
 async def extract_from_content(
@@ -69,4 +65,4 @@ async def extract_from_content(
             "model_name": model_name,
         }
     )
-    return _deduplicate(result)
+    return deduplicate(result)
