@@ -50,6 +50,12 @@ see the [documentation](https://github.com/langchain-ai/langchain-extract/tree/m
 about the API and the [extraction use-case documentation](https://python.langchain.com/docs/use_cases/extraction) for more information about how to extract
 information using LangChain.
 
+First we generate a user ID for ourselves. The application does not manage users or authentication. Access to extractors, few-shot examples, and other artifacts is controlled via this ID, which is managed via cookies in the front end. Consider it secret.
+```sh
+USER_ID=$(uuidgen)
+export USER_ID
+```
+
 ### Create an extractor
 
 ```sh
@@ -57,6 +63,7 @@ curl -X 'POST' \
   'http://localhost:8000/extractors' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
+  --cookie "user_id=${USER_ID}" \
   -d '{
   "name": "Personal Information",
   "description": "Use to extract personal information",
@@ -86,7 +93,7 @@ Response:
 
 ```json
 {
-  "uuid": "32d5324a-8a48-4073-b57c-0a2ebfb0bf5e"
+  "uuid": "e07f389f-3577-4e94-bd88-6b201d1b10b9"
 }
 ```
 
@@ -98,7 +105,8 @@ curl -s -X 'POST' \
 'http://localhost:8000/extract' \
 -H 'accept: application/json' \
 -H 'Content-Type: multipart/form-data' \
--F 'extractor_id=32d5324a-8a48-4073-b57c-0a2ebfb0bf5e' \
+--cookie "user_id=${USER_ID}" \
+-F 'extractor_id=e07f389f-3577-4e94-bd88-6b201d1b10b9' \
 -F 'text=my name is chester and i am 20 years old. My name is eugene and I am 1 year older than chester.' \
 -F 'mode=entire_document' \
 -F 'file=' | jq .
@@ -121,6 +129,24 @@ Response:
 }
 ```
 
+Add a few shot example:
+```sh
+curl -X POST "http://localhost:8000/examples" \
+    -H "Content-Type: application/json" \
+    --cookie "user_id=${USER_ID}" \
+    -d '{
+          "extractor_id": "e07f389f-3577-4e94-bd88-6b201d1b10b9",
+          "content": "marcos is 10.",
+          "output": [
+            {
+              "name": "MARCOS",
+              "age": 10
+            }
+          ]
+        }' | jq .
+```
+The response will contain a UUID for the example. Examples can be deleted with a DELETE request. This example is now persisted and associated with our extractor, and subsequent extraction runs will incorporate it.
+
 ## ✅ Running locally
 
 The easiest way to get started is to use `docker-compose` to run the server.
@@ -132,6 +158,8 @@ Add `.local.env` file to the root directory with the following content:
 ```sh
 OPENAI_API_KEY=... # Your OpenAI API key
 ```
+
+Adding `FIREWORKS_API_KEY` or `TOGETHER_API_KEY` to this file would enable additional models. You can access available models for the server and other information via a `GET` request to the `configuration` endpoint.
 
 Build the images:
 ```sh
