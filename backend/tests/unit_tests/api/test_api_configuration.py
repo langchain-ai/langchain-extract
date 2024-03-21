@@ -9,9 +9,9 @@ async def test_configuration_api() -> None:
         result = response.json()
         assert isinstance(result, dict)
         assert sorted(result) == [
+            "accepted_mimetypes",
             "available_models",
             "max_file_size_mb",
-            "accepted_mimetypes",
         ]
         models = result["available_models"]
         assert all(isinstance(model_name, str) for model_name in models)
