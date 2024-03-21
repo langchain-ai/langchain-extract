@@ -12,6 +12,11 @@ import {
   Tabs,
   Text,
   Textarea,
+  FormControl,
+  FormLabel,
+  HStack,
+  Radio,
+  RadioGroup,
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import React from "react";
@@ -40,13 +45,14 @@ export const Playground = (props: PlaygroundProps) => {
   });
 
   const requestServerConfig = useConfiguration();
-  const [isDisabled, setIsDisabled] = React.useState(false);
+  const [isDisabled, setIsDisabled] = React.useState(true);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const request = {
       extractor_id: extractorId,
+      model_name: event.currentTarget.modelId.value,
     };
 
     if (event.currentTarget.text.value) {
@@ -98,12 +104,30 @@ export const Playground = (props: PlaygroundProps) => {
         <div>
           <Extractor extractorId={extractorId} isShared={isShared} />
         </div>
-        <Heading>Upload Content</Heading>
+        <Heading>Extract</Heading>
+
         <form
           className="m-auto flex flex-col content-between gap-5 mt-10 mb-10"
           onSubmit={handleSubmit}
           onChange={handleChange}
         >
+          {requestServerConfig.isFetched && (
+            <FormControl as="fieldset">
+              <FormLabel as="legend">Extraction Model</FormLabel>
+              <RadioGroup
+                name="modelId"
+                defaultValue={requestServerConfig.data?.available_models[0]}
+              >
+                <HStack spacing="24px">
+                  {requestServerConfig.data?.available_models.map((model) => (
+                    <Radio value={model} key={model}>
+                      {model}
+                    </Radio>
+                  ))}
+                </HStack>
+              </RadioGroup>
+            </FormControl>
+          )}
           {requestServerConfig.isFetched && (
             <input
               type="file"
