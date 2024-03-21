@@ -74,9 +74,12 @@ type ExtractionRequest = {
   file?: File;
 };
 
+type ExtractionResponse = {
+  data: unknown[];
+};
+
 export const runExtraction: MutationFunction<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any,
+  ExtractionResponse,
   [ExtractionRequest, boolean]
 > = async ([extractionRequest, isShared]) => {
   const endpoint = isShared ? "extract/shared" : "extract";

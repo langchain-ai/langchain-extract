@@ -10,16 +10,24 @@ import {
   Tr,
 } from "@chakra-ui/react";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getColumns(records: Array<Record<string, any>>): Array<any> {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getColumns(records: unknown[]): Array<string> {
   // Create a set to store unique keys
-  const uniqueKeys = new Set();
+  const uniqueKeys = new Set<string>();
 
   // Iterate over each record in the list
   records.forEach((record) => {
     // For each key in the current record, add it to the set
+    if (!isRecord(record)) {
+      return;
+    }
     Object.keys(record).forEach((key) => {
-      uniqueKeys.add(key);
+      if (typeof key === "string") {
+        uniqueKeys.add(key);
+      }
     });
   });
 
@@ -27,19 +35,38 @@ function getColumns(records: Array<Record<string, any>>): Array<any> {
   return Array.from(uniqueKeys);
 }
 
+/*
+ * This function takes a value and returns a string representation of it.
+ * If the value is an array, it will join the elements with a comma and space.
+ * If the value is an object, it will create an array of strings representing
+ * each key-value pair, then join them with a comma and space.
+ * Otherwise, it will return the string representation of the value.
+ * @param value - The value to display
+ * @returns The string representation of the value
+ */
+function getDisplayValue(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value.map(getDisplayValue).join(", ");
+  }
+  if (isRecord(value)) {
+    // Creating an array of strings representing each key-value pair,
+    // then joining them with a comma and space.
+    return Object.entries(value)
+      .map(([key, val]) => `${key}: ${getDisplayValue(val)}`)
+      .join(", ");
+  }
+  return String(value);
+}
+
 export const ResultsTable = ({
   data,
   isPending,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: { data: Array<Record<string, any>> } | undefined;
+  data: { data: unknown[] } | undefined;
   isPending: boolean;
 }) => {
   // scan all the results to determine the columns
   // then display the results in a table
-  const actualData = data?.data;
-  const columns = actualData ? getColumns(actualData) : [];
-
   if (isPending) {
     return (
       <Spinner
@@ -51,6 +78,9 @@ export const ResultsTable = ({
       />
     );
   }
+
+  const actualData = data?.data;
+  const columns = actualData ? getColumns(actualData) : [];
 
   return (
     <div>
@@ -69,7 +99,13 @@ export const ResultsTable = ({
               return (
                 <Tr key={index}>
                   {columns.map((column, idx) => (
-                    <Td key={`table-data-${idx}`}>{row[column]}</Td>
+                    // Check if the row has the column,
+                    // if not, display an empty cell
+                    <Td key={`table-cell-${idx}`}>
+                      {isRecord(row) && column in row
+                        ? getDisplayValue(row[column])
+                        : ""}
+                    </Td>
                   ))}
                 </Tr>
               );
