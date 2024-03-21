@@ -28,18 +28,18 @@ const getExtractor = async ({
   const baseUrl = getBaseApiUrl();
   if (isShared) {
     const response = await fetch(`${baseUrl}/shared/extractors/${uuid}`, {
-      credentials: 'include',
+      credentials: "include",
     });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error("Network response was not ok");
     }
     return response.json();
   } else {
     const response = await fetch(`${baseUrl}/extractors/${uuid}`, {
-      credentials: 'include',
+      credentials: "include",
     });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error("Network response was not ok");
     }
     return response.json();
   }
@@ -48,10 +48,10 @@ const getExtractor = async ({
 const listExtractors = async () => {
   const baseUrl = getBaseApiUrl();
   const response = await fetch(`${baseUrl}/extractors`, {
-    credentials: 'include',
+    credentials: "include",
   });
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error("Network response was not ok");
   }
   return response.json();
 };
@@ -60,15 +60,15 @@ const listExtractors = async () => {
 const createExtractor: MutationFunction<any, any> = async (extractor) => {
   const baseUrl = getBaseApiUrl();
   const response = await fetch(`${baseUrl}/extractors`, {
-    method: 'POST',
-    credentials: 'include',
+    method: "POST",
+    credentials: "include",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(extractor),
   });
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error("Network response was not ok");
   }
   return response.json();
 };
@@ -82,10 +82,10 @@ export type ServerConfiguration = {
 const getConfiguration = async (): Promise<ServerConfiguration> => {
   const baseUrl = getBaseApiUrl();
   const response = await fetch(`${baseUrl}/configuration`, {
-    credentials: 'include',
+    credentials: "include",
   });
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error("Network response was not ok");
   }
   return response.json();
 };
@@ -109,10 +109,10 @@ export const suggestExtractor = async ({
   }
   const baseUrl = getBaseApiUrl();
   const response = await fetch(`${baseUrl}/suggest`, {
-    method: 'POST',
-    credentials: 'include',
+    method: "POST",
+    credentials: "include",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       description,
@@ -120,7 +120,7 @@ export const suggestExtractor = async ({
     }),
   });
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error("Network response was not ok");
   }
   return response.json();
 };
@@ -142,15 +142,15 @@ export const runExtraction: MutationFunction<
   const endpoint = isShared ? "extract/shared" : "extract";
   const baseUrl = getBaseApiUrl();
   const response = await fetch(`${baseUrl}/${endpoint}`, {
-    method: 'POST',
-    credentials: 'include',
+    method: "POST",
+    credentials: "include",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(extractionRequest),
   });
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error("Network response was not ok");
   }
   return response.json();
 };
