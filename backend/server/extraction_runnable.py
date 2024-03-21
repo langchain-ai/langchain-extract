@@ -62,29 +62,6 @@ class ExtractResponse(TypedDict):
     data: List[Any]
 
 
-def _deduplicate(
-    extract_responses: Sequence[ExtractResponse],
-) -> ExtractResponse:
-    """Deduplicate the results.
-
-    The deduplication is done by comparing the serialized JSON of each of the results
-    and only keeping the unique ones.
-    """
-    unique_extracted = []
-    seen = set()
-    for response in extract_responses:
-        for data_item in response["data"]:
-            # Serialize the data item for comparison purposes
-            serialized = json.dumps(data_item, sort_keys=True)
-            if serialized not in seen:
-                seen.add(serialized)
-                unique_extracted.append(data_item)
-
-    return {
-        "data": unique_extracted,
-    }
-
-
 def _cast_example_to_dict(example: Example) -> Dict[str, Any]:
     """Cast example record to dictionary."""
     return {
@@ -147,6 +124,29 @@ def _make_prompt_template(
 # PUBLIC API
 
 
+def deduplicate(
+    extract_responses: Sequence[ExtractResponse],
+) -> ExtractResponse:
+    """Deduplicate the results.
+
+    The deduplication is done by comparing the serialized JSON of each of the results
+    and only keeping the unique ones.
+    """
+    unique_extracted = []
+    seen = set()
+    for response in extract_responses:
+        for data_item in response["data"]:
+            # Serialize the data item for comparison purposes
+            serialized = json.dumps(data_item, sort_keys=True)
+            if serialized not in seen:
+                seen.add(serialized)
+                unique_extracted.append(data_item)
+
+    return {
+        "data": unique_extracted,
+    }
+
+
 def get_examples_from_extractor(extractor: Extractor) -> List[Dict[str, Any]]:
     """Get examples from an extractor."""
     return [_cast_example_to_dict(example) for example in extractor.examples]
@@ -206,4 +206,4 @@ async def extract_entire_document(
         extraction_requests, {"max_concurrency": 1}
     )
     # Deduplicate the results
-    return _deduplicate(extract_responses)
+    return deduplicate(extract_responses)

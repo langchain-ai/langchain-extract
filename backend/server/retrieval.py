@@ -3,7 +3,6 @@ from typing import Any, Dict, List, Optional
 
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_core.documents import Document
 from langchain_core.runnables import RunnableLambda
 from langchain_openai import OpenAIEmbeddings
 
@@ -11,20 +10,15 @@ from db.models import Extractor
 from server.extraction_runnable import (
     ExtractRequest,
     ExtractResponse,
+    deduplicate,
     extraction_runnable,
     get_examples_from_extractor,
 )
 
 
-def _get_top_doc_content(docs: List[Document]) -> str:
-    if docs:
-        return docs[0].page_content
-    else:
-        return ""
-
-
-def _make_extract_request(input_dict: Dict[str, Any]) -> ExtractRequest:
-    return ExtractRequest(**input_dict)
+def _make_extract_requests(input_dict: Dict[str, Any]) -> List[ExtractRequest]:
+    docs = input_dict.pop("text")
+    return [ExtractRequest(text=doc.page_content, **input_dict) for doc in docs]
 
 
 async def extract_from_content(
@@ -50,14 +44,14 @@ async def extract_from_content(
 
     runnable = (
         {
-            "text": itemgetter("query") | retriever | _get_top_doc_content,
+            "text": itemgetter("query") | retriever,
             "schema": itemgetter("schema"),
             "instructions": lambda x: x.get("instructions"),
             "examples": lambda x: x.get("examples"),
             "model_name": lambda x: x.get("model_name"),
         }
-        | RunnableLambda(_make_extract_request)
-        | extraction_runnable
+        | RunnableLambda(_make_extract_requests)
+        | extraction_runnable.abatch
     )
     schema = extractor.schema
     examples = get_examples_from_extractor(extractor)
@@ -71,4 +65,4 @@ async def extract_from_content(
             "model_name": model_name,
         }
     )
-    return result
+    return deduplicate(result)
