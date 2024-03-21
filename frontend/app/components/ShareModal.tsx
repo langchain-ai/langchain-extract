@@ -4,6 +4,7 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
+  ModalOverlay,
   Text,
   Input,
   ModalCloseButton,
@@ -25,7 +26,7 @@ export function ShareModal(props: ShareModalProps) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      {/* <ModalOverlay /> */}
+      <ModalOverlay />
       <ModalContent>
         <ModalHeader>Share Link</ModalHeader>
         <ModalCloseButton />
