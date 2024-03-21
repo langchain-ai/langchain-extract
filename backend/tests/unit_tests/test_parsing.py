@@ -10,7 +10,7 @@ from extraction.parsing import (
 from tests.unit_tests.fixtures import get_sample_paths
 
 
-def test_list_of_supported_mimetypes() -> None:
+def test_list_of_accepted_mimetypes() -> None:
     """This list should generally grow! Protecting against typos in mimetypes."""
     assert SUPPORTED_MIMETYPES == [
         # Two MS Word mimetypes are disabled for now

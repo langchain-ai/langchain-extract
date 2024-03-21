@@ -11,7 +11,7 @@ async def test_configuration_api() -> None:
         assert sorted(result) == [
             "available_models",
             "max_file_size_mb",
-            "supported_mimetypes",
+            "accepted_mimetypes",
         ]
         models = result["available_models"]
         assert all(isinstance(model_name, str) for model_name in models)
