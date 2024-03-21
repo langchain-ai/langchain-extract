@@ -139,7 +139,8 @@ const CreateExtractor = ({}) => {
             type="submit"
             icon={<Icon as={ChatBubbleBottomCenterTextIcon} />}
             aria-label="OK"
-            colorScheme="blue"
+            colorScheme={userInput === "" ? "gray" : "blue"}
+            disabled={userInput === ""}
           />
         )}
       </form>
