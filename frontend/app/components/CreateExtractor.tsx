@@ -69,7 +69,7 @@ const CreateExtractor = ({}) => {
   const { push } = useRouter();
   const { mutate } = useCreateExtractor({
     onSuccess: (data) => {
-      push(`/e/${data.uuid}`);
+      push(`/e?extractorId=${data.uuid}`);
     },
   });
 

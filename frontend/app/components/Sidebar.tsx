@@ -70,7 +70,7 @@ export function Sidebar() {
         <Flex alignItems="center">
           <ChakraLink
             p={1}
-            onClick={() => push(`/e/${extractor.uuid}`)}
+            onClick={() => push(`/e?extractorId=${extractor.uuid}`)}
             cursor="pointer"
           >
             <Text noOfLines={1}>
