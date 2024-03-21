@@ -24,7 +24,7 @@ import {
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { useDeleteExtractor, useGetExtractors } from "../utils/api";
 import { getBaseApiUrl } from "../utils/api_url";
@@ -32,6 +32,8 @@ import { ShareModal } from "./ShareModal";
 
 export function Sidebar() {
   const [shareUUID, setShareUUID] = React.useState("");
+  const params = useParams();
+  const currentExtractorId = params.extractorId;
 
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { push } = useRouter();
@@ -50,20 +52,25 @@ export function Sidebar() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const buttons = data?.map((extractor: any) => {
+    const selectedProps =
+      extractor.uuid === currentExtractorId
+        ? {
+            borderLeft: "4px solid gray",
+            borderRadius: "4px",
+            padding: "4px",
+          }
+        : {};
     return (
-      <Flex flexDirection="column" key={extractor.uuid} w="100%">
+      <Flex
+        flexDirection="column"
+        key={extractor.uuid}
+        w="100%"
+        {...selectedProps}
+      >
         <Flex alignItems="center">
           <ChakraLink
             p={1}
             onClick={() => push(`/e/${extractor.uuid}`)}
-            _hover={{
-              textDecoration: "none",
-            }}
-            _activeLink={{
-              border: "1px black",
-              borderBottomStyle: "solid",
-              borderRadius: 1,
-            }}
             cursor="pointer"
           >
             <Text noOfLines={1}>
