@@ -2306,6 +2306,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/js-cookie@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "@types/js-cookie@npm:3.0.6"
+  checksum: 272d551687547445cb210213c73e72e0e5d58ad73e2e444a65d688b8ff9425529779ee0cd6492aaa1f070161916d4254ef2b1a76d64179100437f60749d094ef
+  languageName: node
+  linkType: hard
+
 "@types/json-schema@npm:^7.0.12, @types/json-schema@npm:^7.0.9":
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
@@ -5357,6 +5364,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-cookie@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "js-cookie@npm:3.0.5"
+  checksum: 2dbd2809c6180fbcf060c6957cb82dbb47edae0ead6bd71cbeedf448aa6b6923115003b995f7d3e3077bfe2cb76295ea6b584eb7196cca8ba0a09f389f64967a
+  languageName: node
+  linkType: hard
+
 "js-tiktoken@npm:^1.0.7, js-tiktoken@npm:^1.0.8":
   version: 1.0.10
   resolution: "js-tiktoken@npm:1.0.10"
@@ -5505,6 +5519,7 @@ __metadata:
     "@rjsf/validator-ajv8": ^5.17.1
     "@tanstack/react-query": ^5.28.4
     "@types/dompurify": ^3.0.5
+    "@types/js-cookie": ^3.0.6
     "@types/marked": ^5.0.1
     "@types/node": 20.4.9
     "@types/react": 18.2.20
@@ -5529,6 +5544,7 @@ __metadata:
     eslint-plugin-react: ^7.34.1
     framer-motion: ^11.0.14
     highlight.js: ^11.8.0
+    js-cookie: ^3.0.5
     marked: ^7.0.2
     next: 13.5.4
     postcss: 8.4.31

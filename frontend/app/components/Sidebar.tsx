@@ -28,9 +28,11 @@ import { useRouter, useParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { useDeleteExtractor, useGetExtractors } from "../utils/api";
 import { getBaseApiUrl } from "../utils/api_url";
+import { ensureUserId } from "../utils/ensure_user_id";
 import { ShareModal } from "./ShareModal";
 
 export function Sidebar() {
+  ensureUserId();
   const [shareUUID, setShareUUID] = React.useState("");
   const params = useParams();
   const currentExtractorId = params.extractorId;

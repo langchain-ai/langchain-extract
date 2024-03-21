@@ -42,6 +42,7 @@
     "chakra-react-select": "^4.7.6",
     "framer-motion": "^11.0.14",
     "highlight.js": "^11.8.0",
+    "js-cookie": "^3.0.5",
     "marked": "^7.0.2",
     "next": "13.5.4",
     "postcss": "8.4.31",
@@ -53,6 +54,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/react-syntax-highlighter": "^15.5.11",
     "@typescript-eslint/eslint-plugin": "^7.3.0",
     "@typescript-eslint/parser": "^7.3.0",
