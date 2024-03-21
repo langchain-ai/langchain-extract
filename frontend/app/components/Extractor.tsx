@@ -43,7 +43,11 @@ export const Extractor = ({ extractorId, isShared }: ExtractorProps) => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <Form schema={data.schema} validator={validator} />
+            <Form
+              schema={data.schema}
+              validator={validator}
+              children={true} // Disables the submit button
+            />
           </TabPanel>
           <TabPanel>
             <Text className="mt-1 mb-5">
@@ -56,13 +60,6 @@ export const Extractor = ({ extractorId, isShared }: ExtractorProps) => {
           </TabPanel>
         </TabPanels>
       </Tabs>
-      <VStack align={"left"}>
-        {/* TO DO ADD SYSTEM MESSAGE */}
-        {/* <Text>
-          <strong>System Message: </strong>
-          {data.instruction}
-        </Text> */}
-      </VStack>
     </div>
   );
 };
