@@ -12,7 +12,6 @@ import Form from "@rjsf/chakra-ui";
 import validator from "@rjsf/validator-ajv8";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
-import { VStack } from "@chakra-ui/react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { useGetExtractor } from "../utils/api";
 
@@ -43,7 +42,9 @@ export const Extractor = ({ extractorId, isShared }: ExtractorProps) => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <Form schema={data.schema} validator={validator} />
+            <Form schema={data.schema} validator={validator}>
+              {true} {/* Disables the submit button */}
+            </Form>
           </TabPanel>
           <TabPanel>
             <Text className="mt-1 mb-5">
@@ -56,13 +57,6 @@ export const Extractor = ({ extractorId, isShared }: ExtractorProps) => {
           </TabPanel>
         </TabPanels>
       </Tabs>
-      <VStack align={"left"}>
-        {/* TO DO ADD SYSTEM MESSAGE */}
-        {/* <Text>
-          <strong>System Message: </strong>
-          {data.instruction}
-        </Text> */}
-      </VStack>
     </div>
   );
 };

@@ -192,7 +192,9 @@ const CreateExtractor = ({}) => {
                   schema={lastValidSchema}
                   validator={validator}
                   disabled={!currentSchemaValid || suggestMutation.isPending}
-                />
+                >
+                  {true} {/* Disables the submit button */}
+                </Form>
               </CardBody>
             </Card>
           </>
