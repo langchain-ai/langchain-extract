@@ -2,7 +2,7 @@
 from typing import List
 
 from fastapi import APIRouter
-from typing_extensions import Annotated, TypedDict
+from typing_extensions import TypedDict
 
 from extraction.parsing import MAX_FILE_SIZE_MB, SUPPORTED_MIMETYPES
 from server.models import SUPPORTED_MODELS
@@ -18,7 +18,7 @@ class ConfigurationResponse(TypedDict):
     """Response for configuration."""
 
     available_models: List[str]
-    supported_mimetypes: List[str]
+    accepted_mimetypes: List[str]
     max_file_size_mb: int
 
 
@@ -27,6 +27,6 @@ def get() -> ConfigurationResponse:
     """Endpoint to show server configuration."""
     return {
         "available_models": sorted(SUPPORTED_MODELS),
-        "supported_mimetypes": SUPPORTED_MIMETYPES,
+        "accepted_mimetypes": SUPPORTED_MIMETYPES,
         "max_file_size_mb": MAX_FILE_SIZE_MB,
     }

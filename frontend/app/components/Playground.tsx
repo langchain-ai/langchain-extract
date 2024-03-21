@@ -1,21 +1,23 @@
 "use client";
-
 import {
   Button,
-  Textarea,
   Heading,
   Tab,
-  Tabs,
+  Box,
+  Divider,
+  AbsoluteCenter,
   TabList,
   TabPanel,
   TabPanels,
+  Tabs,
   Text,
+  Textarea,
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { runExtraction } from "../utils/api";
+import { runExtraction, useConfiguration } from "../utils/api";
 import { Extractor } from "./Extractor";
 import { ResultsTable } from "./ResultsTable";
 
@@ -36,7 +38,10 @@ export const Playground = (props: PlaygroundProps) => {
   const { data, isPending, mutate } = useMutation({
     mutationFn: runExtraction,
   });
+
+  const requestServerConfig = useConfiguration();
   const [isDisabled, setIsDisabled] = React.useState(false);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -93,13 +98,26 @@ export const Playground = (props: PlaygroundProps) => {
         <div>
           <Extractor extractorId={extractorId} isShared={isShared} />
         </div>
+        <Heading>Upload Content</Heading>
         <form
           className="m-auto flex flex-col content-between gap-5 mt-10 mb-10"
           onSubmit={handleSubmit}
           onChange={handleChange}
         >
-          <input type="file" name="file" className="file-input " />
-          <div className="divider">OR</div>
+          {requestServerConfig.isFetched && (
+            <input
+              type="file"
+              name="file"
+              className="file-input"
+              accept={requestServerConfig.data?.accepted_mimetypes.join(", ")}
+            />
+          )}
+          <Box position="relative" padding="10">
+            <Divider />
+            <AbsoluteCenter bg="white" px="4">
+              OR
+            </AbsoluteCenter>
+          </Box>
           <Textarea
             placeholder="Enter text to extract information from..."
             name="text"

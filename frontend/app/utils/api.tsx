@@ -50,6 +50,25 @@ const createExtractor: MutationFunction<any, any> = async (extractor) => {
   return response.data;
 };
 
+export type ServerConfiguration = {
+  available_models: string[];
+  max_file_size_mb: number;
+  accepted_mimetypes: string[];
+};
+
+const getConfiguration = async (): Promise<ServerConfiguration> => {
+  const baseUrl = getBaseApiUrl();
+  const response = await axios.get(`${baseUrl}/configuration`);
+  return response.data;
+};
+
+export const useConfiguration = () => {
+  return useQuery({
+    queryKey: ["getConfiguration"],
+    queryFn: getConfiguration,
+  });
+};
+
 export const suggestExtractor = async ({
   description,
   jsonSchema,
