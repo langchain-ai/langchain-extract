@@ -13,7 +13,10 @@ export function middleware(request: NextRequest) {
 
   if (!userId) {
     response.cookies.set(USER_ID_COOKIE_KEY, uuidv4(), {
-      
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+      sameSite: "strict",
+      path: "/",
+      httpOnly: true,
     });
   }
   return response;
