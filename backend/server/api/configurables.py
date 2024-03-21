@@ -2,7 +2,7 @@
 from typing import List
 
 from fastapi import APIRouter
-from typing_extensions import Annotated, TypedDict
+from typing_extensions import TypedDict
 
 from extraction.parsing import MAX_FILE_SIZE_MB, SUPPORTED_MIMETYPES
 from server.models import SUPPORTED_MODELS
