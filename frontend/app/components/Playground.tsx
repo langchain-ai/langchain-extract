@@ -53,6 +53,19 @@ export const Playground = (props: PlaygroundProps) => {
     mutate([request, isShared]);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault(); // Prevent the default Enter action
+      if (isDisabled) {
+        return;
+      }
+
+      event.currentTarget.form?.dispatchEvent(
+        new Event("submit", { cancelable: true, bubbles: true }),
+      );
+    }
+  };
+
   const handleChange = (event: React.FormEvent<HTMLFormElement>) => {
     if (
       event.currentTarget.text.value === "" &&
@@ -92,8 +105,13 @@ export const Playground = (props: PlaygroundProps) => {
             name="text"
             className="textarea textarea-bordered h-3/4"
             autoFocus
+            onKeyDown={handleKeyDown}
           />
-          <Button type="submit" disabled={isDisabled}>
+          <Button
+            type="submit"
+            disabled={isDisabled}
+            colorScheme={isDisabled ? "blue" : "gray"}
+          >
             Run
           </Button>
         </form>
