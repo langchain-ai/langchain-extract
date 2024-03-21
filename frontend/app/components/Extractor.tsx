@@ -44,7 +44,7 @@ export const Extractor = ({ extractorId, isShared }: ExtractorProps) => {
           <TabPanel>
             <Form schema={data.schema} validator={validator}>
               {true} {/* Disables the submit button */}
-            </Form> 
+            </Form>
           </TabPanel>
           <TabPanel>
             <Text className="mt-1 mb-5">

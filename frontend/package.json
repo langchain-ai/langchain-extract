@@ -10,7 +10,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --config .prettierrc --check \"app\"",
     "lint": "eslint --cache --ext .tsx,.jsx --config .eslintrc.json . --ignore-path .gitignore",
-    "lint:fix": "yarn lint --fix"
+    "lint:fix": "yarn lint --fix",
+    "fix": "prettier --write . && yarn lint --fix"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.0",
