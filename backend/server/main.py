@@ -32,9 +32,12 @@ app = FastAPI(
     ],
 )
 
+
 class EnsureUserIDMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
-        user_id = request.cookies.get('user_id')
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        user_id = request.cookies.get("user_id")
         if not user_id:
             user_id = str(uuid.uuid4())  # Generate a new user_id
             request.state.user_id = user_id  # Set user_id in request state
@@ -44,6 +47,7 @@ class EnsureUserIDMiddleware(BaseHTTPMiddleware):
             request.state.user_id = user_id  # Set existing user_id in request state
             response = await call_next(request)
         return response
+
 
 app.add_middleware(EnsureUserIDMiddleware)
 
