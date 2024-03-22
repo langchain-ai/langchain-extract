@@ -11,6 +11,8 @@ async def test_configuration_api() -> None:
         assert sorted(result) == [
             "accepted_mimetypes",
             "available_models",
+            "max_chunks",
+            "max_concurrency",
             "max_file_size_mb",
         ]
         models = result["available_models"]

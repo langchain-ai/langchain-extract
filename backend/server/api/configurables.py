@@ -6,6 +6,7 @@ from typing_extensions import TypedDict
 
 from extraction.parsing import MAX_FILE_SIZE_MB, SUPPORTED_MIMETYPES
 from server.models import SUPPORTED_MODELS
+from server.settings import MAX_CHUNKS, MAX_CONCURRENCY
 
 router = APIRouter(
     prefix="/configuration",
@@ -20,6 +21,8 @@ class ConfigurationResponse(TypedDict):
     available_models: List[str]
     accepted_mimetypes: List[str]
     max_file_size_mb: int
+    max_concurrency: int
+    max_chunks: int
 
 
 @router.get("")
@@ -29,4 +32,6 @@ def get() -> ConfigurationResponse:
         "available_models": sorted(SUPPORTED_MODELS),
         "accepted_mimetypes": SUPPORTED_MIMETYPES,
         "max_file_size_mb": MAX_FILE_SIZE_MB,
+        "max_concurrency": MAX_CONCURRENCY,
+        "max_chunks": MAX_CHUNKS,
     }
