@@ -207,7 +207,7 @@ async def extract_entire_document(
     ]
 
     # Limit the number of chunks to process
-    if len(extraction_requests) < settings.MAX_CHUNKS:
+    if len(extraction_requests) > settings.MAX_CHUNKS and settings.MAX_CHUNKS > 0:
         content_too_long = True
         extraction_requests = extraction_requests[: settings.MAX_CHUNKS]
     else:

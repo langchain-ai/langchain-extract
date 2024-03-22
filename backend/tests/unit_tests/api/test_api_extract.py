@@ -200,6 +200,6 @@ async def test_extract_from_large_file() -> None:
                     )
         assert response.status_code == 200
         assert response.json() == {
-            "data": ["a", "b"],
-            "content_too_long": False,
+            "data": ["a"],
+            "content_too_long": True,
         }
