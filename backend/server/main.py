@@ -68,10 +68,10 @@ add_routes(
 
 
 # Serve the frontend
-ui_dir = str(ROOT / "ui")
+UI_DIR = str(ROOT / "ui")
 
-if os.path.exists(ui_dir):
-    app.mount("/", StaticFiles(directory=ui_dir, html=True), name="ui")
+if os.path.exists(UI_DIR):
+    app.mount("/", StaticFiles(directory=UI_DIR, html=True), name="ui")
 else:
     logger.warning("No UI directory found, serving API only.")
 

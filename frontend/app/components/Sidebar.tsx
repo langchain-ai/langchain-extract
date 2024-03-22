@@ -17,7 +17,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import React from "react";
-import axios from "axios";
 import {
   ArrowTopRightOnSquareIcon,
   EllipsisVerticalIcon,
@@ -26,7 +25,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { useRouter, useParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { useDeleteExtractor, useGetExtractors } from "../utils/api";
+import {
+  useDeleteExtractor,
+  useGetExtractors,
+  axiosClient,
+} from "../utils/api";
 import { getBaseApiUrl } from "../utils/api_url";
 import { ShareModal } from "./ShareModal";
 
@@ -43,7 +46,7 @@ export function Sidebar() {
   const baseUrl = getBaseApiUrl();
   const mutateShare = useMutation({
     mutationFn: async (uuid: string) =>
-      axios.post(`${baseUrl}/extractors/${uuid}/share`),
+      axiosClient.post(`${baseUrl}/extractors/${uuid}/share`),
     onSuccess: (onSuccessData) => {
       setShareUUID(onSuccessData.data.share_uuid);
       onOpen();
