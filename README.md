@@ -52,7 +52,7 @@ see the [documentation](https://github.com/langchain-ai/langchain-extract/tree/m
 about the API and the [extraction use-case documentation](https://python.langchain.com/docs/use_cases/extraction) for more information about how to extract
 information using LangChain.
 
-First we generate a user ID for ourselves. The application does not manage users or authentication. Access to extractors, few-shot examples, and other artifacts is controlled via this ID. Consider it secret.
+First we generate a user ID for ourselves. **The application does not properly manage users or include legitimate authentication**. Access to extractors, few-shot examples, and other artifacts is controlled via this ID. Consider it secret.
 ```sh
 USER_ID=$(uuidgen)
 export USER_ID
