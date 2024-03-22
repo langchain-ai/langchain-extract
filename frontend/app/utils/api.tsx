@@ -122,8 +122,9 @@ type ExtractionRequest = {
   file?: File;
 };
 
-type ExtractionResponse = {
+export type ExtractionResponse = {
   data: unknown[];
+  content_too_long?: boolean;
 };
 
 export const runExtraction: MutationFunction<

@@ -10,6 +10,8 @@ import {
   Tr,
 } from "@chakra-ui/react";
 
+import ExtractionResponse from "../utils/api";
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -62,7 +64,7 @@ export const ResultsTable = ({
   data,
   isPending,
 }: {
-  data: { data: unknown[] } | undefined;
+  data: ExtractionResponse | undefined;
   isPending: boolean;
 }) => {
   // scan all the results to determine the columns
