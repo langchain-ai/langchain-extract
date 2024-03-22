@@ -167,7 +167,7 @@ export const Playground = (props: PlaygroundProps) => {
       <div className="m-auto">
         {data?.content_too_long && (
           <Text color={"red"} margin={5}>
-            The content was too long to be processed. Extract was run on a
+            The content was too long to be processed. Extraction was run on a
             truncated version of the content.
           </Text>
         )}
