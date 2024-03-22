@@ -116,12 +116,12 @@ export const Playground = (props: PlaygroundProps) => {
               <FormLabel as="legend">Extraction Model</FormLabel>
               <RadioGroup
                 name="modelId"
-                defaultValue={requestServerConfig.data?.available_models[0]}
+                defaultValue={requestServerConfig.data?.models[0].name}
               >
                 <HStack spacing="24px">
-                  {requestServerConfig.data?.available_models.map((model) => (
-                    <Radio value={model} key={model}>
-                      {model}
+                  {requestServerConfig.data?.models.map((model) => (
+                    <Radio value={model.name} key={model.name}>
+                      {model.description}
                     </Radio>
                   ))}
                 </HStack>
