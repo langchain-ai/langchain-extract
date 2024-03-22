@@ -1,3 +1,4 @@
+"use client";
 /* Expose API hooks for use in components */
 import axios from "axios";
 import {
@@ -7,6 +8,7 @@ import {
   MutationFunction,
   QueryFunctionContext,
 } from "@tanstack/react-query";
+import { v4 as uuidv4 } from "uuid";
 import { getBaseApiUrl } from "./api_url";
 
 type ExtractorData = {
@@ -17,11 +19,31 @@ type ExtractorData = {
   schema: any;
 };
 
+const getApiKey = (): string => {
+  if (typeof window === "undefined") {
+    return uuidv4();
+  }
+
+  const key = localStorage.getItem("lc-extract-key");
+  if (!key) {
+    // Generate key
+    const newKey = uuidv4();
+    localStorage.setItem("lc-extract-key", newKey);
+    return newKey;
+  }
+  return key;
+};
+
+// Create an instance with custom headers
+export const axiosClient = axios.create({
+  headers: {
+    "x-key": getApiKey(),
+  },
+});
+
 type GetExtractorQueryKey = [string, string, boolean]; // [queryKey, uuid, isShared]
 
 type OnSuccessFn = (data: { uuid: string }) => void;
-
-axios.defaults.withCredentials = true;
 
 const getExtractor = async ({
   queryKey,
@@ -29,24 +51,26 @@ const getExtractor = async ({
   const [, uuid, isShared] = queryKey;
   const baseUrl = getBaseApiUrl();
   if (isShared) {
-    const response = await axios.get(`${baseUrl}/shared/extractors/${uuid}`);
+    const response = await axiosClient.get(
+      `${baseUrl}/shared/extractors/${uuid}`,
+    );
     return response.data;
   } else {
-    const response = await axios.get(`${baseUrl}/extractors/${uuid}`);
+    const response = await axiosClient.get(`${baseUrl}/extractors/${uuid}`);
     return response.data;
   }
 };
 
 const listExtractors = async () => {
   const baseUrl = getBaseApiUrl();
-  const response = await axios.get(`${baseUrl}/extractors`);
+  const response = await axiosClient.get(`${baseUrl}/extractors`);
   return response.data;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createExtractor: MutationFunction<any, any> = async (extractor) => {
   const baseUrl = getBaseApiUrl();
-  const response = await axios.post(`${baseUrl}/extractors`, extractor);
+  const response = await axiosClient.post(`${baseUrl}/extractors`, extractor);
   return response.data;
 };
 
@@ -58,7 +82,7 @@ export type ServerConfiguration = {
 
 const getConfiguration = async (): Promise<ServerConfiguration> => {
   const baseUrl = getBaseApiUrl();
-  const response = await axios.get(`${baseUrl}/configuration`);
+  const response = await axiosClient.get(`${baseUrl}/configuration`);
   return response.data;
 };
 
@@ -80,7 +104,7 @@ export const suggestExtractor = async ({
     return {};
   }
   const baseUrl = getBaseApiUrl();
-  const response = await axios.post(`${baseUrl}/suggest`, {
+  const response = await axiosClient.post(`${baseUrl}/suggest`, {
     description,
     jsonSchema,
   });
@@ -103,7 +127,7 @@ export const runExtraction: MutationFunction<
 > = async ([extractionRequest, isShared]) => {
   const endpoint = isShared ? "extract/shared" : "extract";
   const baseUrl = getBaseApiUrl();
-  const response = await axios.postForm(
+  const response = await axiosClient.postForm(
     `${baseUrl}/${endpoint}`,
     extractionRequest,
   );
@@ -129,7 +153,8 @@ export const useDeleteExtractor = () => {
   const baseUrl = getBaseApiUrl();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (uuid: string) => axios.delete(`${baseUrl}/extractors/${uuid}`),
+    mutationFn: (uuid: string) =>
+      axiosClient.delete(`${baseUrl}/extractors/${uuid}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getExtractors"] });
     },

@@ -3,13 +3,10 @@ import logging
 import os
 from pathlib import Path
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from langserve import add_routes
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.responses import Response
-import uuid
 
 from server.api import configurables, examples, extract, extractors, shared, suggest
 from server.extraction_runnable import (
@@ -32,24 +29,6 @@ app = FastAPI(
     ],
 )
 
-
-class EnsureUserIDMiddleware(BaseHTTPMiddleware):
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
-        user_id = request.cookies.get("user_id")
-        if not user_id:
-            user_id = str(uuid.uuid4())  # Generate a new user_id
-            request.state.user_id = user_id  # Set user_id in request state
-            response = await call_next(request)
-            response.set_cookie(key="user_id", value=user_id, httponly=True)
-        else:
-            request.state.user_id = user_id  # Set existing user_id in request state
-            response = await call_next(request)
-        return response
-
-
-app.add_middleware(EnsureUserIDMiddleware)
 
 ROOT = Path(__file__).parent.parent
 
@@ -89,10 +68,10 @@ add_routes(
 
 
 # Serve the frontend
-ui_dir = str(ROOT / "ui")
+UI_DIR = str(ROOT / "ui")
 
-if os.path.exists(ui_dir):
-    app.mount("/", StaticFiles(directory=ui_dir, html=True), name="ui")
+if os.path.exists(UI_DIR):
+    app.mount("/", StaticFiles(directory=UI_DIR, html=True), name="ui")
 else:
     logger.warning("No UI directory found, serving API only.")
 

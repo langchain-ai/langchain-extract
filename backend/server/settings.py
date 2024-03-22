@@ -6,8 +6,19 @@ from sqlalchemy.engine import URL
 
 
 def get_postgres_url() -> URL:
+    if "INSTANCE_UNIX_SOCKET" in os.environ:
+        return URL.create(
+            drivername="postgresql+psycopg2",
+            username=os.environ.get("PG_USER", "langchain"),
+            password=os.environ.get("PG_PASSWORD", "langchain"),
+            database=os.environ.get("PG_DATABASE", "langchain"),
+            query={
+                "host": os.environ["INSTANCE_UNIX_SOCKET"],
+            },
+        )
+
     url = URL.create(
-        drivername="postgresql",
+        drivername="postgresql+psycopg2",
         username=os.environ.get("PG_USER", "langchain"),
         password=os.environ.get("PG_PASSWORD", "langchain"),
         host=os.environ.get("PG_HOST", "localhost"),

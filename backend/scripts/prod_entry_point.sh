@@ -5,6 +5,6 @@
 set -euxo pipefail
 
 # For now just create the db if it doesn't exist
-# python -m scripts.run_migrations create
+python -m scripts.run_migrations create
 
 uvicorn server.main:app --host 0.0.0.0 --port 8080 --reload

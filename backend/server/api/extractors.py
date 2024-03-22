@@ -2,12 +2,13 @@
 from typing import Any, Dict, List
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Cookie, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, validator
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from db.models import Extractor, SharedExtractors, get_session, validate_extractor_owner
+from server.api.api_key import UserToken
 from server.validators import validate_json_schema
 
 router = APIRouter(
@@ -60,7 +61,7 @@ def share(
     uuid: UUID,
     *,
     session: Session = Depends(get_session),
-    user_id: UUID = Cookie(...),
+    user_id: UUID = Depends(UserToken),
 ) -> ShareExtractorResponse:
     """Endpoint to share an extractor.
 
@@ -110,7 +111,7 @@ def create(
     create_request: CreateExtractor,
     *,
     session: Session = Depends(get_session),
-    user_id: UUID = Cookie(...),
+    user_id: UUID = Depends(UserToken),
 ) -> CreateExtractorResponse:
     """Endpoint to create an extractor."""
 
@@ -128,7 +129,10 @@ def create(
 
 @router.get("/{uuid}")
 def get(
-    uuid: UUID, *, session: Session = Depends(get_session), user_id: UUID = Cookie(...)
+    uuid: UUID,
+    *,
+    session: Session = Depends(get_session),
+    user_id: UUID = Depends(UserToken),
 ) -> Dict[str, Any]:
     """Endpoint to get an extractor."""
     extractor = (
@@ -151,7 +155,7 @@ def list(
     limit: int = 10,
     offset: int = 0,
     session=Depends(get_session),
-    user_id: UUID = Cookie(...),
+    user_id: UUID = Depends(UserToken),
 ) -> List[Any]:
     """Endpoint to get all extractors."""
     return (
@@ -165,7 +169,10 @@ def list(
 
 @router.delete("/{uuid}")
 def delete(
-    uuid: UUID, *, session: Session = Depends(get_session), user_id: UUID = Cookie(...)
+    uuid: UUID,
+    *,
+    session: Session = Depends(get_session),
+    user_id: UUID = Depends(UserToken),
 ) -> None:
     """Endpoint to delete an extractor."""
     session.query(Extractor).filter_by(uuid=str(uuid), owner_id=user_id).delete()
