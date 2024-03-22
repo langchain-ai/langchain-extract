@@ -6,6 +6,8 @@ This repository is not a library, but a jumping point for your own application -
 
 # 🦜⛏️ LangChain Extract
 
+https://github.com/langchain-ai/langchain-extract/assets/26529506/6657280e-d05f-4c0f-9c47-07a0ef7c559d
+
 [![CI](https://github.com/langchain-ai/langchain-extract/actions/workflows/ci.yml/badge.svg)](https://github.com/langchain-ai/langchain-extract/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/langchainai.svg?style=social&label=Follow%20%40LangChainAI)](https://twitter.com/langchainai)
