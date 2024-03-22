@@ -184,6 +184,8 @@ curl -X 'GET' 'http://localhost:8000/ready'
 
 This should return `ok`.
 
+The UI will be available at [http://localhost:3000](http://localhost:3000).
+
 ## Contributions
 
 Feel free to develop in this project for your own needs!
