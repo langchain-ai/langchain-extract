@@ -10,22 +10,32 @@ def get_supported_models():
     """Get models according to environment secrets."""
     models = {}
     if "OPENAI_API_KEY" in os.environ:
-        models["gpt-3.5-turbo"] = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
-        models["gpt-4-0125-preview"] = ChatOpenAI(
-            model="gpt-4-0125-preview", temperature=0
-        )
+        models["gpt-3.5-turbo"] = {
+            "chat_model": ChatOpenAI(model="gpt-3.5-turbo", temperature=0),
+            "description": "GPT-3.5 Turbo",
+        }
+        models["gpt-4-0125-preview"] = {
+            "chat_model": ChatOpenAI(model="gpt-4-0125-preview", temperature=0),
+            "description": "GPT-4 0125 Preview",
+        }
     if "FIREWORKS_API_KEY" in os.environ:
-        models["fireworks"] = ChatFireworks(
-            model="accounts/fireworks/models/firefunction-v1",
-            temperature=0,
-        )
+        models["fireworks"] = {
+            "chat_model": ChatFireworks(
+                model="accounts/fireworks/models/firefunction-v1",
+                temperature=0,
+            ),
+            "description": "Fireworks Firefunction-v1",
+        }
     if "TOGETHER_API_KEY" in os.environ:
-        models["together-ai-mistral-8x7b-instruct-v0.1"] = ChatOpenAI(
-            base_url="https://api.together.xyz/v1",
-            api_key=os.environ["TOGETHER_API_KEY"],
-            model="mistralai/Mixtral-8x7B-Instruct-v0.1",
-            temperature=0,
-        )
+        models["together-ai-mistral-8x7b-instruct-v0.1"] = {
+            "chat_model": ChatOpenAI(
+                base_url="https://api.together.xyz/v1",
+                api_key=os.environ["TOGETHER_API_KEY"],
+                model="mistralai/Mixtral-8x7B-Instruct-v0.1",
+                temperature=0,
+            ),
+            "description": "Mixtral 8x7B Instruct v0.1 (Together AI)",
+        }
 
     return models
 
@@ -47,7 +57,7 @@ def get_chunk_size(model_name: str) -> int:
 def get_model(model_name: Optional[str] = None) -> BaseChatModel:
     """Get the model."""
     if model_name is None:
-        return SUPPORTED_MODELS[DEFAULT_MODEL]
+        return SUPPORTED_MODELS[DEFAULT_MODEL]["chat_model"]
     else:
         supported_model_names = list(SUPPORTED_MODELS.keys())
         if model_name not in supported_model_names:
@@ -56,4 +66,4 @@ def get_model(model_name: Optional[str] = None) -> BaseChatModel:
                 f"Supported models: {supported_model_names}"
             )
         else:
-            return SUPPORTED_MODELS[model_name]
+            return SUPPORTED_MODELS[model_name]["chat_model"]

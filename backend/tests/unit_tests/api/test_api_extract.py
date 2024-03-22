@@ -132,6 +132,11 @@ async def test_extract_from_file() -> None:
         assert response.json() == {"data": ["This is a "]}
 
 
+@patch(
+    "server.extraction_runnable.extraction_runnable",
+    new=RunnableLambda(mock_extraction_runnable),
+)
+@patch("server.extraction_runnable.TokenTextSplitter", mock_text_splitter)
 async def test_extract_from_large_file() -> None:
     user_id = str(uuid4())
     headers = {"x-key": user_id}
@@ -167,22 +172,23 @@ async def test_extract_from_large_file() -> None:
                 )
         assert response.status_code == 413
 
-        # Test page number constraint
+        # Test chunk count constraint
         with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as f:
             f.write("This is a named temporary file.")
             f.seek(0)
             f.flush()
-            with patch(
-                "extraction.parsing._guess_mimetype", return_value="application/pdf"
-            ):
-                with patch("extraction.parsing._get_pdf_page_count", return_value=100):
+            with patch("server.extraction_runnable.settings.MAX_CHUNKS", 1):
+                with patch.object(
+                    CharacterTextSplitter, "split_text", return_value=["a", "b"]
+                ):
                     response = await client.post(
                         "/extract",
                         data={
                             "extractor_id": extractor_id,
                             "mode": "entire_document",
                         },
-                        files={"file": f.name},
+                        files={"file": f},
                         headers=headers,
                     )
-        assert response.status_code == 413
+        assert response.status_code == 200
+        assert response.json() == {"data": ["a"]}
