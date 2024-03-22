@@ -29,4 +29,5 @@ def get() -> ConfigurationResponse:
         "available_models": sorted(SUPPORTED_MODELS),
         "accepted_mimetypes": SUPPORTED_MIMETYPES,
         "max_file_size_mb": MAX_FILE_SIZE_MB,
+        "max_chunk_count": 20,
     }
