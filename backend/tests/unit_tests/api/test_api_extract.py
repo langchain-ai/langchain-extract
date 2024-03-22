@@ -83,7 +83,10 @@ async def test_extract_from_file() -> None:
             headers=headers,
         )
         assert response.status_code == 200
-        assert response.json() == {"data": ["Test Conte"]}
+        assert response.json() == {
+            "data": ["Test Conte"],
+            "content_too_long": False,
+        }
 
         # Vary chat model
         response = await client.post(
@@ -97,7 +100,10 @@ async def test_extract_from_file() -> None:
             headers=headers,
         )
         assert response.status_code == 200
-        assert response.json() == {"data": ["Test Conte"]}
+        assert response.json() == {
+            "data": ["Test Conte"],
+            "content_too_long": False,
+        }
 
         # Test retrieval
         response = await client.post(
@@ -110,7 +116,9 @@ async def test_extract_from_file() -> None:
             headers=headers,
         )
         assert response.status_code == 200
-        assert response.json() == {"data": ["Test Conte"]}
+        assert response.json() == {
+            "data": ["Test Conte"],
+        }
 
         # We'll use multi-form data here.
         # Create a named temporary file
@@ -129,7 +137,7 @@ async def test_extract_from_file() -> None:
             )
 
         assert response.status_code == 200, response.text
-        assert response.json() == {"data": ["This is a "]}
+        assert response.json() == {"data": ["This is a "], "content_too_long": False}
 
 
 @patch(
@@ -191,4 +199,7 @@ async def test_extract_from_large_file() -> None:
                         headers=headers,
                     )
         assert response.status_code == 200
-        assert response.json() == {"data": ["a"]}
+        assert response.json() == {
+            "data": ["a", "b"],
+            "content_too_long": False,
+        }
