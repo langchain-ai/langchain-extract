@@ -182,7 +182,4 @@ def validate_extractor_owner(
     extractor = (
         session.query(Extractor).filter_by(uuid=extractor_id, owner_id=user_id).first()
     )
-    if extractor is None:
-        return False
-    else:
-        return True
+    return extractor is not None

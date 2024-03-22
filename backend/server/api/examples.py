@@ -2,11 +2,12 @@
 from typing import Any, List
 from uuid import UUID
 
-from fastapi import APIRouter, Cookie, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated, TypedDict
 
 from db.models import Example, get_session, validate_extractor_owner
+from server.api.api_key import UserToken
 
 router = APIRouter(
     prefix="/examples",
@@ -36,7 +37,7 @@ def create(
     create_request: CreateExample,
     *,
     session: Session = Depends(get_session),
-    user_id: UUID = Cookie(...),
+    user_id: UUID = Depends(UserToken),
 ) -> CreateExampleResponse:
     """Endpoint to create an example."""
     if not validate_extractor_owner(session, create_request["extractor_id"], user_id):
@@ -59,7 +60,7 @@ def list(
     limit: int = 10,
     offset: int = 0,
     session=Depends(get_session),
-    user_id: UUID = Cookie(...),
+    user_id: UUID = Depends(UserToken),
 ) -> List[Any]:
     """Endpoint to get all examples."""
     if not validate_extractor_owner(session, extractor_id, user_id):
@@ -76,7 +77,10 @@ def list(
 
 @router.delete("/{uuid}")
 def delete(
-    uuid: UUID, *, session: Session = Depends(get_session), user_id: UUID = Cookie(...)
+    uuid: UUID,
+    *,
+    session: Session = Depends(get_session),
+    user_id: UUID = Depends(UserToken),
 ) -> None:
     """Endpoint to delete an example."""
     extractor_id = session.query(Example).filter_by(uuid=str(uuid)).first().extractor_id

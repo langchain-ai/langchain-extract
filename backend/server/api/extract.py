@@ -1,12 +1,13 @@
 from typing import Literal, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Cookie, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
 from db.models import Extractor, SharedExtractors, get_session
 from extraction.parsing import parse_binary_input
+from server.api.api_key import UserToken
 from server.extraction_runnable import ExtractResponse, extract_entire_document
 from server.models import DEFAULT_MODEL
 from server.retrieval import extract_from_content
@@ -27,7 +28,7 @@ async def extract_using_existing_extractor(
     file: Optional[UploadFile] = File(None),
     model_name: Optional[str] = Form(DEFAULT_MODEL),
     session: Session = Depends(get_session),
-    user_id: UUID = Cookie(...),
+    user_id: UUID = Depends(UserToken),
 ) -> ExtractResponse:
     """Endpoint that is used with an existing extractor.
 

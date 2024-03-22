@@ -42,7 +42,7 @@ async def test_extract_from_file() -> None:
     """Test extract from file API."""
     async with get_async_client() as client:
         user_id = str(uuid4())
-        cookies = {"user_id": user_id}
+        headers = {"x-key": user_id}
         # Test with invalid extractor
         extractor_id = UUID(int=1027)  # 1027 is a good number.
         response = await client.post(
@@ -51,7 +51,7 @@ async def test_extract_from_file() -> None:
                 "extractor_id": str(extractor_id),
                 "text": "Test Content",
             },
-            cookies=cookies,
+            headers=headers,
         )
         assert response.status_code == 404, response.text
 
@@ -63,7 +63,9 @@ async def test_extract_from_file() -> None:
             "instruction": "Test Instruction",
         }
         response = await client.post(
-            "/extractors", json=create_request, cookies=cookies
+            "/extractors",
+            json=create_request,
+            headers=headers,
         )
         assert response.status_code == 200, response.text
         # Get the extractor id
@@ -78,7 +80,7 @@ async def test_extract_from_file() -> None:
                 "text": "Test Content",
                 "mode": "entire_document",
             },
-            cookies=cookies,
+            headers=headers,
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
@@ -92,7 +94,7 @@ async def test_extract_from_file() -> None:
                 "mode": "entire_document",
                 "model_name": "gpt-3.5-turbo",
             },
-            cookies=cookies,
+            headers=headers,
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
@@ -105,7 +107,7 @@ async def test_extract_from_file() -> None:
                 "text": "Test Content",
                 "mode": "retrieval",
             },
-            cookies=cookies,
+            headers=headers,
         )
         assert response.status_code == 200
         assert response.json() == {"data": ["Test Conte"]}
@@ -123,7 +125,7 @@ async def test_extract_from_file() -> None:
                     "mode": "entire_document",
                 },
                 files={"file": f},
-                cookies=cookies,
+                headers=headers,
             )
 
         assert response.status_code == 200, response.text
@@ -132,7 +134,7 @@ async def test_extract_from_file() -> None:
 
 async def test_extract_from_large_file() -> None:
     user_id = str(uuid4())
-    cookies = {"user_id": user_id}
+    headers = {"x-key": user_id}
     async with get_async_client() as client:
         # First create an extractor
         create_request = {
@@ -142,7 +144,7 @@ async def test_extract_from_large_file() -> None:
             "instruction": "Test Instruction",
         }
         response = await client.post(
-            "/extractors", json=create_request, cookies=cookies
+            "/extractors", json=create_request, headers=headers
         )
         assert response.status_code == 200, response.text
         # Get the extractor id
@@ -161,7 +163,7 @@ async def test_extract_from_large_file() -> None:
                         "mode": "entire_document",
                     },
                     files={"file": f},
-                    cookies=cookies,
+                    headers=headers,
                 )
         assert response.status_code == 413
 
@@ -181,6 +183,6 @@ async def test_extract_from_large_file() -> None:
                             "mode": "entire_document",
                         },
                         files={"file": f.name},
-                        cookies=cookies,
+                        headers=headers,
                     )
         assert response.status_code == 413
