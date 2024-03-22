@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field, validator
 from typing_extensions import TypedDict
 
 from db.models import Example, Extractor
+from extraction.parsing import MAX_CHUNK_COUNT
 from extraction.utils import update_json_schema
 from server.models import DEFAULT_MODEL, get_chunk_size, get_model
 from server.validators import validate_json_schema
@@ -191,6 +192,7 @@ async def extract_entire_document(
         model_name=DEFAULT_MODEL,
     )
     texts = text_splitter.split_text(content)
+    texts = texts[:MAX_CHUNK_COUNT]
     extraction_requests = [
         ExtractRequest(
             text=text,

@@ -4,7 +4,7 @@ from typing import List
 from fastapi import APIRouter
 from typing_extensions import TypedDict
 
-from extraction.parsing import MAX_FILE_SIZE_MB, SUPPORTED_MIMETYPES
+from extraction.parsing import MAX_CHUNK_COUNT, MAX_FILE_SIZE_MB, SUPPORTED_MIMETYPES
 from server.models import SUPPORTED_MODELS
 
 router = APIRouter(
@@ -29,5 +29,5 @@ def get() -> ConfigurationResponse:
         "available_models": sorted(SUPPORTED_MODELS),
         "accepted_mimetypes": SUPPORTED_MIMETYPES,
         "max_file_size_mb": MAX_FILE_SIZE_MB,
-        "max_chunk_count": 20,
+        "max_chunk_count": MAX_CHUNK_COUNT,
     }
