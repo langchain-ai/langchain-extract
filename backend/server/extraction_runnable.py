@@ -192,7 +192,11 @@ async def extract_entire_document(
         model_name=DEFAULT_MODEL,
     )
     texts = text_splitter.split_text(content)
-    texts = texts[:MAX_CHUNK_COUNT]
+    if len(texts) > MAX_CHUNK_COUNT:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Text exceeds the maximum limit of {MAX_CHUNK_COUNT} chunks.",
+        )
     extraction_requests = [
         ExtractRequest(
             text=text,

@@ -187,5 +187,4 @@ async def test_extract_from_large_file() -> None:
                     files={"file": f},
                     headers=headers,
                 )
-        assert response.status_code == 200
-        assert response.json() == {"data": []}
+        assert response.status_code == 413
