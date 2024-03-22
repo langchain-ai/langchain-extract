@@ -74,10 +74,15 @@ const createExtractor: MutationFunction<any, any> = async (extractor) => {
   return response.data;
 };
 
+export type Model = {
+  name: string;
+  description: string;
+};
+
 export type ServerConfiguration = {
-  available_models: string[];
   max_file_size_mb: number;
   accepted_mimetypes: string[];
+  models: Model[];
 };
 
 const getConfiguration = async (): Promise<ServerConfiguration> => {
