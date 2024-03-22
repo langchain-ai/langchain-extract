@@ -15,6 +15,7 @@ from typing_extensions import TypedDict
 
 from db.models import Example, Extractor
 from extraction.utils import update_json_schema
+from server import settings
 from server.models import DEFAULT_MODEL, get_chunk_size, get_model
 from server.validators import validate_json_schema
 
@@ -169,9 +170,9 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResp
     )
     model = get_model(extraction_request.model_name)
     # N.B. method must be consistent with examples in _make_prompt_template
-    runnable = prompt | model.with_structured_output(
-        schema=schema, method="function_calling"
-    )
+    runnable = (
+        prompt | model.with_structured_output(schema=schema, method="function_calling")
+    ).with_config({"run_name": "extraction"})
 
     return await runnable.ainvoke({"text": extraction_request.text})
 
@@ -201,9 +202,14 @@ async def extract_entire_document(
         )
         for text in texts
     ]
+
+    if settings.MAX_CHUNKS >= 1:
+        # Limit the number of chunks to process
+        extraction_requests = extraction_requests[: settings.MAX_CHUNKS]
+
     # Run extractions which may potentially yield duplicate results
     extract_responses: List[ExtractResponse] = await extraction_runnable.abatch(
-        extraction_requests, {"max_concurrency": 1}
+        extraction_requests, {"max_concurrency": settings.MAX_CONCURRENCY}
     )
     # Deduplicate the results
     return deduplicate(extract_responses)
