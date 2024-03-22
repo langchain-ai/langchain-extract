@@ -134,6 +134,7 @@ async def test_extract_from_file() -> None:
 
 async def test_extract_from_large_file() -> None:
     user_id = str(uuid4())
+    x = 3
     headers = {"x-key": user_id}
     async with get_async_client() as client:
         # First create an extractor
