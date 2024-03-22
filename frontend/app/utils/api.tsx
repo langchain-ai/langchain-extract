@@ -20,6 +20,10 @@ type ExtractorData = {
 };
 
 const getApiKey = (): string => {
+  if (typeof window === "undefined") {
+    return uuidv4();
+  }
+
   const key = localStorage.getItem("lc-extract-key");
   if (!key) {
     // Generate key
