@@ -14,6 +14,7 @@ async def test_configuration_api() -> None:
             "max_chunks",
             "max_concurrency",
             "max_file_size_mb",
+            "models",
         ]
         models = result["available_models"]
         assert all(isinstance(model_name, str) for model_name in models)
