@@ -14,7 +14,6 @@ from pydantic import BaseModel, Field, validator
 from typing_extensions import TypedDict
 
 from db.models import Example, Extractor
-from extraction.parsing import MAX_CHUNK_COUNT
 from extraction.utils import update_json_schema
 from server import settings
 from server.models import DEFAULT_MODEL, get_chunk_size, get_model
@@ -193,11 +192,6 @@ async def extract_entire_document(
         model_name=DEFAULT_MODEL,
     )
     texts = text_splitter.split_text(content)
-    if len(texts) > MAX_CHUNK_COUNT:
-        raise HTTPException(
-            status_code=413,
-            detail=f"Text exceeds the maximum limit of {MAX_CHUNK_COUNT} chunks.",
-        )
     extraction_requests = [
         ExtractRequest(
             text=text,

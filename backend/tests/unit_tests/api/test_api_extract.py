@@ -177,14 +177,18 @@ async def test_extract_from_large_file() -> None:
             f.write("This is a named temporary file.")
             f.seek(0)
             f.flush()
-            with patch("server.extraction_runnable.MAX_CHUNK_COUNT", 0):
-                response = await client.post(
-                    "/extract",
-                    data={
-                        "extractor_id": extractor_id,
-                        "mode": "entire_document",
-                    },
-                    files={"file": f},
-                    headers=headers,
-                )
-        assert response.status_code == 413
+            with patch("server.extraction_runnable.settings.MAX_CHUNKS", 1):
+                with patch.object(
+                    CharacterTextSplitter, "split_text", return_value=["a", "b"]
+                ):
+                    response = await client.post(
+                        "/extract",
+                        data={
+                            "extractor_id": extractor_id,
+                            "mode": "entire_document",
+                        },
+                        files={"file": f},
+                        headers=headers,
+                    )
+        assert response.status_code == 200
+        assert response.json() == {"data": ["a"]}

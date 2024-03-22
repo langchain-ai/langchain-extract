@@ -26,7 +26,6 @@ HANDLERS = {
 SUPPORTED_MIMETYPES = sorted(HANDLERS.keys())
 
 MAX_FILE_SIZE_MB = 10  # in MB
-MAX_CHUNK_COUNT = 50
 
 
 def _guess_mimetype(file_bytes: bytes) -> str:
