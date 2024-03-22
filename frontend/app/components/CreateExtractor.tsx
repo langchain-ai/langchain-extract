@@ -1,16 +1,19 @@
 "use client";
 
 import {
+  AbsoluteCenter,
   Accordion,
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
   Badge,
+  Box,
   Button,
   Card,
   CardBody,
   CircularProgress,
+  Divider,
   FormControl,
   Heading,
   Icon,
@@ -24,8 +27,8 @@ import validator from "@rjsf/validator-ajv8";
 import CodeMirror from "@uiw/react-codemirror";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
-import React from "react";
 import { useRouter } from "next/navigation";
+import React from "react";
 
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
@@ -47,6 +50,7 @@ const CreateExtractor = ({}) => {
   // You might use a mutation hook here if you're
   // using something like React Query for state management
   const [schema, setSchema] = React.useState(startSchema);
+  const [creatable, setCreatable] = React.useState(false);
   const [lastValidSchema, setLastValidSchema] = React.useState(
     JSON.parse(startSchema),
   );
@@ -79,8 +83,12 @@ const CreateExtractor = ({}) => {
       ajv.compile(parsedSchema);
       setCurrentSchemaValid(true);
       setLastValidSchema(parsedSchema);
+      // OK to create if schema is parseable and not empty
+      // and contains an object at the top level
+      setCreatable(parsedSchema.type === "object");
     } catch (e) {
       setCurrentSchemaValid(false);
+      setCreatable(false);
     }
   }, [schema]);
 
@@ -148,7 +156,12 @@ const CreateExtractor = ({}) => {
         className="m-auto flex flex-col content-between gap-5 mt-10"
         onSubmit={handleSubmit}
       >
-        <div className="divider">OR</div>
+        <Box position="relative" padding="10">
+          <Divider />
+          <AbsoluteCenter bg="white" px="10">
+            OR
+          </AbsoluteCenter>
+        </Box>
         <Accordion allowToggle={true}>
           <AccordionItem>
             <AccordionButton>
@@ -199,7 +212,7 @@ const CreateExtractor = ({}) => {
             </Card>
           </>
         )}
-        <Button className="btn" type="submit" size="lg">
+        <Button className="btn" type="submit" size="lg" isDisabled={!creatable}>
           Create
         </Button>
       </form>

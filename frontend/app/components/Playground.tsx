@@ -129,12 +129,22 @@ export const Playground = (props: PlaygroundProps) => {
             </FormControl>
           )}
           {requestServerConfig.isFetched && (
-            <input
-              type="file"
-              name="file"
-              className="file-input"
-              accept={requestServerConfig.data?.accepted_mimetypes.join(", ")}
-            />
+            <>
+              <input
+                type="file"
+                name="file"
+                accept={requestServerConfig.data?.accepted_mimetypes.join(", ")}
+                color="blue"
+                className="border-2 border-dashed border-gray-300 rounded-md p-4 w-full file:mr-4"
+              />
+              <Text fontSize="xs">
+                Max file size is: {requestServerConfig.data?.max_file_size_mb}MB
+              </Text>
+              <Text fontSize="xs">
+                Supported mimetypes:{" "}
+                {requestServerConfig.data?.accepted_mimetypes.join(", ")}
+              </Text>
+            </>
           )}
           <Box position="relative" padding="10">
             <Divider />
