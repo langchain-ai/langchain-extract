@@ -136,6 +136,7 @@ async def test_extract_from_file() -> None:
     "server.extraction_runnable.extraction_runnable",
     new=RunnableLambda(mock_extraction_runnable),
 )
+@patch("server.extraction_runnable.TokenTextSplitter", mock_text_splitter)
 async def test_extract_from_large_file() -> None:
     user_id = str(uuid4())
     headers = {"x-key": user_id}
