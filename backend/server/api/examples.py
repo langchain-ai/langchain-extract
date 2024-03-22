@@ -83,7 +83,10 @@ def delete(
     user_id: UUID = Depends(UserToken),
 ) -> None:
     """Endpoint to delete an example."""
-    extractor_id = session.query(Example).filter_by(uuid=str(uuid)).first().extractor_id
+    example = session.query(Example).filter_by(uuid=str(uuid)).first()
+    if example is None:
+        raise HTTPException(status_code=404, detail="Example not found.")
+    extractor_id = example.extractor_id
     if not validate_extractor_owner(session, extractor_id, user_id):
         raise HTTPException(status_code=404, detail="Extractor not found for owner.")
     session.query(Example).filter_by(uuid=str(uuid)).delete()
