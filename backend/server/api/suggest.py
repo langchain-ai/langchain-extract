@@ -72,7 +72,7 @@ SUGGEST_PROMPT = ChatPromptTemplate.from_messages(
 
 suggestion_chain = SUGGEST_PROMPT | model.with_structured_output(
     schema=ExtractorDefinition
-)
+).with_config({"run_name": "suggest"})
 
 UPDATE_PROMPT = ChatPromptTemplate.from_messages(
     [
@@ -94,7 +94,9 @@ UPDATE_PROMPT = ChatPromptTemplate.from_messages(
     ]
 )
 
-UPDATE_CHAIN = UPDATE_PROMPT | model.with_structured_output(schema=ExtractorDefinition)
+UPDATE_CHAIN = (
+    UPDATE_PROMPT | model.with_structured_output(schema=ExtractorDefinition)
+).with_config({"run_name": "suggest_update"})
 
 
 # PUBLIC API
@@ -104,7 +106,6 @@ UPDATE_CHAIN = UPDATE_PROMPT | model.with_structured_output(schema=ExtractorDefi
 async def suggest(request: SuggestExtractor) -> ExtractorDefinition:
     """Endpoint to create an extractor."""
     if len(request.jsonSchema) > 10:
-        print(f"Using update chain with {request.jsonSchema}")
         return await UPDATE_CHAIN.ainvoke(
             {"input": request.description, "json_schema": request.jsonSchema}
         )
