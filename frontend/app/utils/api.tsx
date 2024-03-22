@@ -79,7 +79,6 @@ export type ServerConfiguration = {
   max_file_size_mb: number;
   accepted_mimetypes: string[];
 };
-
 const getConfiguration = async (): Promise<ServerConfiguration> => {
   const baseUrl = getBaseApiUrl();
   const response = await axiosClient.get(`${baseUrl}/configuration`);
@@ -173,5 +172,88 @@ export const useCreateExtractor = ({
       queryClient.invalidateQueries({ queryKey: ["getExtractors"] });
       onSuccess(data);
     },
+  });
+};
+
+type CreateExampleRequest = {
+  extractor_id: string;
+  content: string;
+  output: any[];
+};
+
+type CreateExampleResponse = {
+  uuid: string;
+};
+
+const createExample: MutationFunction<
+  CreateExampleResponse,
+  CreateExampleRequest
+> = async (example) => {
+  const baseUrl = getBaseApiUrl();
+  const response = await axiosClient.post(`${baseUrl}/examples`, example);
+  return response.data;
+};
+
+export const useCreateExample = ({ onSuccess }: { onSuccess: OnSuccessFn }) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createExample,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["getExamples"] });
+      onSuccess(data);
+    },
+  });
+};
+type DeleteExampleParams = {
+  uuid: string;
+};
+
+const deleteExample = async ({ uuid }: DeleteExampleParams): Promise<void> => {
+  const baseUrl: string = getBaseApiUrl();
+  await axiosClient.delete(`${baseUrl}/examples/${uuid}`);
+};
+
+export const useDeleteExample = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteExample,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getExamples"] });
+    },
+  });
+};
+
+type Example = {
+  uuid: string;
+  content: string;
+  output: any[];
+};
+
+type ListExamplesParams = {
+  extractor_id: string;
+  limit?: number;
+  offset?: number;
+};
+
+const fetchExamples = async ({
+  queryKey,
+}: {
+  queryKey: [string, ListExamplesParams];
+}): Promise<Example[]> => {
+  const [, { extractor_id, limit = 10, offset = 0 }] = queryKey;
+  const baseUrl = getBaseApiUrl();
+  const queryParams: string = new URLSearchParams({
+    extractor_id,
+    limit: limit.toString(),
+    offset: offset.toString(),
+  }).toString();
+  const response = await axiosClient.get(`${baseUrl}/examples?${queryParams}`);
+  return response.data;
+};
+
+export const useListExamples = (params: ListExamplesParams) => {
+  return useQuery({
+    queryKey: ["listExamples", params],
+    queryFn: fetchExamples,
   });
 };
