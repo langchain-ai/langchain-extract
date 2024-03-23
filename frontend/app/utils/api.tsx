@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
 import { getBaseApiUrl } from "./api_url";
-import { use } from "react";
 
 type ExtractorData = {
   uuid: string;
@@ -206,7 +205,9 @@ export const useCreateExample = ({ onSuccess }: { onSuccess: OnSuccessFn }) => {
   return useMutation({
     mutationFn: createExample,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["getExamples"] });
+      // TDOO: invalidate only for the extractor ID asscoiated with the example
+      // that was deleted.
+      queryClient.invalidateQueries({ queryKey: ["listExamples"] });
       onSuccess(data);
     },
   });
@@ -225,7 +226,9 @@ export const useDeleteExample = () => {
   return useMutation({
     mutationFn: deleteExample,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["getExamples"] });
+      // TDOO: invalidate only for the extractor ID asscoiated with the example
+      // that was deleted.
+      queryClient.invalidateQueries({ queryKey: ["listExamples"] });
     },
   });
 };
@@ -238,16 +241,16 @@ type Example = {
 
 type ListExamplesParams = {
   extractor_id: string;
-  limit?: number;
-  offset?: number;
+  limit: number;
+  offset: number;
 };
 
 const fetchExamples = async ({
   queryKey,
 }: {
-  queryKey: [string, ListExamplesParams];
+  queryKey: [string, string, number, number];
 }): Promise<Example[]> => {
-  const [, { extractor_id, limit = 10, offset = 0 }] = queryKey;
+  const [, extractor_id, limit = 10, offset = 0] = queryKey;
   const baseUrl = getBaseApiUrl();
   const queryParams: string = new URLSearchParams({
     extractor_id,
@@ -260,7 +263,12 @@ const fetchExamples = async ({
 
 export const useListExamples = (params: ListExamplesParams) => {
   return useQuery({
-    queryKey: ["listExamples", params],
+    queryKey: [
+      "listExamples",
+      params.extractor_id,
+      params.limit,
+      params.offset,
+    ],
     queryFn: fetchExamples,
   });
 };

@@ -36,7 +36,11 @@ type ExtractorProps = {
  * Component to view and manage an extractor.
  */
 export const Examples = ({ extractorId }: ExtractorProps) => {
-  const listExamplesQuery = useListExamples({ extractor_id: extractorId });
+  const listExamplesQuery = useListExamples({
+    extractor_id: extractorId,
+    limit: 10,
+    offset: 0, // Hard code pagination for now
+  });
   const useDeleteMutation = useDeleteExample();
   if (listExamplesQuery.isLoading) {
     return <div>Loading...</div>;
@@ -52,7 +56,11 @@ export const Examples = ({ extractorId }: ExtractorProps) => {
       {data &&
         data.map((example) => (
           <div key={example.uuid}>
-            <Container margin={'auto'} marginBottom={"5"} scrollBehavior={"auto"}>
+            <Container
+              margin={"auto"}
+              marginBottom={"5"}
+              scrollBehavior={"auto"}
+            >
               <Flex alignItems="center" justifyContent="space-between">
                 <Box flex="1" marginRight="2">
                   <Text isTruncated>{example.content}</Text>
