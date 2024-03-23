@@ -165,6 +165,12 @@ export const Playground = (props: PlaygroundProps) => {
         </form>
       </div>
       <div className="m-auto">
+        {data?.content_too_long && (
+          <Text color={"red"} margin={5}>
+            The content was too long to be processed. Extraction was run on a
+            truncated version of the content.
+          </Text>
+        )}
         <Tabs variant={"enclosed"} colorScheme="blue" size="sm">
           <TabList>
             <Tab>Table</Tab>
