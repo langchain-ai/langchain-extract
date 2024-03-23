@@ -10,7 +10,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 
-import ExtractionResponse from "../utils/api";
+import { ExtractionResponse } from "../utils/api";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
