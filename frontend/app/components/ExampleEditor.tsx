@@ -154,7 +154,7 @@ export const ExampleEditor = ({ extractorId, isShared }: ExtractorProps) => {
     createExampleMutation.mutate({
       extractor_id: extractorId,
       content: formData.formData.content,
-      output: [formData.formData.output],
+      output: formData.formData.output,
     });
   };
 
