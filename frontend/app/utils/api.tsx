@@ -184,6 +184,8 @@ export const useCreateExtractor = ({
 type CreateExampleRequest = {
   extractor_id: string;
   content: string;
+  // Any can be any JSON serializable object
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   output: any[];
 };
 
@@ -200,15 +202,14 @@ const createExample: MutationFunction<
   return response.data;
 };
 
-export const useCreateExample = ({ onSuccess }: { onSuccess: OnSuccessFn }) => {
+export const useCreateExample = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createExample,
-    onSuccess: (data) => {
+    onSuccess: () => {
       // TDOO: invalidate only for the extractor ID asscoiated with the example
       // that was deleted.
       queryClient.invalidateQueries({ queryKey: ["listExamples"] });
-      onSuccess(data);
     },
   });
 };
