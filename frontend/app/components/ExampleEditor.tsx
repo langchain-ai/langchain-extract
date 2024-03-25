@@ -55,7 +55,9 @@ const Examples = ({ extractorId }: { extractorId: string }) => {
   const data = listExamplesQuery.data;
   return (
     <div className="w-5/5">
-      {data && (
+      {data && data.length === 0 ? (
+        <Text>Use the form below to add examples to the extractor</Text>
+      ) : (
         <Table variant="simple">
           <TableCaption placement={"top"}>
             View and Delete Examples
@@ -68,28 +70,29 @@ const Examples = ({ extractorId }: { extractorId: string }) => {
             </Tr>
           </Thead>
           <Tbody>
-            {data.map((example) => (
-              <Tr key={example.uuid}>
-                <Td>{example.content}</Td>
-                <Td>
-                  <SyntaxHighlighter language="json" style={docco}>
-                    {JSON.stringify(example.output, null, 2)}
-                  </SyntaxHighlighter>
-                </Td>
-                <Td>
-                  <IconButton
-                    onClick={() =>
-                      useDeleteMutation.mutate({ uuid: example.uuid })
-                    }
-                    variant={"outline"}
-                    isLoading={useDeleteMutation.isPending}
-                    colorScheme="red"
-                    aria-label="Delete example"
-                    icon={<TrashIcon />}
-                  />
-                </Td>
-              </Tr>
-            ))}
+            {data &&
+              data.map((example) => (
+                <Tr key={example.uuid}>
+                  <Td>{example.content}</Td>
+                  <Td>
+                    <SyntaxHighlighter language="json" style={docco}>
+                      {JSON.stringify(example.output, null, 2)}
+                    </SyntaxHighlighter>
+                  </Td>
+                  <Td>
+                    <IconButton
+                      onClick={() =>
+                        useDeleteMutation.mutate({ uuid: example.uuid })
+                      }
+                      variant={"outline"}
+                      isLoading={useDeleteMutation.isPending}
+                      colorScheme="red"
+                      aria-label="Delete example"
+                      icon={<TrashIcon />}
+                    />
+                  </Td>
+                </Tr>
+              ))}
           </Tbody>
         </Table>
       )}
@@ -165,7 +168,7 @@ export const ExampleEditor = ({ extractorId, isShared }: ExtractorProps) => {
         </AbsoluteCenter>
       </Box>
       <Form
-        // @ts-ignore
+        // @ts-expect-error - Need to investigate
         schema={newSchema}
         uiSchema={UISchema}
         validator={validator}

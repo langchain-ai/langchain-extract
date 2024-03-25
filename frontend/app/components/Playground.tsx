@@ -116,9 +116,7 @@ export const Playground = (props: PlaygroundProps) => {
   }
 
   if (extractorQuery.isError) {
-    return (
-      <div>Unable to load extractor with ID: {extractorId}</div>
-    );
+    return <div>Unable to load extractor with ID: {extractorId}</div>;
   }
 
   if (extractorQuery.data === undefined) {
