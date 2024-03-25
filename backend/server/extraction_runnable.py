@@ -57,10 +57,13 @@ class ExtractRequest(CustomUserType):
         return v
 
 
-class ExtractResponse(TypedDict):
+class ExtractResponse(TypedDict, total=False):
     """Response body for the extract endpoint."""
 
     data: List[Any]
+    # content to long will be set to true if the content is too long
+    # and had to be truncated
+    content_too_long: Optional[bool]
 
 
 def _cast_example_to_dict(example: Example) -> Dict[str, Any]:
@@ -203,13 +206,19 @@ async def extract_entire_document(
         for text in texts
     ]
 
-    if settings.MAX_CHUNKS >= 1:
-        # Limit the number of chunks to process
+    # Limit the number of chunks to process
+    if len(extraction_requests) > settings.MAX_CHUNKS and settings.MAX_CHUNKS > 0:
+        content_too_long = True
         extraction_requests = extraction_requests[: settings.MAX_CHUNKS]
+    else:
+        content_too_long = False
 
     # Run extractions which may potentially yield duplicate results
     extract_responses: List[ExtractResponse] = await extraction_runnable.abatch(
         extraction_requests, {"max_concurrency": settings.MAX_CONCURRENCY}
     )
     # Deduplicate the results
-    return deduplicate(extract_responses)
+    return {
+        "data": deduplicate(extract_responses)["data"],
+        "content_too_long": content_too_long,
+    }
