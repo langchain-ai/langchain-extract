@@ -4,6 +4,8 @@ This repo is under active developments. Do not use code from `main`. Instead ple
 
 This repository is not a library, but a jumping point for your own application -- so do not be surprised to find breaking changes between releases!
 
+Checkout the demo service deployed at [extract.langchain.com/](https://extract.langchain.com/).
+
 # 🦜⛏️ LangChain Extract
 
 https://github.com/langchain-ai/langchain-extract/assets/26529506/6657280e-d05f-4c0f-9c47-07a0ef7c559d
