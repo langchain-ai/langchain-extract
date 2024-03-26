@@ -26,6 +26,7 @@ lxml = "^5.1.0"
 faiss-cpu = "^1.7.4"
 python-multipart = "^0.0.9"
 langchain-fireworks = "^0.1.1"
+langchain-mistralai = "0.1.0rc2"
 
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "^3.6.1"
