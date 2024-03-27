@@ -2,27 +2,6 @@ version: "3.8"
 name: langchain-extract
 
 services:
-  postgres:
-    # Careful if bumping postgres version.
-    # Make sure to keep in sync with CI 
-    # version if being tested on CI.
-    image: postgres:16
-    expose:
-      - "5432"
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: langchain
-      POSTGRES_USER: langchain
-      POSTGRES_PASSWORD: langchain
-    healthcheck:
-        test: [ "CMD-SHELL", "pg_isready -U langchain -d langchain -W langchain" ]
-        interval: 10s
-        timeout: 5s
-        retries: 5
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   backend:
     build:
       context: .
@@ -31,13 +10,10 @@ services:
     env_file:
       - .local.env
     environment:
-      - PG_HOST=postgres
         # Define CORS origins for dev work on UI
       - CORS_ORIGINS=http://localhost:3000
     ports:
       - "8000:8000" # Backend is accessible on localhost:8100
-    depends_on:
-      - postgres
     volumes:
       - ./backend:/backend
 
@@ -55,6 +31,3 @@ services:
       - /app/node_modules
     depends_on:
       - backend
-
-volumes:
-  postgres_data:

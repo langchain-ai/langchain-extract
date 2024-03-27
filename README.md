@@ -1,28 +1,6 @@
-🚧 Under Active Development 🚧
 
-This repo is under active developments. Do not use code from `main`. Instead please checkout code from [releases](https://github.com/langchain-ai/langchain-extract/releases)
 
-This repository is not a library, but a jumping point for your own application -- so do not be surprised to find breaking changes between releases!
-
-Checkout the demo service deployed at [extract.langchain.com/](https://extract.langchain.com/).
-
-# 🦜⛏️ LangChain Extract
-
-https://github.com/langchain-ai/langchain-extract/assets/26529506/6657280e-d05f-4c0f-9c47-07a0ef7c559d
-
-[![CI](https://github.com/langchain-ai/langchain-extract/actions/workflows/ci.yml/badge.svg)](https://github.com/langchain-ai/langchain-extract/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/langchainai.svg?style=social&label=Follow%20%40LangChainAI)](https://twitter.com/langchainai)
-[![](https://dcbadge.vercel.app/api/server/6adMQxSpJS?compact=true&style=flat)](https://discord.gg/6adMQxSpJS)
-[![Open Issues](https://img.shields.io/github/issues-raw/langchain-ai/langchain-extract)](https://github.com/langchain-ai/langchain-extract/issues)
-
-`langchain-extract` is a simple web server that allows you to extract information from text and files using LLMs. It is build using [FastAPI](https://fastapi.tiangolo.com/), [LangChain](https://python.langchain.com/) and [Postgresql](https://www.postgresql.org/).
-
-The backend closely follows the [extraction use-case documentation](https://python.langchain.com/docs/use_cases/extraction) and provides
-a reference implementation of an app that helps to do extraction over data using LLMs.
-
-This repository is meant to be a starting point for building your own extraction application which
-may have slightly different requirements or use cases.
+# Revanguard Document AI
 
 ## Functionality 
 
@@ -34,25 +12,12 @@ may have slightly different requirements or use cases.
 - 📂 Extract information from text and/or binary files
 - 🦜️🏓 [LangServe](https://github.com/langchain-ai/langserve) endpoint to integrate with LangChain `RemoteRunnnable`
 
-## Releases:
-
-0.0.1: https://github.com/langchain-ai/langchain-extract/releases/tag/0.0.1
-
-## 📚 Documentation
-
-See the example notebooks in the [documentation](https://github.com/langchain-ai/langchain-extract/tree/main/docs/source/notebooks)
-to see how to create examples to improve extraction results, upload files (e.g., HTML, PDF) and more.
-
-Documentation and server code are both under development!
 
 ## 🍯 Example API
 
 Below are two sample `curl` requests to demonstrate how to use the API.
 
-These only provide minimal examples of how to use the API, 
-see the [documentation](https://github.com/langchain-ai/langchain-extract/tree/main/docs/source/notebooks) for more information
-about the API and the [extraction use-case documentation](https://python.langchain.com/docs/use_cases/extraction) for more information about how to extract
-information using LangChain.
+These only provide minimal examples of how to use the API.
 
 First we generate a user ID for ourselves. **The application does not properly manage users or include legitimate authentication**. Access to extractors, few-shot examples, and other artifacts is controlled via this ID. Consider it secret.
 ```sh
@@ -176,7 +141,7 @@ Run the services:
 docker compose up
 ```
 
-This will launch both the extraction server and the postgres instance.
+This will launch the extraction server.
 
 Verify that the server is running:
 
@@ -188,59 +153,3 @@ This should return `ok`.
 
 The UI will be available at [http://localhost:3000](http://localhost:3000).
 
-## Contributions
-
-Feel free to develop in this project for your own needs!
-For now, we are not accepting pull requests, but would love to hear [questions, ideas or issues](https://github.com/langchain-ai/langchain-extract/discussions).
-
-## Development
-
-To set up for development, you will need to install [Poetry](https://python-poetry.org/).
-
-The backend code is located in the `backend` directory.
-
-```sh
-cd backend
-```
-
-Set up the environment using poetry:
-
-```sh
-poetry install --with lint,dev,test
-```
-
-Run the following script to create a database and schema:
-
-```sh
-python -m scripts.run_migrations create 
-```
-
-From `/backend`:
-
-```sh
-OPENAI_API_KEY=[YOUR API KEY] python -m server.main
-```
-
-### Testing 
-
-Create a test database. The test database is used for running tests and is
-separate from the main database. It will have the same schema as the main
-database.
-
-```sh
-python -m scripts.run_migrations create-test-db
-```
-
-Run the tests
-
-```sh
-make test
-```
-
-### Linting and format
-
-Testing and formatting is done using a Makefile inside `[root]/backend`
-
-```sh
-make format
-```
