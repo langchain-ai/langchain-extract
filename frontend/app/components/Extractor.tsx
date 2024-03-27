@@ -38,7 +38,7 @@ export const Extractor = ({ extractorId, isShared }: ExtractorProps) => {
       <Tabs className="mt-5" variant={"enclosed"} colorScheme="blue" size="sm">
         <TabList>
           <Tab>Form</Tab>
-          <Tab>Code</Tab>
+          {/*<Tab>Code</Tab>*/}
         </TabList>
         <TabPanels>
           <TabPanel>
