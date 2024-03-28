@@ -1,7 +1,7 @@
 from server.extraction_runnable import ExtractResponse, deduplicate
 
 
-async def test_deduplication_different_resutls() -> None:
+async def test_deduplication_different_results() -> None:
     """Test deduplication of extraction results."""
     result = deduplicate(
         [
