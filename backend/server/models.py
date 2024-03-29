@@ -14,10 +14,11 @@ def get_supported_models():
             "chat_model": ChatOpenAI(model="gpt-3.5-turbo", temperature=0),
             "description": "GPT-3.5 Turbo",
         }
-        models["gpt-4-0125-preview"] = {
-            "chat_model": ChatOpenAI(model="gpt-4-0125-preview", temperature=0),
-            "description": "GPT-4 0125 Preview",
-        }
+        if os.environ.get("DISABLE_GPT4", "").lower() != "true":
+            models["gpt-4-0125-preview"] = {
+                "chat_model": ChatOpenAI(model="gpt-4-0125-preview", temperature=0),
+                "description": "GPT-4 0125 Preview",
+            }
     if "FIREWORKS_API_KEY" in os.environ:
         models["fireworks"] = {
             "chat_model": ChatFireworks(
