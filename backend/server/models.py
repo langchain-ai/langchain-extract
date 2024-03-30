@@ -3,6 +3,7 @@ from typing import Optional
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_fireworks import ChatFireworks
+from langchain_mistralai import ChatMistralAI
 from langchain_openai import ChatOpenAI
 
 
@@ -26,6 +27,11 @@ def get_supported_models():
                 temperature=0,
             ),
             "description": "Fireworks Firefunction-v1",
+        }
+    if "MISTRAL_API_KEY" in os.environ:
+        models["mistral-large"] = {
+            "chat_model": ChatMistralAI(model="mistral-large-latest", temperature=0),
+            "description": "Mistral Large",
         }
     if "TOGETHER_API_KEY" in os.environ:
         models["together-ai-mistral-8x7b-instruct-v0.1"] = {
