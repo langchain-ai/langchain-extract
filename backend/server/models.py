@@ -1,6 +1,7 @@
 import os
 from typing import Optional
 
+from langchain_anthropic import ChatAnthropic
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_fireworks import ChatFireworks
 from langchain_openai import ChatOpenAI
@@ -36,6 +37,13 @@ def get_supported_models():
                 temperature=0,
             ),
             "description": "Mixtral 8x7B Instruct v0.1 (Together AI)",
+        }
+    if "ANTHROPIC_API_KEY" in os.environ:
+        models["claude-3-sonnet-20240229"] = {
+            "chat_model": ChatAnthropic(
+                model="claude-3-sonnet-20240229", temperature=0
+            ),
+            "description": "Claude 3 Sonnet",
         }
 
     return models
