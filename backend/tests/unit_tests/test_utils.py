@@ -1,5 +1,5 @@
-from langchain_core.messages import AIMessage
 from langchain.pydantic_v1 import BaseModel, Field
+from langchain_core.messages import AIMessage
 
 from extraction.utils import update_json_schema
 from server.extraction_runnable import ExtractionExample, _make_prompt_template
