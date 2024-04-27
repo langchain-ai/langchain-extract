@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import json
+import uuid
 from typing import Any, Dict, List, Optional, Sequence
 
 from fastapi import HTTPException
 from jsonschema import Draft202012Validator, exceptions
 from langchain.text_splitter import TokenTextSplitter
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import chain
 from langserve import CustomUserType
@@ -97,19 +98,18 @@ def _make_prompt_template(
             # TODO: We'll need to refactor this at some point to
             # support other encoding strategies. The function calling logic here
             # has some hard-coded assumptions (e.g., name of parameters like `data`).
-            function_call = {
-                "arguments": json.dumps(
-                    {
-                        "data": example.output,
-                    }
-                ),
+            _id = uuid.uuid4().hex[:]
+            tool_call = {
+                "args": {"data": example.output},
                 "name": function_name,
+                "id": _id,
             }
             few_shot_prompt.extend(
                 [
                     HumanMessage(content=example.text),
-                    AIMessage(
-                        content="", additional_kwargs={"function_call": function_call}
+                    AIMessage(content="", tool_calls=[tool_call]),
+                    ToolMessage(
+                        content="You have correctly called this tool.", tool_call_id=_id
                     ),
                 ]
             )
@@ -172,10 +172,9 @@ async def extraction_runnable(extraction_request: ExtractRequest) -> ExtractResp
         schema["title"],
     )
     model = get_model(extraction_request.model_name)
-    # N.B. method must be consistent with examples in _make_prompt_template
-    runnable = (
-        prompt | model.with_structured_output(schema=schema, method="function_calling")
-    ).with_config({"run_name": "extraction"})
+    runnable = (prompt | model.with_structured_output(schema=schema)).with_config(
+        {"run_name": "extraction"}
+    )
 
     return await runnable.ainvoke({"text": extraction_request.text})
 

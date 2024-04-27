@@ -1,4 +1,5 @@
 from langchain.pydantic_v1 import BaseModel, Field
+from langchain_core.messages import AIMessage
 
 from extraction.utils import update_json_schema
 from server.extraction_runnable import ExtractionExample, _make_prompt_template
@@ -82,7 +83,7 @@ def test_make_prompt_template() -> None:
     )
     prompt = _make_prompt_template(instructions, examples, "name")
     messages = prompt.messages
-    assert 4 == len(messages)
+    assert 5 == len(messages)
     system = messages[0].prompt.template
     assert system.startswith(prefix)
     assert system.endswith(instructions)
@@ -90,11 +91,13 @@ def test_make_prompt_template() -> None:
     example_input = messages[1]
     assert example_input.content == "Test text."
     example_output = messages[2]
-    assert "function_call" in example_output.additional_kwargs
-    assert example_output.additional_kwargs["function_call"]["name"] == "name"
+    assert isinstance(example_output, AIMessage)
+    assert example_output.tool_calls
+    assert len(example_output.tool_calls) == 1
+    assert example_output.tool_calls[0]["name"] == "name"
 
     prompt = _make_prompt_template(instructions, None, "name")
     assert 2 == len(prompt.messages)
 
     prompt = _make_prompt_template(None, examples, "name")
-    assert 4 == len(prompt.messages)
+    assert 5 == len(prompt.messages)
