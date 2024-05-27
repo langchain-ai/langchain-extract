@@ -24,7 +24,7 @@ a reference implementation of an app that helps to do extraction over data using
 This repository is meant to be a starting point for building your own extraction application which
 may have slightly different requirements or use cases.
 
-## Functionality 
+## Functionality
 
 - 🚀 FastAPI webserver with a REST API
 - 📚 OpenAPI Documentation
@@ -37,6 +37,7 @@ may have slightly different requirements or use cases.
 ## Releases:
 
 0.0.1: https://github.com/langchain-ai/langchain-extract/releases/tag/0.0.1
+0.0.2: https://github.com/langchain-ai/langchain-extract/releases/tag/0.0.2
 
 ## 📚 Documentation
 
@@ -49,12 +50,13 @@ Documentation and server code are both under development!
 
 Below are two sample `curl` requests to demonstrate how to use the API.
 
-These only provide minimal examples of how to use the API, 
+These only provide minimal examples of how to use the API,
 see the [documentation](https://github.com/langchain-ai/langchain-extract/tree/main/docs/source/notebooks) for more information
 about the API and the [extraction use-case documentation](https://python.langchain.com/docs/use_cases/extraction) for more information about how to extract
 information using LangChain.
 
 First we generate a user ID for ourselves. **The application does not properly manage users or include legitimate authentication**. Access to extractors, few-shot examples, and other artifacts is controlled via this ID. Consider it secret.
+
 ```sh
 USER_ID=$(uuidgen)
 export USER_ID
@@ -134,6 +136,7 @@ Response:
 ```
 
 Add a few shot example:
+
 ```sh
 curl -X POST "http://localhost:8000/examples" \
     -H "Content-Type: application/json" \
@@ -149,6 +152,7 @@ curl -X POST "http://localhost:8000/examples" \
           ]
         }' | jq .
 ```
+
 The response will contain a UUID for the example. Examples can be deleted with a DELETE request. This example is now persisted and associated with our extractor, and subsequent extraction runs will incorporate it.
 
 ## ✅ Running locally
@@ -166,6 +170,7 @@ OPENAI_API_KEY=... # Your OpenAI API key
 Adding `FIREWORKS_API_KEY` or `TOGETHER_API_KEY` to this file would enable additional models. You can access available models for the server and other information via a `GET` request to the `configuration` endpoint.
 
 Build the images:
+
 ```sh
 docker compose build
 ```
@@ -212,7 +217,7 @@ poetry install --with lint,dev,test
 Run the following script to create a database and schema:
 
 ```sh
-python -m scripts.run_migrations create 
+python -m scripts.run_migrations create
 ```
 
 From `/backend`:
@@ -221,7 +226,7 @@ From `/backend`:
 OPENAI_API_KEY=[YOUR API KEY] python -m server.main
 ```
 
-### Testing 
+### Testing
 
 Create a test database. The test database is used for running tests and is
 separate from the main database. It will have the same schema as the main
