@@ -1,10 +1,9 @@
-version: "3.8"
 name: langchain-extract
 
 services:
   postgres:
     # Careful if bumping postgres version.
-    # Make sure to keep in sync with CI 
+    # Make sure to keep in sync with CI
     # version if being tested on CI.
     image: postgres:16
     expose:
@@ -16,10 +15,10 @@ services:
       POSTGRES_USER: langchain
       POSTGRES_PASSWORD: langchain
     healthcheck:
-        test: [ "CMD-SHELL", "pg_isready -U langchain -d langchain -W langchain" ]
-        interval: 10s
-        timeout: 5s
-        retries: 5
+      test: ["CMD-SHELL", "pg_isready -U langchain -d langchain -W langchain"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
