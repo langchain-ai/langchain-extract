@@ -1,7 +1,4 @@
-"""Convert binary input to blobs and parse them using the appropriate parser."""
-from __future__ import annotations
-
-from typing import BinaryIO, List
+from typing import BinaryIO, List, Tuple
 
 from fastapi import HTTPException
 from langchain.document_loaders.parsers import BS4HTMLParser, PDFMinerParser
@@ -9,6 +6,9 @@ from langchain.document_loaders.parsers.generic import MimeTypeBasedParser
 from langchain.document_loaders.parsers.txt import TextParser
 from langchain_community.document_loaders import Blob
 from langchain_core.documents import Document
+import pytesseract
+from PIL import Image
+import io
 
 HANDLERS = {
     "application/pdf": PDFMinerParser(),
@@ -24,6 +24,7 @@ HANDLERS = {
 }
 
 SUPPORTED_MIMETYPES = sorted(HANDLERS.keys())
+SUPPORTED_MIMETYPES.extend(["image/jpeg", "image/png"])
 
 MAX_FILE_SIZE_MB = 10  # in MB
 
@@ -58,7 +59,6 @@ MIMETYPE_BASED_PARSER = MimeTypeBasedParser(
     fallback_parser=None,
 )
 
-
 def convert_binary_input_to_blob(data: BinaryIO) -> Blob:
     """Convert ingestion input to blob."""
     file_size_in_mb = _get_file_size_in_mb(data)
@@ -71,7 +71,14 @@ def convert_binary_input_to_blob(data: BinaryIO) -> Blob:
 
     file_data = data.read()
     mimetype = _guess_mimetype(file_data)
+    print(mimetype)
     file_name = data.name
+
+    # If the file is an image, convert it to text using OCR
+    if mimetype in ["image/jpeg", "image/png"]:
+        image = Image.open(io.BytesIO(file_data))
+        file_data = pytesseract.image_to_string(image).encode()
+        mimetype = "text/plain"
 
     return Blob.from_data(
         data=file_data,

@@ -21,10 +21,13 @@ RUN set -eux && \
       curl \
       libpq-dev \
       python3-dev \
-      libmagic1
+      libmagic1 \
+      tesseract-ocr \
+      libtesseract-dev
 
 # https://python-poetry.org/docs
 RUN pip install poetry
+RUN pip install unstructured
 
 # install deps before copying project files so the cache is only invalidated
 # when the deps change
