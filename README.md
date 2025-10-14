@@ -1,6 +1,8 @@
-🚧 Under Active Development 🚧
+**Archived**
 
-This repo is under active developments. Do not use code from `main`. Instead please checkout code from [releases](https://github.com/langchain-ai/langchain-extract/releases)
+This is an example repo that is no longer maintained, but you can use it as a reference for implementing an extraction service with a UI.
+
+Do not use code from `main`. Instead please checkout code from [releases](https://github.com/langchain-ai/langchain-extract/releases)
 
 This repository is not a library, but a jumping point for your own application -- so do not be surprised to find breaking changes between releases!
 
