@@ -14,6 +14,7 @@ from server.extraction_runnable import (
     ExtractResponse,
     extraction_runnable,
 )
+from server.middleware import add_langsmith_tracing
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,9 @@ app = FastAPI(
         }
     ],
 )
+
+
+add_langsmith_tracing = app.middleware("http")(add_langsmith_tracing)
 
 
 ROOT = Path(__file__).parent.parent
